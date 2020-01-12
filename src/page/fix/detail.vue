@@ -1,0 +1,246 @@
+<template>
+<div class="wy-fix-detail">
+  <div class="wy-fix-detItem" style="">
+    <div class="wy-fix-det-head">
+      <span class="wy-fix-det-title">基本信息</span>
+      <label class="wy-fix-det-status">待派单</label>
+    </div>
+    <div style="">
+      <div v-for="item in options" class="wy-fix-det-desitem">
+        <span>{{item.title}}</span>：<span class="wy-fix-det-desitemvalue">{{item.value}}</span>
+        <label v-if="item.title == '报修人员'" class="wy-fix-det-usertagdiv">
+          <span class="wy-fix-det-usertag">
+            产权用户
+          </span>
+        </label>
+        <a href="tel:12345" class="wy-fix-det-userphone" v-if="item.title == '报修人员'">
+          <img src="../../../static/images/wy/phone.png" />
+        </a>
+      </div>
+    </div>
+  </div>
+  <div class="wy-fix-detItem" style="">
+    <div class="wy-fix-det-head">
+      <span class="wy-fix-det-title">故障信息</span>
+    </div>
+    <div style="">
+      <div v-for="item in problemOptions" class="wy-fix-det-desitem">
+        <span>{{item.title}}</span>：
+        <span class="wy-fix-det-desitemvalue" v-if="item.title != '故障图片'">{{item.value}}</span>
+        <div v-else class="wy-fix-det-desitemimgs">
+          <img :src="src" v-for="src in item.value" class="wy-fix-det-desitemimg" />
+        </div>
+        <div style="clear:both;"></div>
+      </div>
+    </div>
+  </div>
+  <div id="wy-steps"></div>
+  <div class="wy-fix-detbuts">
+    <div class="wy-fix-detbut" style="color:#3789F9;">派单</div>
+    <div class="wy-fix-detbut" style="color:#F18A29;">追记</div>
+    <div class="wy-fix-detbut" style="color:#D0021B;">撤销</div>
+    <div class="wy-fix-detbut" style="color:#3789F9;" @click="gotoRate">评价</div>
+  </div>
+</div>
+
+</template>
+
+<script>
+import { Navbar, TabItem,TabContainer,TabContainerItem,Cell,Checklist  } from 'mint-ui';
+import * as utils from '../../utils';
+export default {
+  name: 'detail',
+  components: {
+      [Navbar.name]: Navbar,
+      [TabItem.name]: TabItem,
+      [TabContainer.name]: TabContainer,
+      [TabContainerItem.name]: TabContainerItem,
+      [Cell.name]: Cell,
+      [Checklist.name]: Checklist,
+  },
+  data () {
+    return {
+      options: [{
+        title:'报修单号',
+        value:'123'
+      },{
+        title:'报修区域',
+        value:'34'
+      },{
+        title:'报修人员',
+        value:'刘备'
+      },{
+        title:'报修事件',
+        value:'7'
+      },{
+        title:'预约时间',
+        value:'8'
+      },{
+        title:'项目名称',
+        value:'9'
+      }],
+      problemOptions: [{
+        title:'到场时间',
+        value:'123'
+      },{
+        title:'报修类型',
+        value:'34'
+      },{
+        title:'故障地址',
+        value:'刘备'
+      },{
+        title:'故障描述',
+        value:'7'
+      },{
+        title:'故障图片',
+        value:['http://img3.imgtn.bdimg.com/it/u=1256111504,1125893713&fm=26&gp=0.jpg','http://img3.imgtn.bdimg.com/it/u=1256111504,1125893713&fm=26&gp=0.jpg','http://img3.imgtn.bdimg.com/it/u=1256111504,1125893713&fm=26&gp=0.jpg','http://img3.imgtn.bdimg.com/it/u=1256111504,1125893713&fm=26&gp=0.jpg']
+      }]
+    }
+  },
+  created(){
+    // console.log(utils)
+    // debugger;
+    this.$nextTick(()=>{
+      var steps1 = window.steps({
+        el: "#wy-steps",
+        data: [
+        { title: "<span class='wy-step-tag'>追记</span><span class='wy-step-time'>2020-10-12 12:30</span><span class='wy-step-person'>追记人：刘备</span>", description: "追记描述：这是一段描述" },
+            { title: "步骤2", description: "222" }
+        ],
+        active: 1,
+        direction: "vertical"
+      });
+    })
+  },
+  methods:{
+    gotoRate(){
+      this.$router.push({
+        name:'fixRate',
+      })
+    }
+  }
+}
+</script>
+
+<!-- Add "scoped" attribute to limit CSS to this component only -->
+<style >
+.wy-fix-detbuts {
+  padding: 16px;
+    background: #fff;
+    /*position: absolute;*/
+    width: calc(100% - 32px);
+    bottom: 0;
+}
+.wy-fix-detbuts .wy-fix-detbut{
+  display: inline-block;
+  text-align: center;
+  width: calc((100% - 20px) / 4);
+  font-size: 14px;
+  line-height: 14px;
+  border-right: solid 2px #ddd;
+}
+.wy-fix-detbuts .wy-fix-detbut:last-child{
+
+  border-right: none;
+}
+#wy-steps{
+  background: #fff;
+}
+.wy-step-tag {
+border-radius: 8px;
+    border: 1px solid rgba(55,137,249,1);
+    color: rgba(55,137,249,1);
+    font-size: 10px;
+    display: inline-block;
+    line-height: 10px;
+    padding: 2px 4px 1px 4px;
+    vertical-align: text-bottom;
+}
+.wy-step-time,.wy-step-person {
+  display: inline-block;
+  vertical-align: top;
+  padding: 0 4px;
+}
+.wy-fix-det-title{
+  display: inline-block;
+  vertical-align: top;
+  font-size:16px;
+font-weight:600;
+color:rgba(51,51,51,1);
+}
+.wy-fix-det-status{
+  font-size:14px;
+  float: right;
+font-weight:500;
+color:rgba(55,137,249,1);
+}
+.wy-fix-detItem {
+  background: #fff;
+  padding:16px 24px;text-align: left;line-height:1;
+  margin-bottom: 12px;
+}
+.wy-fix-det-head{
+  padding-bottom: 16px;
+    border-bottom: solid 1px #ddd;
+}
+.wy-fix-det-desitem {
+  padding-top: 12px;
+  font-size:14px;
+font-weight:500;
+color:rgba(51,51,51,1);
+line-height: 14px;
+position: relative;
+
+}
+.wy-fix-det-desitemvalue {
+  display: inline-block;
+  vertical-align: top;
+  padding-left: 4px;
+}
+.wy-fix-det-usertagdiv{
+display: inline-block;
+    vertical-align: top;
+    position: relative;
+}
+.wy-fix-det-usertag {
+    width: 42px;
+    /* height: 18px; */
+    border-radius: 2px;
+    border: 1px solid rgba(55,137,249,1);
+    font-size: 10px;
+    /* font-weight: 500; */
+    color: rgba(55,137,249,1);
+    /* line-height: 10px; */
+    display: inline-block;
+    padding: 2px 2px 0px 2px;
+    margin-left: 4px;
+    vertical-align: top;
+    position: absolute;
+    top: -3px;
+}
+.wy-fix-det-userphone {
+  position: absolute;
+      top: 8px;
+  right: 0;
+}
+.wy-fix-det-userphone img {
+  width: 18px;
+  height: 18px;
+}
+.wy-fix-det-desitemimgs{
+display: inline-block;
+    /* position: relative; */
+    /* top: 100%; */
+    float: right;
+    position: relative;
+    top: -12px;
+    left: 12px;
+    /*overflow: hidden;*/
+}
+.wy-fix-det-desitemimg {
+  width: 50px;
+  height: 50px;
+  display: inline-block;
+  margin-right: 4px;
+}
+</style>
