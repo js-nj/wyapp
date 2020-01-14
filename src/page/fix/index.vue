@@ -117,13 +117,13 @@
   </mt-tab-container>
   <mt-tabbar v-model="selected" class="wy-fix-tabbar">
     <mt-tab-item id="kjbx">
-      <img slot="icon" src="../../../static/images/wy/kjbx.png" alt="" >
-      <!-- <img slot="icon" src="../assets/100x100.png"> -->
+      <img v-if="selected == 'kjbx'" slot="icon" src="../../../static/images/wy/kjbx_select.png" alt="" >
+      <img v-else slot="icon" src="../../../static/images/wy/kjbx.png" alt="" >
       快捷报修
     </mt-tab-item>
     <mt-tab-item id="bxjl">
-      <img slot="icon" src="../../../static/images/wy/bxjl.png" alt="" >
-      <!-- <img slot="icon" src="../assets/100x100.png"> -->
+      <img v-if="selected == 'bxjl'" slot="icon" src="../../../static/images/wy/wxjl_select.png" alt="" >
+      <img v-else slot="icon" src="../../../static/images/wy/wxjl.png" alt="" >
       报修记录
     </mt-tab-item>
   </mt-tabbar>
@@ -319,6 +319,8 @@ export default {
   vertical-align: initial;
   font-size: 13px;
   color:#999;
+      position: relative;
+    top: -2px;
 }
  .mint-tabbar > .mint-tab-item.is-selected .mint-tab-item-label{
 color: #26a2ff;

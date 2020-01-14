@@ -2,7 +2,7 @@
 <div class="wy-fix-rate">
   <div class="wy-fix-rateItem" style="">
     <div class="wy-fix-rate-head">
-      <img  style="width:20px;height:20px;" src="../../../static/images/wy/kjbx.png" />
+      <img  style="width:20px;height:20px;" src="../../../static/images/wy/kjbx_tmp.png" />
       <span class="wy-fix-rate-title">维修</span>
       <label class="wy-fix-rate-status" style="color:#333;">已完成</label>
     </div>
@@ -14,9 +14,21 @@
     <div class="wy-fix-rate-head">
       <span class="wy-fix-rate-title">评价</span>
       <div class="wy-fix-rate-levs">
-        <label class="wy-fix-rate-lev">好评</label>
-        <label class="wy-fix-rate-lev">中评</label>
-        <label class="wy-fix-rate-lev">差评</label>
+        <label class="wy-fix-rate-lev wy-fix-ratelev-select">
+          <img class="fix-img-rate" src="../../../static/images/wy/pj_hp.png" />
+          <img class="fix-img-rate-select" src="../../../static/images/wy/pj_hp_select.png" />
+          <span class="fix-rate-span">好评</span>
+        </label>
+        <label class="wy-fix-rate-lev">
+          <img class="fix-img-rate" src="../../../static/images/wy/pj_zp.png" />
+          <img class="fix-img-rate-select" src="../../../static/images/wy/pj_zp_select.png" />
+          <span class="fix-rate-span">中评</span>
+        </label>
+        <label class="wy-fix-rate-lev">
+          <img class="fix-img-rate" src="../../../static/images/wy/pj_cp.png" />
+          <img class="fix-img-rate-select" src="../../../static/images/wy/pj_cp_select.png" />
+          <span class="fix-rate-span">差评</span>
+        </label>
       </div>
     </div>
     <mt-field label="" placeholder="这里可以填写详细评价哦" type="textarea" rows="4" v-model="introduction"></mt-field>
@@ -30,6 +42,7 @@
 <script>
 import { Field,Button  } from 'mint-ui';
 import * as utils from '../../utils';
+import $ from "jquery";
 export default {
   name: 'detail',
   components: {
@@ -47,7 +60,11 @@ export default {
     // console.log(utils)
     // debugger;
     this.$nextTick(()=>{
-
+      $('.wy-fix-rate-lev','.wy-fix-rate-levs').on('click', function (ele) {
+            // debugger;
+            // that.tabId = $(this).attr('tabid');
+            $(this).addClass('wy-fix-ratelev-select').siblings('.wy-fix-ratelev-select').removeClass('wy-fix-ratelev-select');
+        });
     })
   }
 }
@@ -102,11 +119,35 @@ line-height:22px;
   vertical-align: top;
   font-size:12px;
   color:rgba(170,170,170,1);
-  padding-left: 32px;
+  padding-left: 24px;
 }
 .wy-fix-rate-levs .wy-fix-rate-lev {
   display: inline-block;
   vertical-align: top;
   padding: 0 8px;
+}
+.wy-fix-rate-levs .wy-fix-rate-lev img{
+  width: 20px;
+  /*display: inline-block;*/
+  vertical-align: top;
+}
+.wy-fix-rate-lev .fix-img-rate{
+  display: inline-block;
+}
+.wy-fix-rate-lev .fix-img-rate-select{
+  display: none;
+}
+.wy-fix-rate-lev.wy-fix-ratelev-select .fix-img-rate{
+  display: none;
+}
+.wy-fix-rate-lev.wy-fix-ratelev-select .fix-img-rate-select{
+  display: inline-block;
+}
+.fix-rate-span {
+  display: inline-block;
+  padding-left: 4px;
+}
+.wy-fix-rate-lev.wy-fix-ratelev-select .fix-rate-span{
+  color:#EA521F;
 }
 </style>

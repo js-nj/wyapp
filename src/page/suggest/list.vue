@@ -6,7 +6,9 @@
       <span class="wy-sug-item-typeId">{{item.typeId}}</span>
       <label @click="isshowhide(item,index)">
         <span class="wy-sug-item-status" style="">{{item.serviceStatus}}</span>
-        <span>></span>
+        <!-- <span>></span> -->
+        <img v-if="!item.show" class="wy-sug-item-img" src="../../../static/images/wy/act_zk.png" />
+        <img v-else class="wy-sug-item-img" src="../../../static/images/wy/act_sq.png" />
       </label>
     </div>
     <div class="wy-sug-item-hide" v-if="item.show">
@@ -143,5 +145,8 @@ margin-top: 0;
 }
 .wy-sug-item-hide>div {
   padding: 4px 0px;
+}
+.wy-sug-item-img{
+  width: 12px;
 }
 </style>

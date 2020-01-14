@@ -6,7 +6,7 @@
             <div class="weui-tab__panel">
               <div v-if="tabId=='1'">
                 <div class="wy-location">
-                  <img class="wy-location-img" src="../../static/images/location.jpg" />
+                  <img class="wy-location-img" src="../../static/images/wy/location.png" />
                   <span class="wy-location-name">龙湖国际（双龙大道）</span>
                 </div>
                 <div class="wy-head">
@@ -283,17 +283,17 @@ a {
 }
 .wy-location-img{
   display: inline-block;
-    width: 24px;
-    height: 28px;
+    width: 14px;
+    height: 18px;
     margin-bottom: 2px;
     /* position: absolute; */
     position: relative;
-    top: 8px;
+    top: 12px;
 }
 .wy-location-name{
   font-size: 14px;
     position: relative;
-    top: -2px;
+    top: 6px;
 }
 .wy-news {
   background: #fff;
