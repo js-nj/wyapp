@@ -15,8 +15,10 @@
     </div>
     <div style="padding: 12px 0;">
       <p class="wy-sug-name">添加图片（可选）</p>
-      <div>
+      <div class="wy-sug-index">
+        <img src="" class="show" style="width:60px;height:60px;display:none;" />
         <img style="width: 65px;" src="../../../static/images/addimage.jpg" />
+        <input id="imageFile1"  name="imageFile" onchange="changepic(this,'wy-sug-index')" type="file" accept="image/png, image/jpeg, image/gif, image/jpg" />
       </div>
     </div>
   </div>
@@ -61,23 +63,66 @@ export default {
       })
     },
     postWyOpitionSave(){
-      var param = {
-        propertyId :'',// 物业ID ,
-        companyId :'',// 公司ID ,
-        communityId :'',// 楼宇ID ,
-        ownerId : '',//业主ID ,
-        typeId : '',//类型ID ,
-        opinionContent : this.introduction,//投诉内容 ,
-        imgUrl : '',//图片地址（多个以逗号隔开）
-      };
-      utils.Get('postWyOpinionSave',param).then(function(res){
-        if (res.data.code ==0) {
-          Toast('提交成功~');
-        }else {
-          Toast('提交失败,'+res.data.msg+'！');
-        }
-        // that.list = res.data.page.list;
-      });
+      var imageFile = $("#imageFile1").val();
+      if(imageFile && imageFile.length > 0){
+        var formData = new FormData();
+        formData.append("file", $("#imageFile1")[0].files[0]);
+        $.ajax({
+            url:window.hostPath+"/app/upload/img",
+            type:"post",
+            data:formData,
+            dataType:"json",
+            // 告诉jQuery不要去处理发送的数据
+            processData: false,
+            // 告诉jQuery不要去设置Content-Type请求头
+            contentType: false,
+            beforeSend: function () {
+               console.log("正在进行，请稍候");
+            },
+            success:function(data){
+                if(data.code == 0){
+                  var param = {
+                    propertyId :'',// 物业ID ,
+                    companyId :'',// 公司ID ,
+                    communityId :'',// 楼宇ID ,
+                    ownerId : '',//业主ID ,
+                    typeId : '',//类型ID ,
+                    opinionContent : this.introduction,//投诉内容 ,
+                    imgUrl : '',//图片地址（多个以逗号隔开）
+                  };
+                  utils.Get('postWyOpinionSave',param).then(function(res){
+                    if (res.data.code ==0) {
+                      Toast('提交成功~');
+                    }else {
+                      Toast('提交失败,'+res.data.msg+'！');
+                    }
+                    // that.list = res.data.page.list;
+                  });
+                }else{
+                  alert(data.msg)
+                    // $("#imageForm").submit();
+                }
+            }
+        })
+      }else {
+        var param = {
+          propertyId :'',// 物业ID ,
+          companyId :'',// 公司ID ,
+          communityId :'',// 楼宇ID ,
+          ownerId : '',//业主ID ,
+          typeId : '',//类型ID ,
+          opinionContent : this.introduction,//投诉内容 ,
+          imgUrl : '',//图片地址（多个以逗号隔开）
+        };
+        utils.Get('postWyOpinionSave',param).then(function(res){
+          if (res.data.code ==0) {
+            Toast('提交成功~');
+          }else {
+            Toast('提交失败,'+res.data.msg+'！');
+          }
+          // that.list = res.data.page.list;
+        });
+      }
     }
   }
 }
@@ -85,6 +130,18 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style >
+#imageFile1 {
+      /* margin-left: 40px; */
+    /* display: inline-block; */
+    /* height: 34px; */
+    /* visibility: hidden; */
+    position: absolute;
+    /* top: -29px; */
+    width: 60px;
+    height: 60px;
+    left: 0px;
+    opacity: 0;
+}
 .wy-sug-body {
   margin:8px 0 16px 0;
   padding:8px 16px;

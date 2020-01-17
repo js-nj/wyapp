@@ -11,7 +11,7 @@
         <!-- tab-container -->
         <mt-tab-container v-model="fixTypes">
           <mt-tab-container-item id="public">
-            <div class="wy-fix-ggform" style="">
+            <div class="wy-fix-ggform wy-fix-public" style="">
               <mt-field label="公共地址" placeholder="请填写地址" v-model="ggfixplace"></mt-field>
               <div @click="ggshowSheet" class="wy-select-problem">
                 <mt-cell title="故障类型" :value="ggproblem" is-link  ></mt-cell>
@@ -20,15 +20,17 @@
               <mt-field label="" placeholder="请填写故障描述帮助我们尽快解决问题" type="textarea" rows="4" v-model="ggintroduction"></mt-field>
             </div>
             <div style="padding: 16px;text-align: left;">
+              <img src="" class="show" style="width:60px;height:60px;display:none;" />
               <div class="upload_item" v-for="(item,index) in gguploadImgs">
-                <i class="iconfont icon-weiwancheng cancel_upload_img" @click="ggdeleteImg(item.id)"></i>
-                <img class="upload_img" @click="ggpreviewImg(index)" :src="item.fileUrl" alt="">
+                <i class="iconfont icon-weiwancheng cancel_upload_img" @click="ggdeleteImg(item)"></i>
+                <img class="upload_img" @click="ggpreviewImg(item)" :src="item" alt="">
               </div>
               <div class="upload_item">
                 <img class="upload_img" src="../../../static/images/upload.png" alt="无" @click="gghandleClick">
+                <input id="imageFile"  name="imageFile" onchange="changepic(this,'wy-fix-public')" type="file" accept="image/png, image/jpeg, image/gif, image/jpg" />
               </div>
             </div>
-            <mt-button class="wy-sug-button" type="primary" @click="">确认提交</mt-button>
+            <mt-button class="wy-sug-button" type="primary" @click="postWyServiceSave">确认提交</mt-button>
           </mt-tab-container-item>
           <mt-tab-container-item id="private">
             <div class="wy-fix-private" ref="privateDiv">
@@ -45,15 +47,20 @@
                 <mt-field label="" placeholder="请填写故障描述帮助我们尽快解决问题" type="textarea" rows="4" v-model="grintroduction"></mt-field>
               </div>
               <div style="padding: 16px;text-align: left;">
+                <img src="" class="show" style="width:60px;height:60px;display:none;" />
                 <div class="upload_item" v-for="(item,index) in gruploadImgs">
-                  <i class="iconfont icon-weiwancheng cancel_upload_img" @click="grdeleteImg(item.id)"></i>
-                  <img class="upload_img" @click="grpreviewImg(index)" :src="item.fileUrl" alt="">
+                  <i class="iconfont icon-weiwancheng cancel_upload_img" @click="grdeleteImg(item)"></i>
+                  <img class="upload_img" @click="grpreviewImg(item)" :src="item" alt="">
                 </div>
                 <div class="upload_item">
                   <img class="upload_img" src="../../../static/images/upload.png" alt="无" @click="grhandleClick">
+                  <input id="imageFile"  name="imageFile" onchange="changepic(this,'wy-fix-private')" type="file" accept="image/png, image/jpeg, image/gif, image/jpg" />
+
                 </div>
               </div>
-              <mt-button class="wy-sug-button" type="primary" @click="">确认提交</mt-button>
+              <div class="tkDiv" id="addLOGO" style="z-index:12;height:auto;">
+        </div>
+              <mt-button id="saveBtn" class="wy-sug-button" type="primary" @click="postWyServiceSave">确认提交</mt-button>
             </div>
           </mt-tab-container-item>
         </mt-tab-container>
@@ -135,6 +142,7 @@
 import { Navbar, TabItem,Tabbar,TabContainer,TabContainerItem,Cell,Checklist,Actionsheet,Field,Picker,Popup,Button,DatetimePicker} from 'mint-ui';
 // import utils from '../utils.js';
 import * as utils from '../../utils';
+import $ from "jquery";
 export default {
   name: 'detail',
   components: {
@@ -193,10 +201,7 @@ export default {
       ggfixplace:'',
       ggintroduction:'',
       ggproblem:'',
-      gguploadImgs:[{
-        fileUrl:'http://www.baidu.com/img/bd_logo1.png',
-        id:'1'
-      }],
+      gguploadImgs:[],
       ggslots: [
         {
           values: [{name:'马桶坏了',id:'12'},{name:'马桶坏了2',id:'122'},],
@@ -207,10 +212,7 @@ export default {
       grfixplace:'',
       grintroduction:'',
       grproblem:'',
-      gruploadImgs:[{
-        fileUrl:'http://www.baidu.com/img/bd_logo1.png',
-        id:'1'
-      }],
+      gruploadImgs:[],
       grslots: [
         {
           values: [{name:'马桶坏了',id:'12'},{name:'马桶坏了2',id:'122'},],
@@ -225,6 +227,44 @@ export default {
     this.$nextTick(() => {
         this.$refs['privateDiv'].style.height = (document.body.clientHeight - 90) + 'px';
         // this.$refs['timepiker'].open();
+        // $(function(){
+
+        //   $("#saveBtn").click(function(){
+        //       var imageName = $("#imageName").val();
+        //       var imageFile = $("#imageFile").val();
+        //       // if(imageName == '' || imageName.length == 0){
+        //       //     alert("请输入图片名称");
+        //       //     return;
+        //       // }
+        //       if(imageFile == '' || imageFile.length == 0){
+        //           alert("请选择要上传的图片");
+        //           return;
+        //       }
+        //       var formData = new FormData();
+        //           formData.append("file", $("#imageFile")[0].files[0]);
+        //       $.ajax({
+        //           url:window.hostPath+"/app/upload/img",
+        //           type:"post",
+        //           data:formData,
+        //           dataType:"json",
+        //           // 告诉jQuery不要去处理发送的数据
+        //           processData: false,
+        //           // 告诉jQuery不要去设置Content-Type请求头
+        //           contentType: false,
+        //           beforeSend: function () {
+        //              console.log("正在进行，请稍候");
+        //           },
+        //           success:function(data){
+        //               if(data.code == 0){
+
+        //               }else{
+        //                 alert(data.msg)
+        //                   // $("#imageForm").submit();
+        //               }
+        //           }
+        //       })
+        //   })
+        // })
     })
   },
   watch:{
@@ -242,6 +282,80 @@ export default {
     }
   },
   methods:{
+    postWyServiceSave(){
+      var imageFile = $("#imageFile").val();
+      if(imageFile && imageFile.length > 0){
+        var formData = new FormData();
+        formData.append("file", $("#imageFile")[0].files[0]);
+        $.ajax({
+            url:window.hostPath+"/app/upload/img",
+            type:"post",
+            data:formData,
+            dataType:"json",
+            // 告诉jQuery不要去处理发送的数据
+            processData: false,
+            // 告诉jQuery不要去设置Content-Type请求头
+            contentType: false,
+            beforeSend: function () {
+               console.log("正在进行，请稍候");
+            },
+            success:function(data){
+                if(data.code == 0){
+                    var param = {
+                      propertyId: '物业ID' ,
+                      companyId: '公司ID' ,
+                      communityId: '楼宇ID' ,
+                      ownerId: '业主ID' ,
+                      typeId: '故障类型ID' ,
+                      serviceAddress: '故障位置' ,
+                      serviceContent: '故障描述' ,
+                      ownerName: '联系人' ,
+                      ownerMobile: '电话' ,
+                      doorDate: '预约上门时间' ,
+                      beginTime: '预约上门时间段1' ,
+                      endTime: '预约上门时间段2' ,
+                      imgUrl: '图片地址（多个以逗号隔开）'
+                    };
+                    utils.Post('postWyServiceSave',param).then(function(res){
+                      if (res.data.code ==0) {
+                        Toast('提交成功~');
+                      }else {
+                        Toast('提交失败,'+res.data.msg+'！');
+                      }
+                      // that.list = res.data.page.list;
+                    });
+                }else{
+                  alert(data.msg)
+                    // $("#imageForm").submit();
+                }
+            }
+        })
+      }else {
+        var param = {
+          propertyId: '物业ID' ,
+          companyId: '公司ID' ,
+          communityId: '楼宇ID' ,
+          ownerId: '业主ID' ,
+          typeId: '故障类型ID' ,
+          serviceAddress: '故障位置' ,
+          serviceContent: '故障描述' ,
+          ownerName: '联系人' ,
+          ownerMobile: '电话' ,
+          doorDate: '预约上门时间' ,
+          beginTime: '预约上门时间段1' ,
+          endTime: '预约上门时间段2' ,
+          imgUrl: '图片地址（多个以逗号隔开）'
+        };
+        utils.Post('postWyServiceSave',param).then(function(res){
+          if (res.data.code ==0) {
+            Toast('提交成功~');
+          }else {
+            Toast('提交失败,'+res.data.msg+'！');
+          }
+          // that.list = res.data.page.list;
+        });
+      }
+    },
     ggdeleteImg(){
 
     },
@@ -298,6 +412,18 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style >
+#imageFile {
+      /* margin-left: 40px; */
+    /* display: inline-block; */
+    /* height: 34px; */
+    /* visibility: hidden; */
+    position: absolute;
+    /* top: -29px; */
+    width: 60px;
+    height: 60px;
+    left: 0px;
+    opacity: 0;
+}
 .wy-fix-ggform input.mint-field-core {
   background: #fff;
 }
