@@ -282,6 +282,9 @@ export default {
     }
   },
   methods:{
+    getWyserviceList(){
+
+    },
     postWyServiceSave(){
       var imageFile = $("#imageFile").val();
       if(imageFile && imageFile.length > 0){

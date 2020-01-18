@@ -7,4 +7,8 @@ export default {
   getWyOpinionList: hostPath + '/app/wyopinion/list',
   postWyOpinionSave: hostPath + '/app/wyopinion/save',
   postWyServiceSave: hostPath + '/app/wyservice/save',
+  getUserInfo: hostPath + '/app/txhn/getUserInfo',
+  getPayList: hostPath + '/app/wypay/list',
+  postWyserviceEvaluate: hostPath + '/app/wyservice/evaluate',
+  getWyserviceList: hostPath + '/app/wyservice/list'
 }

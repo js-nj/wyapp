@@ -166,6 +166,7 @@ export default {
   },
   created(){
     var that = this;
+    that.getUserInfo();
     this.$nextTick(function(){
         $('.weui-tabbar__item').on('click', function (ele) {
             // debugger;
@@ -188,6 +189,22 @@ export default {
     }
   },
   methods:{
+    getUserInfo(){
+      var param = {
+        residentCode:window.location.href.split('resident_code=')[1]
+      };
+      if (param.residentCode) {
+        utils.Get('getUserInfo',param).then(function(res){
+          console.log('getUserInfo',res)
+          if (res.code == 0) {
+            window.userInfo = res.result;
+          }
+          // that.ggMenu = res.data.page.list;
+        });
+      }else {
+        alert('未获取到resident_code');
+      }
+    },
     gotoPage(route){
       this.$router.push({
         name:route,

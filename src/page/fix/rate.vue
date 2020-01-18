@@ -14,17 +14,17 @@
     <div class="wy-fix-rate-head">
       <span class="wy-fix-rate-title">评价</span>
       <div class="wy-fix-rate-levs">
-        <label class="wy-fix-rate-lev wy-fix-ratelev-select">
+        <label class="wy-fix-rate-lev wy-fix-ratelev-select" level="hp">
           <img class="fix-img-rate" src="../../../static/images/wy/pj_hp.png" />
           <img class="fix-img-rate-select" src="../../../static/images/wy/pj_hp_select.png" />
           <span class="fix-rate-span">好评</span>
         </label>
-        <label class="wy-fix-rate-lev">
+        <label class="wy-fix-rate-lev" level="zp">
           <img class="fix-img-rate" src="../../../static/images/wy/pj_zp.png" />
           <img class="fix-img-rate-select" src="../../../static/images/wy/pj_zp_select.png" />
           <span class="fix-rate-span">中评</span>
         </label>
-        <label class="wy-fix-rate-lev">
+        <label class="wy-fix-rate-lev" level="cp">
           <img class="fix-img-rate" src="../../../static/images/wy/pj_cp.png" />
           <img class="fix-img-rate-select" src="../../../static/images/wy/pj_cp_select.png" />
           <span class="fix-rate-span">差评</span>
@@ -34,13 +34,13 @@
     <mt-field label="" placeholder="这里可以填写详细评价哦" type="textarea" rows="4" v-model="introduction"></mt-field>
 
   </div>
-  <mt-button class="wy-fix-rate-button" type="primary" @click="">确认提交</mt-button>
+  <mt-button class="wy-fix-rate-button" type="primary" @click="postWyserviceEvaluate">确认提交</mt-button>
 </div>
 
 </template>
 
 <script>
-import { Field,Button  } from 'mint-ui';
+import { Field,Button,Toast  } from 'mint-ui';
 import * as utils from '../../utils';
 import $ from "jquery";
 export default {
@@ -49,23 +49,39 @@ export default {
 
       [Field.name]: Field,
       [Button.name]: Button,
+      [Toast.name]: Toast,
   },
   data () {
     return {
-      introduction:''
+      introduction:'',
+      level:'hp'
     }
 
   },
   created(){
-    // console.log(utils)
-    // debugger;
+    var that = this;
     this.$nextTick(()=>{
       $('.wy-fix-rate-lev','.wy-fix-rate-levs').on('click', function (ele) {
             // debugger;
-            // that.tabId = $(this).attr('tabid');
+            that.level = $(this).attr('level');
             $(this).addClass('wy-fix-ratelev-select').siblings('.wy-fix-ratelev-select').removeClass('wy-fix-ratelev-select');
         });
     })
+  },
+  methods:{
+    postWyserviceEvaluate(){
+      var param = {
+        id : '' ,
+        evaluateLevel : this.level ,
+        evaluateContent : this.introduction ,
+        ownerId : '业主ID'
+      };
+      utils.Post('postWyserviceEvaluate',param).then(function(res){
+        if (res.data.code == 0) {
+          Toast('评价成功');
+        }
+      });
+    }
   }
 }
 </script>
