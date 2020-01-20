@@ -10,16 +10,16 @@
 
         <!-- tab-container -->
         <mt-tab-container v-model="fixTypes">
-          <mt-tab-container-item id="public">
-            <div class="wy-fix-ggform wy-fix-public" style="">
-              <mt-field label="公共地址" placeholder="请填写地址" v-model="ggfixplace"></mt-field>
-              <div @click="ggshowSheet" class="wy-select-problem">
+          <mt-tab-container-item id="public" class="wy-fix-public">
+            <div class="wy-fix-ggform" style="">
+              <mt-field label="报修地址" placeholder="请输入有故障的具体位置" v-model="ggfixplace"></mt-field>
+              <!-- <div @click="ggshowSheet" class="wy-select-problem">
                 <mt-cell title="故障类型" :value="ggproblem" is-link  ></mt-cell>
-              </div>
-              <mt-cell class="wy-fix-name" title="备注信息"></mt-cell>
+              </div> -->
+              <mt-cell class="wy-fix-name" title="故障描述"></mt-cell>
               <mt-field label="" placeholder="请填写故障描述帮助我们尽快解决问题" type="textarea" rows="4" v-model="ggintroduction"></mt-field>
             </div>
-            <div style="padding: 16px;text-align: left;">
+            <div style="padding: 16px 24px;text-align: left;">
               <img src="" class="show" style="width:60px;height:60px;display:none;" />
               <div class="upload_item" v-for="(item,index) in gguploadImgs">
                 <i class="iconfont icon-weiwancheng cancel_upload_img" @click="ggdeleteImg(item)"></i>
@@ -36,17 +36,17 @@
             <div class="wy-fix-private" ref="privateDiv">
               <div class="wy-fix-ggform" style="">
                 <mt-field label="家庭住址" placeholder="请填写地址" v-model="grfixplace"></mt-field>
-                <mt-field label="用户姓名" placeholder="请输入用户名" v-model="username"></mt-field>
+                <mt-field label="报修人" placeholder="请输入用户名" v-model="username"></mt-field>
                 <mt-field label="联系方式" placeholder="请输入手机号" type="tel" v-model="phone"></mt-field>
-                <mt-field label="预约日期" placeholder="请输入日期" type="date" v-model="problemday"></mt-field>
+                <mt-field label="上门日期" placeholder="请输入日期" type="date" v-model="problemday"></mt-field>
                 <!-- <mt-datetime-picker type="time" v-model="problemTime" ref="timepiker"></mt-datetime-picker> -->
-                <div @click="grshowSheet" class="wy-select-problem">
+                <!-- <div @click="grshowSheet" class="wy-select-problem">
                   <mt-cell title="故障类型" :value="grproblem" is-link  ></mt-cell>
-                </div>
-                <mt-cell class="wy-fix-name" title="备注信息"></mt-cell>
+                </div> -->
+                <mt-cell class="wy-fix-name" title="故障描述"></mt-cell>
                 <mt-field label="" placeholder="请填写故障描述帮助我们尽快解决问题" type="textarea" rows="4" v-model="grintroduction"></mt-field>
               </div>
-              <div style="padding: 16px;text-align: left;">
+              <div style="padding: 16px 24px;text-align: left;">
                 <img src="" class="show" style="width:60px;height:60px;display:none;" />
                 <div class="upload_item" v-for="(item,index) in gruploadImgs">
                   <i class="iconfont icon-weiwancheng cancel_upload_img" @click="grdeleteImg(item)"></i>
@@ -226,46 +226,8 @@ export default {
     // debugger;
     this.$nextTick(() => {
         this.$refs['privateDiv'].style.height = (document.body.clientHeight - 90) + 'px';
-        // this.$refs['timepiker'].open();
-        // $(function(){
-
-        //   $("#saveBtn").click(function(){
-        //       var imageName = $("#imageName").val();
-        //       var imageFile = $("#imageFile").val();
-        //       // if(imageName == '' || imageName.length == 0){
-        //       //     alert("请输入图片名称");
-        //       //     return;
-        //       // }
-        //       if(imageFile == '' || imageFile.length == 0){
-        //           alert("请选择要上传的图片");
-        //           return;
-        //       }
-        //       var formData = new FormData();
-        //           formData.append("file", $("#imageFile")[0].files[0]);
-        //       $.ajax({
-        //           url:window.hostPath+"/app/upload/img",
-        //           type:"post",
-        //           data:formData,
-        //           dataType:"json",
-        //           // 告诉jQuery不要去处理发送的数据
-        //           processData: false,
-        //           // 告诉jQuery不要去设置Content-Type请求头
-        //           contentType: false,
-        //           beforeSend: function () {
-        //              console.log("正在进行，请稍候");
-        //           },
-        //           success:function(data){
-        //               if(data.code == 0){
-
-        //               }else{
-        //                 alert(data.msg)
-        //                   // $("#imageForm").submit();
-        //               }
-        //           }
-        //       })
-        //   })
-        // })
-    })
+    });
+    this.getWyserviceList();
   },
   watch:{
     ggchooseResult(val){
@@ -283,9 +245,25 @@ export default {
   },
   methods:{
     getWyserviceList(){
-
+      var param = {
+        ownerId:'4f895cb1ac2ef28b2178089a1ead421d',
+        page:1,
+        limit:10
+      };
+      var that = this;
+      utils.Post('getWyserviceList',param).then(function(res){
+        // if (res.data.code ==0) {
+        //   Toast('提交成功~');
+        // }else {
+        //   Toast('提交失败,'+res.data.msg+'！');
+        // }
+        that.options = res.data.page.list;
+      });
     },
     postWyServiceSave(){
+      // 业主ID 4f895cb1ac2ef28b2178089a1ead421d
+      // 物业ID 998bac69aeb0e363a455b28c32b3cfa9
+      var that = this;
       var imageFile = $("#imageFile").val();
       if(imageFile && imageFile.length > 0){
         var formData = new FormData();
@@ -305,19 +283,19 @@ export default {
             success:function(data){
                 if(data.code == 0){
                     var param = {
-                      propertyId: '物业ID' ,
+                      propertyId: '998bac69aeb0e363a455b28c32b3cfa9' ,
                       companyId: '公司ID' ,
                       communityId: '楼宇ID' ,
-                      ownerId: '业主ID' ,
+                      ownerId: '4f895cb1ac2ef28b2178089a1ead421d' ,
                       typeId: '故障类型ID' ,
-                      serviceAddress: '故障位置' ,
-                      serviceContent: '故障描述' ,
-                      ownerName: '联系人' ,
-                      ownerMobile: '电话' ,
+                      serviceAddress: that.ggfixplace ,
+                      serviceContent: that.ggintroduction ,
+                      ownerName: '大刘' ,
+                      ownerMobile: '1885173' ,
                       doorDate: '预约上门时间' ,
                       beginTime: '预约上门时间段1' ,
                       endTime: '预约上门时间段2' ,
-                      imgUrl: '图片地址（多个以逗号隔开）'
+                      imgUrl: 'www.baidu.com'
                     };
                     utils.Post('postWyServiceSave',param).then(function(res){
                       if (res.data.code ==0) {
@@ -438,6 +416,25 @@ export default {
   height: 100%;
     background: #fff;
 }
+.wy-fix .mint-navbar{
+  width: 200px;
+    margin: 16px auto;
+    border: solid 1px #26a2ff;
+    border-radius: 42px;
+    /*background: #ddd;*/
+}
+.wy-fix .mint-navbar .mint-tab-item.is-selected{
+  color: #fff;
+  background-color: #26a2ff;
+  border-bottom: none;
+  margin-bottom: 0px;
+}
+.wy-fix .mint-navbar .mint-tab-item {
+  padding: 11.5px;
+}
+.wy-fix .mint-navbar .mint-tab-item {
+  border-radius: 42px;
+}
 .wy-fix-tabbar .mint-tab-item-icon{
   margin:0;
   display: inline-block;
@@ -518,29 +515,39 @@ color: #333;
     .wy-sug-button{
   font-size: 16px;
       width: 90%;
-    margin: 0 auto 16px auto;
+    margin: 0 auto 32px auto;
     display: block;
 }
 .wy-fix-name.mint-cell .mint-cell-title {
   text-align: left;
-  padding-left: 20px;
+  /*padding-left: 20px;*/
 }
 .wy-fix-ggform {
-  padding-top: 3px;
+  padding: 3px 16px;
   /*border-bottom:solid 1px #ddd;*/
+}
+.wy-fix-ggform .mint-cell-title {
+  text-align: left;
 }
 .wy-fix-ggform .mint-cell-wrapper {
   background-image: none;
   border-bottom:solid 1px #ddd;
 }
 .wy-fix-ggform>.mint-cell:first-child .mint-cell-wrapper {
-  border-top:solid 1px #ddd;
+  /*border-top:solid 1px #ddd;*/
 }
 .wy-fix-ggform .mint-cell.is-textarea {
-  margin:  0px 16px 16px 16px;
+  margin:  0px 16px 16px 8px;
   display: block;
   border-radius:2px;
 border:1px solid rgba(238,238,238,1);
+}
+.wy-fix-ggform .mint-cell-text{
+font-size: 14px;
+}
+.wy-fix-ggform ::placeholder {
+  /*color: red;*/
+  font-size: 12px;
 }
 .wy-fix-ggform .mint-cell:last-child {
   background-image: none;

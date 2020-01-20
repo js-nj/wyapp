@@ -51,7 +51,7 @@
             <div style="padding-top:2px;">2019年 9月-10月</div>
           </div>
           <div class="wy-rec-item-money">
-            <span>总金额</span>
+            <span>金额</span>
             <div style="padding-top:2px;">{{item.money}}</div>
           </div>
           <div class="wy-rec-icon">></div>

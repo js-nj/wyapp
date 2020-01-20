@@ -14,6 +14,7 @@
         //console.log(obj.files[0]);//这里可以获取上传文件的name
         // var last = className + ' '
         var newsrc=getObjectURL(obj.files[0]);
+        console.log('document.getElementsByClassName(className)[0]',document.getElementsByClassName(className)[0])
         document.getElementsByClassName(className)[0].getElementsByClassName('show')[0].style.display = 'inline-block';
         // console.log('document.getElementsByClassName(className)[0]',document.getElementsByClassName(className)[0])
         document.getElementsByClassName(className)[0].getElementsByClassName('show')[0].src=newsrc;

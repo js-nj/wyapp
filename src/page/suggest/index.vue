@@ -17,7 +17,7 @@
       <p class="wy-sug-name">添加图片（可选）</p>
       <div class="wy-sug-index">
         <img src="" class="show" style="width:60px;height:60px;display:none;" />
-        <img style="width: 65px;" src="../../../static/images/addimage.jpg" />
+        <img style="width: 65px;" src="../../../static/images/upload.png" />
         <input id="imageFile1"  name="imageFile" onchange="changepic(this,'wy-sug-index')" type="file" accept="image/png, image/jpeg, image/gif, image/jpg" />
       </div>
     </div>

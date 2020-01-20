@@ -5,15 +5,19 @@
         <div class="weui-tab">
             <div class="weui-tab__panel">
               <div v-if="tabId=='1'">
-                <div class="wy-location">
+                <!-- <div class="wy-location">
                   <img class="wy-location-img" src="../../static/images/wy/location.png" />
                   <span class="wy-location-name">龙湖国际（双龙大道）</span>
-                </div>
+                </div> -->
                 <div class="wy-head">
                   <div class="wy-header">
                     <img class="wy-head-img" src="../../static/images/wy-1.jpg" />
                   </div>
                   <div class="wy-menu">
+                    <div class="wy-menu-item" @click="gotoHref()">
+                      <img src="../../static/images/wy/mj.png" style="width: 24px;" alt="" class="weui-tabbar__icon">
+                      <div>门禁</div>
+                    </div>
                     <div class="wy-menu-item" @click="gotoPage('recIndex')">
                       <img src="../../static/images/wy/jf.png" style="width: 24px;" alt="" class="weui-tabbar__icon">
                       <div>缴费</div>
@@ -93,23 +97,29 @@
                   <div><img class="wy-myhead-img" src="../../static/images/wy/man.jpg" /></div>
                   <div>
                     <p style="text-align:left;font-size:16px;">张三</p>
-                    <span style="font-size:14px;">颐秀居 7栋-1单元-1002</span>
+                    <span style="font-size:14px;">1234567890</span>
                   </div>
-                  <div>
+                  <div style="visibility:hidden;">
                     <p>30.00</p>
                     <span style="font-size:12px;">积分</span>
                   </div>
                 </div>
                 <div class="wy-mybody">
                   <div class="wy-mybody-content">
+                    <mt-cell title="我的房产" to="/sugList" is-link>
+                      <img slot="icon" src="../../static/images/wy/mj.png" />
+                    </mt-cell>
+                    <mt-cell title="我的门禁" to="/recIndex" is-link>
+                      <img style="width: 18px;" slot="icon" src="../../static/images/wy/mj.png" />
+                    </mt-cell>
                     <mt-cell title="我的缴费" to="/recIndex" is-link>
                       <img style="width: 18px;" slot="icon" src="../../static/images/wy/jf.png" />
                     </mt-cell>
                     <mt-cell title="我的报修" to="/fixIndex" is-link>
                       <img slot="icon" src="../../static/images/wy/bx.png" />
                     </mt-cell>
-                    <mt-cell title="我的建议" to="/sugList" is-link>
-                      <img slot="icon" src="../../static/images//wy/ts.png" />
+                    <mt-cell title="我的投诉" to="/sugList" is-link>
+                      <img slot="icon" src="../../static/images/wy/ts.png" />
                     </mt-cell>
                   </div>
                 </div>
@@ -189,6 +199,9 @@ export default {
     }
   },
   methods:{
+    gotoHref(){
+      window.location.href = "http://www.baidu.com";
+    },
     getUserInfo(){
       var param = {
         residentCode:window.location.href.split('resident_code=')[1]
@@ -278,7 +291,7 @@ a {
 }
 .wy-menu-item {
   display: inline-block;
-  width: 32%;
+  width: 23.7%;
   vertical-align: top;
 }
 .wy-head-img {
@@ -289,7 +302,7 @@ a {
       background: #fff;
   padding: 16px;
   position: relative;
-    top: -16px;
+    /*top: -16px;*/
 }
 .wy-location {
   background-color: #365FB2;

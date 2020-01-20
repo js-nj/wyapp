@@ -5,7 +5,7 @@
     <div class="wy-rec-detail-title">支付成功</div>
   </div>
   <div style="padding:0 16px;background:#fff;">
-    <mt-cell v-for="item in options" :title="item.title" :value="item.value"></mt-cell>
+    <mt-cell v-for="item in options" :title="item.title" :key="item.title" :value="item.value"></mt-cell>
   </div>
 
   <!-- <mt-cell title="标题文字" value="说明文字"></mt-cell> -->
