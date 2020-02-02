@@ -3,7 +3,7 @@
   <div class="wy-fix-detItem" style="">
     <div class="wy-fix-det-head">
       <span class="wy-fix-det-title">基本信息</span>
-      <label class="wy-fix-det-status">待派单</label>
+      <label class="wy-fix-det-status">{{status}}</label>
     </div>
     <div style="">
       <div v-for="item in options" class="wy-fix-det-desitem">
@@ -13,7 +13,7 @@
             产权用户
           </span>
         </label>
-        <a href="tel:12345" class="wy-fix-det-userphone" v-if="item.title == '报修人员'">
+        <a :href="phone" class="wy-fix-det-userphone" v-if="item.title == '报修人员'">
           <img src="../../../static/images/wy/phone.png" />
         </a>
       </div>
@@ -60,40 +60,42 @@ export default {
   },
   data () {
     return {
+      phone:'',
+      status:'',
       options: [{
         title:'报修单号',
-        value:'123'
+        value:''
       },{
         title:'报修区域',
-        value:'34'
+        value:''
       },{
         title:'报修人员',
-        value:'刘备'
+        value:''
       },{
         title:'报修事件',
-        value:'7'
+        value:''
       },{
         title:'预约时间',
-        value:'8'
+        value:''
       },{
         title:'项目名称',
-        value:'9'
+        value:''
       }],
       problemOptions: [{
         title:'到场时间',
-        value:'123'
+        value:''
       },{
         title:'报修类型',
-        value:'34'
+        value:''
       },{
         title:'故障地址',
-        value:'刘备'
+        value:''
       },{
         title:'故障描述',
-        value:'7'
+        value:''
       },{
         title:'故障图片',
-        value:['http://img3.imgtn.bdimg.com/it/u=1256111504,1125893713&fm=26&gp=0.jpg','http://img3.imgtn.bdimg.com/it/u=1256111504,1125893713&fm=26&gp=0.jpg','http://img3.imgtn.bdimg.com/it/u=1256111504,1125893713&fm=26&gp=0.jpg','http://img3.imgtn.bdimg.com/it/u=1256111504,1125893713&fm=26&gp=0.jpg']
+        value:[]
       }]
     }
   },
@@ -115,7 +117,7 @@ export default {
     var param = {
       id:''
     };
-    param.id = this.$route.params.item.id;
+    param.id = window.location.href.split('id=')[1];
     this.getWyServiceInfo(param);
   },
   methods:{
@@ -125,14 +127,64 @@ export default {
       })
     },
     getWyServiceInfo(param){
+      var that = this;
       utils.Get('getWyServiceInfo',param).then(function(res){
-        if (res.data.code === 0 && res.data.WyServiceDetail) {
-          this.options = [];
-          for (var key in res.data.WyServiceDetail) {
-            var tmpObj = {};
-            tmpObj[key] = res.data.WyServiceDetail[key];
-            this.options.push(tmpObj);
-          }
+        if (res.data.code === 0 && res.data.wyService) {
+          that.phone = 'tel:'+res.data.wyService.ownerMobile;
+          that.status = res.data.wyService.serviceStatusName;
+          that.$set(that.options,0,{
+            title:'报修单号',
+            value:res.data.wyService.serviceNumber
+          });
+          that.$set(that.options,1,{
+            title:'报修区域',
+            value:res.data.wyService.typeName
+          });
+          that.$set(that.options,2,{
+            title:'报修人员',
+            value:res.data.wyService.ownerName
+          });
+          that.$set(that.options,3,{
+            title:'报修时间',
+            value:res.data.wyService.createDate
+          });
+          that.$set(that.options,4,{
+            title:'预约时间',
+            value:res.data.wyService.doorDate+' '+res.data.wyService.beginTime+'-'+res.data.wyService.endTime
+          });
+          that.$set(that.options,5,{
+            title:'项目名称',
+            value:''
+          });
+
+          that.$set(that.problemOptions,0,{
+            title:'到场时间',
+            value:res.data.wyService.repairTime
+          });
+          that.$set(that.problemOptions,1,{
+            title:'报修类型',
+            value:res.data.wyService.serviceTypeName
+          });
+          that.$set(that.problemOptions,2,{
+            title:'报修地址',
+            value:res.data.wyService.serviceAddress
+          });
+          that.$set(that.problemOptions,3,{
+            title:'报修内容',
+            value:res.data.wyService.serviceContent
+          });
+          that.$set(that.problemOptions,4,{
+            title:'故障图片',
+            value:res.data.wyService.imgUrl.split(',')
+          });
+
+          // that.options = [];
+          // for (var key in res.data.wyService) {
+          //   var tmpObj = {};
+          //   tmpObj.title = key;
+          //   tmpObj.value = res.data.wyService[key];
+          //   that.options.push(tmpObj);
+          // }
         }
       });
     }
@@ -251,9 +303,10 @@ display: inline-block;
     /* top: 100%; */
     float: right;
     position: relative;
-    top: -12px;
-    left: 12px;
-    /*overflow: hidden;*/
+    top: -4px;
+    left: 6px;
+    /* overflow: hidden; */
+    width: 200px;
 }
 .wy-fix-det-desitemimg {
   width: 50px;

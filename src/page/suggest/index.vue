@@ -40,7 +40,7 @@ export default {
     return {
       msg: 'Welcome to Your Vue.js App',
       introduction:'',
-      typeId:''
+      typeId:'1'
     }
   },
   components:{
@@ -69,6 +69,7 @@ export default {
       })
     },
     postWyOpitionSave(){
+      var that = this;
       var imageFile = $("#imageFile1").val();
       console.log('imageFile',$("#imageFile1")[0].files)
       if(imageFile && imageFile.length > 0){
@@ -98,11 +99,11 @@ export default {
                     companyId :window.userInfo.companyId,// 公司ID ,
                     communityId :window.userInfo.communityId,// 楼宇ID ,
                     ownerId : window.userInfo.ownerId,//业主ID ,
-                    typeId : this.typeId,//类型ID ,
-                    opinionContent : this.introduction,//投诉内容 ,
+                    typeId : that.typeId,//类型ID ,
+                    opinionContent : that.introduction,//投诉内容 ,
                     imgUrl : data.imgUrl,//图片地址（多个以逗号隔开）
                   };
-                  utils.Get('postWyOpinionSave',param).then(function(res){
+                  utils.Post('postWyOpinionSave',param).then(function(res){
                     if (res.data.code ==0) {
                       Toast('提交成功~');
                     }else {
@@ -121,11 +122,11 @@ export default {
           companyId :window.userInfo.companyId,// 公司ID ,
           communityId :window.userInfo.communityId,// 楼宇ID ,
           ownerId : window.userInfo.ownerId,//业主ID ,
-          typeId : this.typeId,//类型ID ,
-          opinionContent : this.introduction,//投诉内容 ,
+          typeId : that.typeId,//类型ID ,
+          opinionContent : that.introduction,//投诉内容 ,
           // imgUrl : '',//图片地址（多个以逗号隔开）
         };
-        utils.Get('postWyOpinionSave',param).then(function(res){
+        utils.Post('postWyOpinionSave',param).then(function(res){
           if (res.data.code ==0) {
             Toast('提交成功~');
           }else {

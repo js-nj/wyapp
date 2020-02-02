@@ -64,17 +64,17 @@
                     cancel-text="取消"
                     placeholder="搜索">
                   </mt-search>
-                  <div class="wy-ggmenu">
+                  <!-- <div class="wy-ggmenu">
                     <div v-for="(item,index) in ggMenu" :class="{'wy-ggmenu-item':true,'wy-ggmenu-item-selected':index===0}" @click="ggmenuClick(item,index)">
                       <span>{{item.catName}}</span>
                       <i></i>
                     </div>
-                  </div>
+                  </div> -->
                   <div class="wy-gg-body">
                     <div class="wy-news-items">
                       <div class="wy-news-item" v-for="item in ggNews" @click="gotoDetail(item)">
                         <div class="wy-news-item-img">
-                          <img src="../../static/images/wy-2.png" />
+                          <img src="../../static/images/ggdefault.jpg" />
                         </div>
                         <div class="wy-news-item-body">
                           <div class="wy-news-item-title">{{item.cmsTitle}}</div>
@@ -107,11 +107,13 @@
                 <div class="wy-mybody">
                   <div class="wy-mybody-content">
                     <mt-cell title="我的房产" to="/otherHouse" is-link>
-                      <img slot="icon" src="../../static/images/wy/mj.png" />
+                      <img slot="icon" src="../../static/images/wy/myfw.png" />
                     </mt-cell>
-                    <mt-cell title="我的门禁" to="/recIndex" is-link>
-                      <img style="width: 18px;" slot="icon" src="../../static/images/wy/mj.png" />
-                    </mt-cell>
+                    <div class="wy-my-mj" @click="getOpenDoor">
+                      <mt-cell title="我的门禁" is-link>
+                        <img style="width: 18px;" slot="icon" src="../../static/images/wy/mj.png" />
+                      </mt-cell>
+                    </div>
                     <mt-cell title="我的缴费" to="/recIndex" is-link>
                       <img style="width: 18px;" slot="icon" src="../../static/images/wy/jf.png" />
                     </mt-cell>
@@ -184,14 +186,13 @@ export default {
             that.tabId = $(this).attr('tabid');
             $(this).addClass('weui-bar__item_on').siblings('.weui-bar__item_on').removeClass('weui-bar__item_on');
         });
-        that.getZxList();
     });
 
   },
   watch:{
     tabId(id){
       if (id==='2') {
-        this.getGgType();
+        // this.getGgType();
         this.getGgList();
       }
     },
@@ -204,10 +205,15 @@ export default {
       var param = {
         propertyId:window.userInfo.propertyId
       };
+      // debugger
       utils.Get('getOpenDoor',param).then(function(res){
-          // console.log('getUserInfo',res)
+          console.log('getOpenDoor',res)
           if (res.data.code === 0 && res.data.wyDoor && res.data.wyDoor.doorOpenUrl) {
-            window.location.href = res.data.wyDoor.doorOpenUrl;
+            if (res.data.wyDoor.doorOpenUrl.indexOf('http')>-1) {
+              window.location.href = res.data.wyDoor.doorOpenUrl;
+            }else {
+              window.location.href = 'http://'+res.data.wyDoor.doorOpenUrl;
+            }
             // window.userInfo = res.result;
           }
           // that.ggMenu = res.data.page.list;
@@ -215,6 +221,7 @@ export default {
       // window.location.href = "http://www.baidu.com";
     },
     getUserInfo(){
+      var that = this;
       var param = {
         residentCode:window.location.href.split('resident_code=')[1].split('&open_id=')[0]
       };
@@ -268,6 +275,7 @@ export default {
             //   delFlag: null,
             // };
           }
+          that.getZxList();
           // that.ggMenu = res.data.page.list;
         });
       }else {
@@ -288,25 +296,25 @@ export default {
         }
       })
     },
-    ggmenuClick(item,index){
-      $('.wy-ggmenu-item-selected').removeClass('wy-ggmenu-item-selected');
-      $('.wy-ggmenu-item').eq(index).addClass('wy-ggmenu-item-selected');
-      this.getGgList(item.id);
-    },
-    getGgType(){
-      var that = this;
-      utils.Get('getGgType',{}).then(function(res){
-        console.log('getGgType',res)
-        that.ggMenu = res.data.page.list;
-      });
-    },
+    // ggmenuClick(item,index){
+    //   $('.wy-ggmenu-item-selected').removeClass('wy-ggmenu-item-selected');
+    //   $('.wy-ggmenu-item').eq(index).addClass('wy-ggmenu-item-selected');
+    //   this.getGgList(item.id);
+    // },
+    // getGgType(){
+    //   var that = this;
+    //   utils.Get('getGgType',{}).then(function(res){
+    //     console.log('getGgType',res)
+    //     that.ggMenu = res.data.page.list;
+    //   });
+    // },
     getGgList(id,value){
       var that = this;
       var param = {
         page:1,
         limit:10,
-        categoryId:(window.userInfo && window.userInfo.categoryId) || '2',
-        propertyId:'1'
+        categoryId:'1',
+        propertyId:window.userInfo.propertyId
       };
       if (id) {
         param.typeId=id;
@@ -325,8 +333,8 @@ export default {
       var param = {
         page:1,
         limit:10,
-        categoryId:(window.userInfo && window.userInfo.categoryId) || '1',
-        propertyId:'2'
+        categoryId:'2',
+        propertyId:window.userInfo.propertyId
       };
       utils.Get('getGgList',param).then(function(res){
         console.log('getGgList',res)
@@ -335,8 +343,11 @@ export default {
       });
     },
     clickMoreNews(){
-      $('.weui-tabbar__item').eq(1).addClass('weui-bar__item_on').siblings('.weui-bar__item_on').removeClass('weui-bar__item_on');
-      this.tabId = '2';
+      // $('.weui-tabbar__item').eq(1).addClass('weui-bar__item_on').siblings('.weui-bar__item_on').removeClass('weui-bar__item_on');
+      // this.tabId = '2';
+      this.$router.push({
+        name:'otherZxlist'
+      })
     }
   }
 }
@@ -567,5 +578,7 @@ border-radius:9px;
     width: 20px;
     height: 20px;
 }
-
+.wy-my-mj .mint-cell-wrapper{
+      background-image: linear-gradient(180deg, #d9d9d9, #d9d9d9 50%, transparent 50%) !important;
+}
 </style>

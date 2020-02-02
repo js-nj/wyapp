@@ -1,12 +1,12 @@
 <template>
 <div class="wy-detail">
-  <div class="wy-detail-title">{{'题目'+title}}</div>
+  <div class="wy-detail-title">{{title}}</div>
   <div class="wy-detail-des">
-    <span class="wy-detail-des-item">{{'作者'+auther}}</span>
-    <span class="wy-detail-des-item">{{'来源'+mfrom}}</span>
-    <span class="wy-detail-des-item">{{'时间'+time}}</span>
+    <span class="wy-detail-des-item">{{auther}}</span>
+    <span class="wy-detail-des-item">{{mfrom}}</span>
+    <span class="wy-detail-des-item">{{time}}</span>
   </div>
-  <div class="wy-detail-body">{{'操作元素的 class 列表和内联样式是数据绑定的一个常见需求。因为它们都是属性，所以我们可以用 v-bind 处理它们：只需要通过表达式计算出字符串结果即可。不过，字符串拼接麻烦且易错。因此，在将 v-bind 用于 class 和 style 时，Vue.js 做了'+content}}</div>
+  <div class="wy-detail-body">{{content}}</div>
 </div>
 
 </template>
@@ -20,11 +20,11 @@ export default {
     return {
       msg: 'Welcome to Your Vue.js App',
       id:'',
-      title:'1',
-      auther:'2',
-      mfrom:'3',
-      time:'4',
-      content:'5'
+      title:'',
+      auther:'',
+      mfrom:'',
+      time:'',
+      content:''
     }
   },
   created(){
@@ -39,13 +39,15 @@ export default {
   },
   methods:{
     getGgDetail(param){
+      var that = this;
       utils.Get('getGgDetail',param).then(function(res){
+        console.log('res----',res)
         if (res.data.code === 0) {
-          this.title = res.data.result.title;
-          this.auther = res.data.result.auther;
-          this.mfrom = res.data.result.mfrom;
-          this.time = res.data.result.time;
-          this.content = res.data.result.content;
+          that.title = res.data.wyCms.cmsTitle;
+          that.auther = res.data.wyCms.checkUserName ;
+          that.mfrom = res.data.wyCms.copyfrom;
+          that.time = res.data.wyCms.createDate;
+          that.content = res.data.wyCms.cmsContent;
         }
         // that.list = res.data.page.list;
       });

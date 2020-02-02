@@ -12,6 +12,7 @@ import fixRate from '@/page/fix/rate'
 import sugIndex from '@/page/suggest/index'
 import sugList from '@/page/suggest/list'
 import otherHouse from '@/page/other/house'
+import otherZxlist from '@/page/other/zxlist'
 Vue.use(Router)
 
 export default new Router({
@@ -63,5 +64,9 @@ export default new Router({
     path: '/otherHouse',
     name: 'otherHouse',
     component: otherHouse
+  }, {
+    path: '/otherZxlist',
+    name: 'otherZxlist',
+    component: otherZxlist
   }]
 })

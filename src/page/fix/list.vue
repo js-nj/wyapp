@@ -80,36 +80,44 @@
         <mt-tab-container v-model="listStatus">
           <mt-tab-container-item id="doing">
             <div class="wy-fix-list-item" v-for="item in options">
-              <mt-cell :title="item.name">
-                <span :class="{'wy-color-blue':item.status=='待受理'}">{{item.status}}</span>
+              <mt-cell :title="item.typeName">
+                <span :class="{'wy-color-blue':item.status=='待受理'||'待确认'}">{{item.serviceStatusName}}</span>
                 <img slot="icon" src="../../../static/images/wy/ggbx.png" width="24" height="24">
               </mt-cell>
-              <mt-cell :title="item.place">
+              <mt-cell :title="item.serviceAddress">
                 <img slot="icon" src="../../../static/images/wy/lddy.png" width="24" height="24">
               </mt-cell>
-              <mt-cell :title="item.time">
+              <mt-cell :title="item.createDate ">
                 <img slot="icon" src="../../../static/images/wy/bxsj.png" width="24" height="24">
               </mt-cell>
-              <mt-cell :title="item.content" value="详情" is-link to="./fixDetail">
+              <mt-cell :title="item.serviceContent " value="详情" is-link :to="'./fixDetail?id='+item.id">
                 <img slot="icon" src="../../../static/images/wy/bxnr.png" width="24" height="24" >
               </mt-cell>
+            </div>
+            <div v-if="options.length==0" style="padding:16px 0;">
+              <img style="width:128px;height:103px;" src="../../../static/images/wy/none.png" />
+              <div style="color:#ADB7BA;font-size:15px;">暂无内容</div>
             </div>
           </mt-tab-container-item>
           <mt-tab-container-item id="done">
             <div class="wy-fix-list-item" v-for="item in doneOptions">
-              <mt-cell :title="item.name">
-                <span :class="{'wy-color-blue':item.status=='待受理'}">{{item.status}}</span>
+              <mt-cell :title="item.typeName">
+                <span :class="{'wy-color-blue':item.status=='待受理'||'待确认'}">{{item.serviceStatusName}}</span>
                 <img slot="icon" src="../../../static/images/wy/jtbx.png" width="24" height="24">
               </mt-cell>
-              <mt-cell :title="item.place">
+              <mt-cell :title="item.serviceAddress">
                 <img slot="icon" src="../../../static/images/wy/lddy.png" width="24" height="24">
               </mt-cell>
-              <mt-cell :title="item.time">
+              <mt-cell :title="item.createDate ">
                 <img slot="icon" src="../../../static/images/wy/bxsj.png" width="24" height="24">
               </mt-cell>
-              <mt-cell :title="item.content" value="详情" is-link to="./fixDetail">
+              <mt-cell :title="item.serviceContent " value="详情" is-link :to="'./fixDetail?id='+item.id">
                 <img slot="icon" src="../../../static/images/wy/bxnr.png" width="24" height="24" >
               </mt-cell>
+            </div>
+            <div v-if="doneOptions.length==0" style="padding:16px 0;">
+              <img style="width:128px;height:103px;" src="../../../static/images/wy/none.png" />
+              <div style="color:#ADB7BA;font-size:15px;">暂无内容</div>
             </div>
           </mt-tab-container-item>
         </mt-tab-container>
@@ -247,7 +255,7 @@ export default {
         limit:10
       };
       var that = this;
-      utils.Post('getWyserviceListIn',param).then(function(res){
+      utils.Get('getWyserviceListIn',param).then(function(res){
         if (res.data.code ==0) {
           that.options = res.data.page.list;
         }else {
@@ -263,7 +271,7 @@ export default {
         limit:10
       };
       var that = this;
-      utils.Post('getWyserviceListComplete',param).then(function(res){
+      utils.Get('getWyserviceListComplete',param).then(function(res){
         if (res.data.code ==0) {
           that.doneOptions = res.data.page.list;
         }else {
