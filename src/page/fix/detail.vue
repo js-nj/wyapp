@@ -100,6 +100,7 @@ export default {
   created(){
     // console.log(utils)
     // debugger;
+    document.title = '报修详情';
     this.$nextTick(()=>{
       var steps1 = window.steps({
         el: "#wy-steps",
@@ -110,13 +111,30 @@ export default {
         active: 1,
         direction: "vertical"
       });
-    })
+    });
+    var param = {
+      id:''
+    };
+    param.id = this.$route.params.item.id;
+    this.getWyServiceInfo(param);
   },
   methods:{
     gotoRate(){
       this.$router.push({
         name:'fixRate',
       })
+    },
+    getWyServiceInfo(param){
+      utils.Get('getWyServiceInfo',param).then(function(res){
+        if (res.data.code === 0 && res.data.WyServiceDetail) {
+          this.options = [];
+          for (var key in res.data.WyServiceDetail) {
+            var tmpObj = {};
+            tmpObj[key] = res.data.WyServiceDetail[key];
+            this.options.push(tmpObj);
+          }
+        }
+      });
     }
   }
 }

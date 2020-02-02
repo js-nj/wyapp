@@ -65,6 +65,7 @@ export default {
     [Button.name]:Button
   },
   created(){
+    document.title = '我的建议';
     this.$nextTick(function(){
         $('span','.wy-sug-typeIds').on('click', function (ele) {
             // debugger;

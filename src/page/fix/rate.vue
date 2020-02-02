@@ -60,6 +60,7 @@ export default {
   },
   created(){
     var that = this;
+    document.title = '报修评价';
     this.$nextTick(()=>{
       $('.wy-fix-rate-lev','.wy-fix-rate-levs').on('click', function (ele) {
             // debugger;

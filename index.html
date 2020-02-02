@@ -13,11 +13,21 @@
        function changepic(obj,className) {
         //console.log(obj.files[0]);//这里可以获取上传文件的name
         // var last = className + ' '
-        var newsrc=getObjectURL(obj.files[0]);
-        console.log('document.getElementsByClassName(className)[0]',document.getElementsByClassName(className)[0])
-        document.getElementsByClassName(className)[0].getElementsByClassName('show')[0].style.display = 'inline-block';
-        // console.log('document.getElementsByClassName(className)[0]',document.getElementsByClassName(className)[0])
-        document.getElementsByClassName(className)[0].getElementsByClassName('show')[0].src=newsrc;
+        for (var i = 0; i < obj.files.length; i++) {
+          var fileItem = obj.files[i];
+          var newsrc=getObjectURL(obj.files[i]);
+          var tmpImg = document.createElement('img');
+          tmpImg.src=newsrc;
+          tmpImg.style.display="inline-block";
+          tmpImg.style.height = '60px';
+          tmpImg.style.width = '60px';
+          document.getElementById('wy-imgs-upload').appendChild(tmpImg)
+        }
+        // var newsrc=getObjectURL(obj.files[0]);
+        // // console.log('document.getElementsByClassName(className)[0]',document.getElementsByClassName(className)[0])
+        // document.getElementsByClassName(className)[0].getElementsByClassName('show')[0].style.display = 'inline-block';
+        // // console.log('document.getElementsByClassName(className)[0]',document.getElementsByClassName(className)[0])
+        // document.getElementsByClassName(className)[0].getElementsByClassName('show')[0].src=newsrc;
       }
       //建立一個可存取到該file的url
       function getObjectURL(file) {

@@ -61,7 +61,52 @@ export default {
   created(){
     // console.log(utils)
     // debugger;
-
+    document.title = '账单详情';
+    var param = {
+      id:''
+    };
+    param.id = this.$route.params.item.id;
+    utils.Get('getPayInfo',param).then(function(res){
+        if (res.data.code === 0 && res.data.wyPay) {
+          this.options = [];
+          for (var key in res.data.wyPay) {
+            var tmpObj = {};
+            tmpObj[key] = res.data.wyPay[key];
+            this.options.push(tmpObj);
+          }
+          // this.options =
+          // "id": "bddcd5cf78e3475bbedee8c2895ab0e5",
+          // "propertyId": "998bac69aeb0e363a455b28c32b3cfa9",
+          // "communityId": "8a59832ab1e0c8ef236dde5f8c978f71",
+          // "ownerId": "7538cab87a164e48c9e9cce6d83663d4",
+          // "houseId": "3",
+          // "payNumber": "",
+          // "ePayNumber": null,
+          // "payAddress": "A组/1幢/1单元/101室",
+          // "ownerName": "小通",
+          // "ownerMobile": "17712852616",
+          // "needPayTime": null,
+          // "orderId": null,
+          // "payStart": "2020-01",
+          // "payEnd": "2020-02",
+          // "payMoney": 10,
+          // "payItem": "1",
+          // "payItemName": "物业费",
+          // "payType": null,
+          // "payTypeName": null,
+          // "payTime": null,
+          // "payStatus": 1,
+          // "payStatusName": "待收费",
+          // "remarks": "123",
+          // "createBy": "1",
+          // "createDate": "2020-01-29 11:54:08",
+          // "updateBy": "1",
+          // "updateDate": "2020-01-29 11:54:08",
+          // "delFlag": "0",
+          // "epayNumber": null
+        }
+        // that.list = res.data.page.list;
+    });
   }
 }
 </script>

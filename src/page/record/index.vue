@@ -39,7 +39,7 @@
         <label style="font-size: 14px;display: inline-block;padding: 0 16px 0 0;">
           合计：<span style="color:#DE3116;">¥</span><span style="color:#DE3116;display:inline-block;min-width:32px;">{{allMoney}}</span>
         </label>
-        <mt-button class="wy-rec-button" type="primary" @click="">去支付</mt-button>
+        <mt-button class="wy-rec-button" type="primary" @click="postCreateOrder">去支付</mt-button>
       </div>
     </mt-tab-container-item>
     <mt-tab-container-item id="2">
@@ -87,6 +87,7 @@ export default {
       options: [
         {
           time: '物业费2222',
+          id:'',
           money: '1111',
           value:[],
           options:[{
@@ -97,6 +98,7 @@ export default {
         },
         {
           time: '物业费2222',
+          id:'',
           money: '1111',
           value:[],
           options:[{
@@ -109,6 +111,7 @@ export default {
     }
   },
   created(){
+    document.title = '账单列表';
     this.getPayList();
 
   },
@@ -200,6 +203,23 @@ export default {
           // remarks (String, optional): 备注
         }
         // that.list = res.data.page.list;
+      });
+    },
+    postCreateOrder(){
+      var param = {
+        ids:'',
+        redirectUrl:'http://www.waiqinzx.com/index.html#/recResult'
+      };
+      this.options.forEach(function(item){
+        if (item.value[0]) {
+          param.ids = param.ids + item.id + ',';
+        }
+      });
+
+      utils.Post('postCreateOrder',param).then(function(res){
+        if (res.data.code === 0) {
+
+        }
       });
     },
     gotoRecDetail(item){

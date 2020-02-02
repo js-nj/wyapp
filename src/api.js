@@ -1,14 +1,27 @@
 var hostPath = 'http://121.196.192.110:2057/zhwy';
 window.hostPath = hostPath;
 export default {
-  getInfo: 'http://localhost:3000/users/info',
+  //海纳个人信息
+  // getInfo: 'http://localhost:3000/users/info',
+  getUserInfo: hostPath + '/app/txhn/getUserInfo',
+  //公告
   getGgType: hostPath + '/app/wycmscategory/list',
   getGgList: hostPath + '/app/wycms/list',
+  getGgDetail: hostPath + '/app/wycms/info',
+  //投诉建议
   getWyOpinionList: hostPath + '/app/wyopinion/list',
   postWyOpinionSave: hostPath + '/app/wyopinion/save',
-  postWyServiceSave: hostPath + '/app/wyservice/save',
-  getUserInfo: hostPath + '/app/txhn/getUserInfo',
+  //支付
   getPayList: hostPath + '/app/wypay/list',
+  getPayInfo: hostPath + '/app/wypay/info',
+  postCreateOrder: hostPath + '/app/txhn/createOrder',
+  //维修
   postWyserviceEvaluate: hostPath + '/app/wyservice/evaluate',
-  getWyserviceList: hostPath + '/app/wyservice/list'
+  getWyserviceListIn: hostPath + '/app/wyservice/listin',
+  getWyserviceListComplete: hostPath + '/app/wyservice/listcomplete',
+  postWyServiceSave: hostPath + '/app/wyservice/save',
+  getWyServiceInfo: hostPath + '/app/wyservice/info',
+  //门禁
+  getOpenDoor: hostPath + '/app/wydoor/info'
+  //图片上传的接口在代码内
 }

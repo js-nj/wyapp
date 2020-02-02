@@ -1,21 +1,17 @@
 <template>
 <div class="wy-fix">
-  <!-- tab-container -->
+
   <!-- <mt-tab-container v-model="selected"> -->
-    <!-- <mt-tab-container-item id="kjbx"> -->
+    <!-- <mt-tab-container-item id="kjbx">
         <mt-navbar v-model="fixTypes">
           <mt-tab-item id="public">公共区域</mt-tab-item>
           <mt-tab-item id="private">个人区域</mt-tab-item>
         </mt-navbar>
 
-        <!-- tab-container -->
         <mt-tab-container v-model="fixTypes">
           <mt-tab-container-item id="public" class="wy-fix-public">
             <div class="wy-fix-ggform" style="">
               <mt-field label="报修地址" placeholder="请输入有故障的具体位置" v-model="ggfixplace"></mt-field>
-              <!-- <div @click="ggshowSheet" class="wy-select-problem">
-                <mt-cell title="故障类型" :value="ggproblem" is-link  ></mt-cell>
-              </div> -->
               <mt-cell class="wy-fix-name" title="故障描述"></mt-cell>
               <mt-field label="" placeholder="请填写故障描述帮助我们尽快解决问题" type="textarea" rows="4" v-model="ggintroduction"></mt-field>
             </div>
@@ -35,20 +31,11 @@
           <mt-tab-container-item id="private">
             <div class="wy-fix-private" ref="privateDiv">
               <div class="wy-fix-ggform" style="">
-                <!-- <mt-cell label="选择住址" v-model="grfixplace"></mt-cell> -->
-
-                <div @click="grfpshowSheet" class="wy-select-problem">
-                  <mt-cell title="选择住址" :value="grfixplace" is-link  ></mt-cell>
-                </div>
-
+                <mt-field label="家庭住址" placeholder="请填写地址" v-model="grfixplace"></mt-field>
                 <mt-field label="报修人" placeholder="请输入用户名" v-model="username"></mt-field>
                 <mt-field label="联系方式" placeholder="请输入手机号" type="tel" v-model="phone"></mt-field>
                 <mt-field label="上门日期" placeholder="请输入日期" type="date" v-model="problemday"></mt-field>
-                <div class="wy-fix-fixtime" @click="openTimePicker"><span>具体时间</span><label class="wy-fix-fixtimevalue">{{problemTime}}</label></div>
-                <mt-datetime-picker type="time" v-model="problemTime" ref="timepiker"></mt-datetime-picker>
-                <div @click="grshowSheet" class="wy-select-problem">
-                  <mt-cell title="故障类型" :value="grproblem" is-link  ></mt-cell>
-                </div>
+
                 <mt-cell class="wy-fix-name" title="故障描述"></mt-cell>
                 <mt-field label="" placeholder="请填写故障描述帮助我们尽快解决问题" type="textarea" rows="4" v-model="grintroduction"></mt-field>
               </div>
@@ -82,19 +69,14 @@
             <span class="wy-fix-pop-btn" @click="grokValuesChange">确定</span>
             <mt-picker :slots="grslots" @change="gronValuesChange" valueKey="name"></mt-picker>
         </mt-popup>
-        <mt-popup
-          v-model="grfpsheetVisible"
-          position="bottom">
-            <span class="wy-fix-pop-btn" @click="grfpokValuesChange">确定</span>
-            <mt-picker :slots="grfpslots" @change="grfponValuesChange" valueKey="name"></mt-picker>
-        </mt-popup>
-    <!-- </mt-tab-container-item> -->
-    <!-- <mt-tab-container-item id="bxjl">
+    </mt-tab-container-item> -->
+    <div id="bxjl">
         <mt-navbar v-model="listStatus">
           <mt-tab-item id="doing">处理中</mt-tab-item>
           <mt-tab-item id="done">已完成</mt-tab-item>
         </mt-navbar>
 
+        <!-- tab-container -->
         <mt-tab-container v-model="listStatus">
           <mt-tab-container-item id="doing">
             <div class="wy-fix-list-item" v-for="item in options">
@@ -131,7 +113,7 @@
             </div>
           </mt-tab-container-item>
         </mt-tab-container>
-    </mt-tab-container-item> -->
+    </div>
   <!-- </mt-tab-container> -->
   <!-- <mt-tabbar v-model="selected" class="wy-fix-tabbar">
     <mt-tab-item id="kjbx">
@@ -150,7 +132,7 @@
 </template>
 
 <script>
-import { Navbar, TabItem,Tabbar,TabContainer,TabContainerItem,Cell,Checklist,Actionsheet,Field,Picker,Popup,Button,DatetimePicker} from 'mint-ui';
+import { Navbar, TabItem,Tabbar,TabContainer,TabContainerItem,Cell,Checklist,Actionsheet,Field,Picker,Popup,Button,DatetimePicker,Toast} from 'mint-ui';
 // import utils from '../utils.js';
 import * as utils from '../../utils';
 import $ from "jquery";
@@ -169,18 +151,18 @@ export default {
       [Picker.name]: Picker,
       [Popup.name]: Popup,
       [Button.name]: Button,
+      [Toast.name]: Toast,
       [DatetimePicker.name]: DatetimePicker,
   },
   data () {
     return {
       msg: 'Welcome to Your Vue.js App',
-      problemTime:'',
+      // problemTime:'',
       username:'',
       phone:'',
       problemday:'',
       ggsheetVisible:false,
       grsheetVisible:false,
-      grfpsheetVisible:false,
       selected:'kjbx',
       listStatus:'doing',
       fixTypes:'public',
@@ -231,23 +213,17 @@ export default {
         }
       ],
       grchooseResult:{},
-      grfpslots: [
-        {
-          values: [{name:'马桶坏了',id:'12'},{name:'马桶坏了2',id:'122'},],
-        }
-      ],
-      grfpchooseResult:{}
     }
   },
   created(){
     // console.log(utils)
     // debugger;
-    document.title = '快捷报修';
-    this.$nextTick(() => {
-        this.$refs['privateDiv'].style.height = (document.body.clientHeight - 90) + 'px';
-    });
-    // this.getWyserviceListIn();
-    // this.getWyserviceListComplete();
+    // this.$nextTick(() => {
+    //     this.$refs['privateDiv'].style.height = (document.body.clientHeight - 90) + 'px';
+    // });
+    document.title = '我的报修';
+    this.getWyserviceListIn();
+    this.getWyserviceListComplete();
   },
   watch:{
     ggchooseResult(val){
@@ -261,18 +237,9 @@ export default {
         console.log('val',val)
         this.grproblem = val.name;
       }
-    },
-    grfpchooseResult(val){
-      if (val && val.name) {
-        console.log('val',val)
-        this.grfixplace = val.name;
-      }
     }
   },
   methods:{
-    openTimePicker(){
-      this.$refs.timepiker.open();
-    },
     getWyserviceListIn(){
       var param = {
         ownerId:'4f895cb1ac2ef28b2178089a1ead421d',
@@ -281,12 +248,12 @@ export default {
       };
       var that = this;
       utils.Post('getWyserviceListIn',param).then(function(res){
-        // if (res.data.code ==0) {
-        //   Toast('提交成功~');
-        // }else {
-        //   Toast('提交失败,'+res.data.msg+'！');
-        // }
-        that.options = res.data.page.list;
+        if (res.data.code ==0) {
+          that.options = res.data.page.list;
+        }else {
+          Toast('获取数据失败');
+        }
+
       });
     },
     getWyserviceListComplete(){
@@ -297,12 +264,12 @@ export default {
       };
       var that = this;
       utils.Post('getWyserviceListComplete',param).then(function(res){
-        // if (res.data.code ==0) {
-        //   Toast('提交成功~');
-        // }else {
-        //   Toast('提交失败,'+res.data.msg+'！');
-        // }
-        that.doneOptions = res.data.page.list;
+        if (res.data.code ==0) {
+          that.doneOptions = res.data.page.list;
+        }else {
+          Toast('获取数据失败');
+        }
+
       });
     },
     postWyServiceSave(){
@@ -431,22 +398,6 @@ export default {
         this.grchooseResult = this.grslots[0].values;
       }
       this.grsheetVisible = false;
-    },
-    grfpshowSheet(){
-      // debugger;
-      this.grfpsheetVisible = true;
-    },
-    grfponValuesChange(e,val){
-      if (val) {
-        this.grfpchooseResult = val[0];
-      }
-      // console.log(values)
-    },
-    grfpokValuesChange(){
-      if (!this.grfpchooseResult.name) {
-        this.grfpchooseResult = this.grfpslots[0].values;
-      }
-      this.grfpsheetVisible = false;
     }
   }
 }
@@ -474,7 +425,7 @@ export default {
   width: 20px;
 }
 .wy-fix {
-  height: calc(100% - 16px);
+ height: calc(100% - 16px);
     background: #fff;
     padding-top: 16px;
 }
@@ -517,20 +468,7 @@ color: #26a2ff;
 margin-top: 8px;
 
 }
-.wy-fix-fixtime{
-  padding: 12px 10px;
-    text-align: left;
-    font-size: 14px;
-    color: inherit;
-    border-bottom: solid 1px #d9d9d9;
-}
-.wy-fix-fixtime span {
-  width: 105px;
-  display: inline-block;
-}
-.wy-fix-fixtimevalue {
 
-}
 .wy-fix-list-item .mint-cell:first-child .mint-cell-wrapper {
   background-image: none;
 }
@@ -562,7 +500,7 @@ color: #333;
   width:100%
 }
 .wy-select-problem .mint-cell-title{
-  /*padding-left: 20px;*/
+  padding-left: 20px;
   text-align: left;
 }
 .upload_item {

@@ -6,9 +6,9 @@
   <div class="wy-sug-body" style="">
     <p class="wy-sug-name">请选择反馈类型</p>
     <div class="wy-sug-types">
-      <span class="wy-sug-type">投诉</span>
-      <span>建议</span>
-      <span>表扬</span>
+      <span class="wy-sug-type" typeid="1">投诉</span>
+      <span typeid="2">建议</span>
+      <span typeid="3">表扬</span>
     </div>
     <div class="wy-sug-textarea">
       <mt-field label="" placeholder="请输入您要反馈的内容" type="textarea" rows="4" v-model="introduction"></mt-field>
@@ -16,9 +16,11 @@
     <div style="padding: 12px 0;">
       <p class="wy-sug-name">添加图片（可选）</p>
       <div class="wy-sug-index">
-        <img src="" class="show" style="width:60px;height:60px;display:none;" />
+        <div id="wy-imgs-upload" style="display:inline-block;vertical-align:top;">
+          <!-- <img src="" class="show" style="width:60px;height:60px;display:none;" /> -->
+        </div>
         <img style="width: 65px;" src="../../../static/images/upload.png" />
-        <input id="imageFile1"  name="imageFile" onchange="changepic(this,'wy-sug-index')" type="file" accept="image/png, image/jpeg, image/gif, image/jpg" />
+        <input id="imageFile1"  name="imageFile" onchange="changepic(this,'wy-sug-index')" type="file" multiple accept="image/png, image/jpeg, image/gif, image/jpg" />
       </div>
     </div>
   </div>
@@ -37,7 +39,8 @@ export default {
   data () {
     return {
       msg: 'Welcome to Your Vue.js App',
-      introduction:''
+      introduction:'',
+      typeId:''
     }
   },
   components:{
@@ -46,10 +49,13 @@ export default {
     [Toast.name]:Toast
   },
   created(){
+    document.title = '提交建议';
+    var that = this;
     this.$nextTick(function(){
         $('span','.wy-sug-types').on('click', function (ele) {
             // debugger;
             // that.tabId = $(this).attr('tabid');
+            that.typeId = $(this).attr('typeid');
             $(this).addClass('wy-sug-type').siblings('.wy-sug-type').removeClass('wy-sug-type');
         });
         // that.getGgList();
@@ -64,9 +70,14 @@ export default {
     },
     postWyOpitionSave(){
       var imageFile = $("#imageFile1").val();
+      console.log('imageFile',$("#imageFile1")[0].files)
       if(imageFile && imageFile.length > 0){
         var formData = new FormData();
-        formData.append("file", $("#imageFile1")[0].files[0]);
+        // for (var i = 0; i < imageFile.length; i++) {
+          // imageFile[i]
+          formData.append("file", $("#imageFile1")[0].files[0]);
+        // }
+        // debugger
         $.ajax({
             url:window.hostPath+"/app/upload/img",
             type:"post",
@@ -80,15 +91,16 @@ export default {
                console.log("正在进行，请稍候");
             },
             success:function(data){
+              console.log('img data',data);
                 if(data.code == 0){
                   var param = {
-                    propertyId :'',// 物业ID ,
-                    companyId :'',// 公司ID ,
-                    communityId :'',// 楼宇ID ,
-                    ownerId : '',//业主ID ,
-                    typeId : '',//类型ID ,
+                    propertyId :window.userInfo.propertyId,// 物业ID ,
+                    companyId :window.userInfo.companyId,// 公司ID ,
+                    communityId :window.userInfo.communityId,// 楼宇ID ,
+                    ownerId : window.userInfo.ownerId,//业主ID ,
+                    typeId : this.typeId,//类型ID ,
                     opinionContent : this.introduction,//投诉内容 ,
-                    imgUrl : '',//图片地址（多个以逗号隔开）
+                    imgUrl : data.imgUrl,//图片地址（多个以逗号隔开）
                   };
                   utils.Get('postWyOpinionSave',param).then(function(res){
                     if (res.data.code ==0) {
@@ -100,19 +112,18 @@ export default {
                   });
                 }else{
                   alert(data.msg)
-                    // $("#imageForm").submit();
                 }
             }
         })
       }else {
         var param = {
-          propertyId :'',// 物业ID ,
-          companyId :'',// 公司ID ,
-          communityId :'',// 楼宇ID ,
-          ownerId : '',//业主ID ,
-          typeId : '',//类型ID ,
+          propertyId :window.userInfo.propertyId,// 物业ID ,
+          companyId :window.userInfo.companyId,// 公司ID ,
+          communityId :window.userInfo.communityId,// 楼宇ID ,
+          ownerId : window.userInfo.ownerId,//业主ID ,
+          typeId : this.typeId,//类型ID ,
           opinionContent : this.introduction,//投诉内容 ,
-          imgUrl : '',//图片地址（多个以逗号隔开）
+          // imgUrl : '',//图片地址（多个以逗号隔开）
         };
         utils.Get('postWyOpinionSave',param).then(function(res){
           if (res.data.code ==0) {

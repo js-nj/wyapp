@@ -14,7 +14,7 @@
                     <img class="wy-head-img" src="../../static/images/wy-1.jpg" />
                   </div>
                   <div class="wy-menu">
-                    <div class="wy-menu-item" @click="gotoHref()">
+                    <div class="wy-menu-item" @click="getOpenDoor()">
                       <img src="../../static/images/wy/mj.png" style="width: 24px;" alt="" class="weui-tabbar__icon">
                       <div>门禁</div>
                     </div>
@@ -106,7 +106,7 @@
                 </div>
                 <div class="wy-mybody">
                   <div class="wy-mybody-content">
-                    <mt-cell title="我的房产" to="/sugList" is-link>
+                    <mt-cell title="我的房产" to="/otherHouse" is-link>
                       <img slot="icon" src="../../static/images/wy/mj.png" />
                     </mt-cell>
                     <mt-cell title="我的门禁" to="/recIndex" is-link>
@@ -115,7 +115,7 @@
                     <mt-cell title="我的缴费" to="/recIndex" is-link>
                       <img style="width: 18px;" slot="icon" src="../../static/images/wy/jf.png" />
                     </mt-cell>
-                    <mt-cell title="我的报修" to="/fixIndex" is-link>
+                    <mt-cell title="我的报修" to="/fixList" is-link>
                       <img slot="icon" src="../../static/images/wy/bx.png" />
                     </mt-cell>
                     <mt-cell title="我的投诉" to="/sugList" is-link>
@@ -176,6 +176,7 @@ export default {
   },
   created(){
     var that = this;
+    document.title = '物业管理';
     that.getUserInfo();
     this.$nextTick(function(){
         $('.weui-tabbar__item').on('click', function (ele) {
@@ -183,7 +184,7 @@ export default {
             that.tabId = $(this).attr('tabid');
             $(this).addClass('weui-bar__item_on').siblings('.weui-bar__item_on').removeClass('weui-bar__item_on');
         });
-        that.getGgList();
+        that.getZxList();
     });
 
   },
@@ -199,18 +200,73 @@ export default {
     }
   },
   methods:{
-    gotoHref(){
-      window.location.href = "http://www.baidu.com";
+    getOpenDoor(){
+      var param = {
+        propertyId:window.userInfo.propertyId
+      };
+      utils.Get('getOpenDoor',param).then(function(res){
+          // console.log('getUserInfo',res)
+          if (res.data.code === 0 && res.data.wyDoor && res.data.wyDoor.doorOpenUrl) {
+            window.location.href = res.data.wyDoor.doorOpenUrl;
+            // window.userInfo = res.result;
+          }
+          // that.ggMenu = res.data.page.list;
+        });
+      // window.location.href = "http://www.baidu.com";
     },
     getUserInfo(){
       var param = {
-        residentCode:window.location.href.split('resident_code=')[1]
+        residentCode:window.location.href.split('resident_code=')[1].split('&open_id=')[0]
       };
       if (param.residentCode) {
         utils.Get('getUserInfo',param).then(function(res){
           console.log('getUserInfo',res)
-          if (res.code == 0) {
-            window.userInfo = res.result;
+          if (res.data.code == 0 && res.data.result) {
+            window.userInfo = res.data.result;
+            localStorage.setItem('_userInfo',JSON.stringify(res.data.result));
+          }else {
+            window.userInfo = JSON.parse(localStorage.getItem('_userInfo'));
+            // window.userInfo = {
+            //   id: "4f895cb1ac2ef28b2178089a1ead421d",
+            //   ownerId: "4f895cb1ac2ef28b2178089a1ead421d",
+            //   propertyId: "998bac69aeb0e363a455b28c32b3cfa9",
+            //   ownerName: "徐宾",
+            //   userNickName: "just believe",
+            //   userHeadimgurl: "http://thirdwx.qlogo.cn/mmopen/r2nqKJ7Ss7eKgbczia9dTyd5yFZE9Uw9nicSyX9V5RkhOdqgOcvXaicOSnNC2I2Xa3FCNjh1jibImlicoosUWP88q0w/132",
+            //   userSex: "男",
+            //   ownerMobile: "18851730242",
+            //   openId: "oLoB71d1j0hg0gVMLjIYUHTF0HXs",
+            //   unionId: "bd403077e60f7d5ee167e56dd6b968c3",
+            //   idNumber: null,
+            //   remarks: null,
+            //   createBy: null,
+            //   createDate: null,
+            //   updateBy: "4f895cb1ac2ef28b2178089a1ead421d",
+            //   updateDate: "2020-02-02 13:06:20",
+            //   propertyName: "江海物业",
+            //   communityEntityList: [{
+            //     id: "8a59832ab1e0c8ef236dde5f8c978f71",
+            //     propertyId: null,
+            //     communityName: "天地新城",
+            //     structName: null,
+            //     structCode: null,
+            //     layerSize: null,
+            //     province: "江苏省",
+            //     city: "南京市",
+            //     district: "雨花台区",
+            //     communityAddress: "岱善路",
+            //     longitude: null,
+            //     latitude: null,
+            //     remarks: null,
+            //     createBy: null,
+            //     createDate: null,
+            //     updateBy: null,
+            //     updateDate: null,
+            //     delFlag: null,
+            //     address: "A组/1幢/1单元/102室"
+            //   }],
+            //   delFlag: null,
+            // };
           }
           // that.ggMenu = res.data.page.list;
         });
@@ -248,7 +304,9 @@ export default {
       var that = this;
       var param = {
         page:1,
-        limit:10
+        limit:10,
+        categoryId:(window.userInfo && window.userInfo.categoryId) || '2',
+        propertyId:'1'
       };
       if (id) {
         param.typeId=id;
@@ -259,6 +317,20 @@ export default {
       utils.Get('getGgList',param).then(function(res){
         console.log('getGgList',res)
         that.ggNews = res.data.page.list;
+        // that.indexNews = res.data.page.list;
+      });
+    },
+    getZxList(value){
+      var that = this;
+      var param = {
+        page:1,
+        limit:10,
+        categoryId:(window.userInfo && window.userInfo.categoryId) || '1',
+        propertyId:'2'
+      };
+      utils.Get('getGgList',param).then(function(res){
+        console.log('getGgList',res)
+        // that.ggNews = res.data.page.list;
         that.indexNews = res.data.page.list;
       });
     },
