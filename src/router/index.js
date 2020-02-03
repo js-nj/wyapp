@@ -8,7 +8,9 @@ import recResult from '@/page/record/result'
 import fixIndex from '@/page/fix/index'
 import fixList from '@/page/fix/list'
 import fixDetail from '@/page/fix/detail'
-import fixRate from '@/page/fix/rate'
+import fixRate from '@/page/fix/rate';
+import fixerLogin from '@/page/fixer/login'
+import fixerIndex from '@/page/fixer/index'
 import sugIndex from '@/page/suggest/index'
 import sugList from '@/page/suggest/list'
 import otherHouse from '@/page/other/house'
@@ -52,6 +54,14 @@ export default new Router({
     path: '/fixRate',
     name: 'fixRate',
     component: fixRate
+  }, {
+    path: '/fixerLogin',
+    name: 'fixerLogin',
+    component: fixerLogin
+  }, {
+    path: '/fixerIndex',
+    name: 'fixerIndex',
+    component: fixerIndex
   }, {
     path: '/sugIndex',
     name: 'sugIndex',

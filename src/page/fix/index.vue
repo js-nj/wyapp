@@ -13,9 +13,9 @@
           <mt-tab-container-item id="public" class="wy-fix-public">
             <div class="wy-fix-ggform" style="">
               <mt-field label="报修地址" placeholder="请输入有故障的具体位置" v-model="ggfixplace"></mt-field>
-              <!-- <div @click="ggshowSheet" class="wy-select-problem">
+              <div @click="ggshowSheet" class="wy-select-problem">
                 <mt-cell title="故障类型" :value="ggproblem" is-link  ></mt-cell>
-              </div> -->
+              </div>
               <mt-cell class="wy-fix-name" title="故障描述"></mt-cell>
               <mt-field label="" placeholder="请填写故障描述帮助我们尽快解决问题" type="textarea" rows="4" v-model="ggintroduction"></mt-field>
             </div>
@@ -216,7 +216,7 @@ export default {
       gguploadImgs:[],
       ggslots: [
         {
-          values: [{name:'马桶坏了',id:'12'},{name:'马桶坏了2',id:'122'},],
+          values: [{name:'马桶坏了',id:'12'},{name:'马桶坏了2',id:'122'}],
         }
       ],
       ggchooseResult:{},
@@ -233,7 +233,7 @@ export default {
       grchooseResult:{},
       grfpslots: [
         {
-          values: [{name:'马桶坏了',id:'12'},{name:'马桶坏了2',id:'122'},],
+          values: [],
         }
       ],
       grfpchooseResult:{}
@@ -243,9 +243,20 @@ export default {
     // console.log(utils)
     // debugger;
     document.title = '快捷报修';
+    var tmpArr= window.userInfo.communityEntityList.map(function(item){
+      var tmp = {
+        id:item.id,
+        name:item.address
+      };
+      return tmp
+    });
+    this.$set(this.grfpslots[0],'values',tmpArr);
+
     this.$nextTick(() => {
         this.$refs['privateDiv'].style.height = (document.body.clientHeight - 90) + 'px';
     });
+    this.getProblemsInPublic();
+    this.getProblemsInPrivate();
     // this.getWyserviceListIn();
     // this.getWyserviceListComplete();
   },
@@ -272,6 +283,58 @@ export default {
   methods:{
     openTimePicker(){
       this.$refs.timepiker.open();
+    },
+    getProblemsInPublic(){
+      var param = {
+        page:1,
+        limit:10,
+        typeId:1
+      };
+      var that = this;
+      utils.Post('getWyservicecategory',param).then(function(res){
+        if (res.data.code ==0) {
+          var arr = res.data.page.list.map(function(item){
+            var tmp = {
+              id:item.id,
+              name:item.catNames
+            };
+            // item.name = item.catNames;
+            return tmp;
+          });
+          console.log('arr---',arr)
+          that.$set(that.ggslots[0],'values',arr);
+        }else {
+          Toast('请求失败');
+        }
+
+        // that.ggslots[0].value = res.data.page.list;
+      });
+    },
+    getProblemsInPrivate(){
+      var param = {
+        page:1,
+        limit:10,
+        typeId:2
+      };
+      var that = this;
+      utils.Post('getWyservicecategory',param).then(function(res){
+        if (res.data.code ==0) {
+          var arr = res.data.page.list.map(function(item){
+            var tmp = {
+              id:item.id,
+              name:item.catNames
+            };
+            // item.name = item.catNames;
+            return tmp;
+          });
+          console.log('arr---',arr)
+          that.$set(that.grslots[0],'values',arr);
+        }else {
+          Toast('请求失败');
+        }
+
+        // that.ggslots[0].value = res.data.page.list;
+      });
     },
     getWyserviceListIn(){
       var param = {
@@ -518,7 +581,7 @@ margin-top: 8px;
 
 }
 .wy-fix-fixtime{
-  padding: 12px 10px;
+  padding: 12px 16px;
     text-align: left;
     font-size: 14px;
     color: inherit;

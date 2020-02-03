@@ -105,4 +105,7 @@ export default {
   text-align: left;
   margin-bottom: 4px;
 }
+.wy-zx .wy-news-items{
+      background: #fff;
+}
 </style>

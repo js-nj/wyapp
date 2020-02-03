@@ -48,9 +48,9 @@
   </div>
   <div id="wy-steps"></div>
   <div class="wy-fix-detbuts">
-    <div class="wy-fix-detbut" style="color:#3789F9;" v-if="serviceStatus==3">确认</div>
+    <div class="wy-fix-detbut" style="color:#3789F9;" @click="gotoSure" v-if="serviceStatus==3">确认</div>
     <!-- <div class="wy-fix-detbut" style="color:#F18A29;">追记</div> -->
-    <div class="wy-fix-detbut" style="color:#D0021B;" v-if="serviceStatus==1 || serviceStatus==2">撤销</div>
+    <div class="wy-fix-detbut" style="color:#D0021B;" @click="gotoCancel" v-if="serviceStatus==1 || serviceStatus==2">撤销</div>
     <div class="wy-fix-detbut" style="color:#F18A29;" @click="gotoRate"  v-if="serviceStatus==4">评价</div>
   </div>
 </div>
@@ -72,6 +72,7 @@ export default {
   },
   data () {
     return {
+      id:'',
       phone:'',
       status:'',
       steps:[],
@@ -127,6 +128,7 @@ export default {
       id:''
     };
     param.id = window.location.href.split('id=')[1];
+    this.id = param.id;
     this.getWyServiceInfo(param);
   },
   watch:{
@@ -148,11 +150,40 @@ export default {
     }
   },
   methods:{
+    gotoCancel(){
+      var param = {
+        id:this.id,
+        ownerId:window.userInfo.ownerId
+      };
+      var that = this;
+      utils.Get('postWyserviceCancel',param).then(function(res){
+        if (res.data.code ==0) {
+          Toast('撤销成功~');
+        }else {
+          Toast('撤销失败~');
+        }
+      });
+    },
+    gotoSure(){
+      var param = {
+        id:this.id,
+        ownerId:window.userInfo.ownerId
+      };
+      var that = this;
+      utils.Get('WyServiceSure',param).then(function(res){
+        if (res.data.code ==0) {
+          Toast('撤销成功~');
+        }else {
+          Toast('撤销失败~');
+        }
+      });
+    },
     gotoRate(){
       this.$router.push({
         name:'fixRate',
       })
     },
+
     getWyServiceInfo(param){
       var that = this;
       utils.Get('getWyServiceInfo',param).then(function(res){

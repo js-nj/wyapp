@@ -2,10 +2,10 @@
 <div class="wy-sug-list">
   <div v-if="list.length>0" v-for="(item,index) in list" class="wy-sug-item">
     <div class="wy-sug-item-head">
-      <span>{{item.time}}</span>
-      <span class="wy-sug-item-typeId">{{item.typeId}}</span>
+      <span>{{item.createDate}}</span>
+      <span class="wy-sug-item-typeId">{{item.typeName}}</span>
       <label @click="isshowhide(item,index)">
-        <span class="wy-sug-item-status" style="">{{item.serviceStatus}}</span>
+        <span class="wy-sug-item-status" style="">{{item.opinionStatusName}}</span>
         <!-- <span>></span> -->
         <img v-if="!item.show" class="wy-sug-item-img" src="../../../static/images/wy/act_zk.png" />
         <img v-else class="wy-sug-item-img" src="../../../static/images/wy/act_sq.png" />
@@ -14,7 +14,7 @@
     <div class="wy-sug-item-hide" v-if="item.show">
       <div>
         <span>投诉单号</span>
-        <div>{{item.serviceNumber}}</div>
+        <div>{{item.opinionNumber}}</div>
       </div>
       <div>
         <span>房屋地址</span>
@@ -85,7 +85,7 @@ export default {
       utils.Get('getWyOpinionList',{}).then(function(res){
         if (res.data.page.list && res.data.page.list.length>0) {
           res.data.page.list.forEach(function(item){
-              item.time = '2020-01-11(无投诉时间)';
+              // item.time = item.createDate;
               that.list.push(item);
           });
         }

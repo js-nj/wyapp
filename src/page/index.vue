@@ -329,8 +329,12 @@ export default {
         propertyId:window.userInfo.propertyId
       };
       utils.Get('getGgList',param).then(function(res){
-        console.log('getGgList',res)
-        that.swipes = res.data.page.list;
+        console.log('getGgList',res);
+        if (res.data.page.list.length>5) {
+          that.swipes = res.data.page.list.splice(0, 4);
+        } else {
+          that.swipes = res.data.page.list;
+        }
         // that.indexNews = res.data.page.list;
       });
     },

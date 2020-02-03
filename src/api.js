@@ -21,6 +21,11 @@ export default {
   getWyserviceListComplete: hostPath + '/app/wyservice/listcomplete',
   postWyServiceSave: hostPath + '/app/wyservice/save',
   getWyServiceInfo: hostPath + '/app/wyservice/info',
+  getWyservicecategory: hostPath + '/app/wyservicecategory/list',
+  postWyserviceSure: hostPath + '/app/wyservice/sure',
+  postWyserviceCancel: hostPath + '/app/wyservice/cancel',
+  //维修工
+  postLogin: hostPath + '/app/login',
   //门禁
   getOpenDoor: hostPath + '/app/wydoor/info'
   //图片上传的接口在代码内
