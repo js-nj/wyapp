@@ -11,7 +11,12 @@
                 </div> -->
                 <div class="wy-head">
                   <div class="wy-header">
-                    <img class="wy-head-img" src="../../static/images/wy-1.jpg" />
+                    <!-- <img class="wy-head-img" src="../../static/images/wy-1.jpg" /> -->
+                    <mt-swipe :show-indicators="false" style="height:124px;">
+                      <mt-swipe-item v-for="item in swipes">
+                        <img class="wy-head-img" :src="item.cmsImgUrl" />
+                      </mt-swipe-item>
+                    </mt-swipe>
                   </div>
                   <div class="wy-menu">
                     <div class="wy-menu-item" @click="getOpenDoor()">
@@ -47,7 +52,8 @@
                           </div>
                         </div>
                         <div class="wy-news-item-img">
-                          <img src="../../static/images/wy-2.png" />
+                          <img v-if="item.cmsImgUrl" :src="item.cmsImgUrl" />
+                          <img v-else src="../../static/images/wy-2.png" />
                         </div>
                       </div>
                       <div v-if="indexNews.length==0" style="padding:16px 0;">
@@ -74,7 +80,8 @@
                     <div class="wy-news-items">
                       <div class="wy-news-item" v-for="item in ggNews" @click="gotoDetail(item)">
                         <div class="wy-news-item-img">
-                          <img src="../../static/images/ggdefault.jpg" />
+                          <img v-if="item.cmsImgUrl" :src="item.cmsImgUrl" />
+                          <img v-else src="../../static/images/ggdefault.jpg" />
                         </div>
                         <div class="wy-news-item-body">
                           <div class="wy-news-item-title">{{item.cmsTitle}}</div>
@@ -159,13 +166,15 @@
 import 'weui';
 import weui from 'weui.js';
 import $ from "jquery";
-import { Search,Cell } from 'mint-ui';
+import { Search,Cell,Swipe, SwipeItem } from 'mint-ui';
 import * as utils from '../utils';
 export default {
   name: 'index',
   components: {
       [Search.name]: Search,
-      [Cell.name]: Cell
+      [Cell.name]: Cell,
+      [Swipe.name]: Swipe,
+      [SwipeItem.name]: SwipeItem
   },
   data () {
     return {
@@ -173,7 +182,8 @@ export default {
       indexNews:[],
       ggNews:[],
       ggMenu:[],
-      searchValue:''
+      searchValue:'',
+      swipes:[]
     }
   },
   created(){
@@ -276,6 +286,7 @@ export default {
             // };
           }
           that.getZxList();
+          that.getSwipeImgs();
           // that.ggMenu = res.data.page.list;
         });
       }else {
@@ -308,6 +319,21 @@ export default {
     //     that.ggMenu = res.data.page.list;
     //   });
     // },
+    getSwipeImgs(){
+      var that = this;
+      var param = {
+        page:1,
+        limit:10,
+        isCarousel:'1',
+        isIndex:'1',
+        propertyId:window.userInfo.propertyId
+      };
+      utils.Get('getGgList',param).then(function(res){
+        console.log('getGgList',res)
+        that.swipes = res.data.page.list;
+        // that.indexNews = res.data.page.list;
+      });
+    },
     getGgList(id,value){
       var that = this;
       var param = {
@@ -333,7 +359,6 @@ export default {
       var param = {
         page:1,
         limit:10,
-        categoryId:'2',
         propertyId:window.userInfo.propertyId
       };
       utils.Get('getGgList',param).then(function(res){
@@ -447,6 +472,10 @@ a {
 .wy-news-item-title {
   padding: 4px 0;
   color: #333;
+  width: 184px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 .wy-news-item-des {
   font-size: 12px;

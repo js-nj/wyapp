@@ -2,12 +2,16 @@
 <div class="wy-fix-detail">
   <div class="wy-fix-detItem" style="">
     <div class="wy-fix-det-head">
-      <span class="wy-fix-det-title">基本信息</span>
+      <span class="wy-fix-det-title">故障信息</span>
       <label class="wy-fix-det-status">{{status}}</label>
     </div>
-    <div style="">
-      <div v-for="item in options" class="wy-fix-det-desitem">
-        <span>{{item.title}}</span>：<span class="wy-fix-det-desitemvalue">{{item.value}}</span>
+    <div style="padding-bottom: 32px;">
+      <div v-for="item in options" class="wy-fix-det-desitem" style="">
+        <span>{{item.title}}</span>：
+        <span class="wy-fix-det-desitemvalue" v-if="item.title != '故障图片'" >{{item.value}}</span>
+        <div v-else class="wy-fix-det-desitemimgs">
+          <img :src="src" v-for="src in item.value" class="wy-fix-det-desitemimg" />
+        </div>
         <label v-if="item.title == '报修人员'" class="wy-fix-det-usertagdiv">
           <span class="wy-fix-det-usertag">
             产权用户
@@ -21,7 +25,7 @@
   </div>
   <div class="wy-fix-detItem" style="">
     <div class="wy-fix-det-head">
-      <span class="wy-fix-det-title">故障信息</span>
+      <span class="wy-fix-det-title">维修信息</span>
     </div>
     <div style="">
       <div v-for="item in problemOptions" class="wy-fix-det-desitem">
@@ -34,12 +38,20 @@
       </div>
     </div>
   </div>
+  <div class="wy-fix-detItem" style="">
+    <div class="wy-fix-det-head">
+      <span class="wy-fix-det-title">评价信息</span>
+    </div>
+    <div style="padding: 8px 0;font-size: 14px;line-height: 16px;">
+      Mint UI 包含丰富的 CSS 和 JS 组件，能够满足日常的移动端开发需要。通过它，可以快速构建出风格统一的页面，提升开发效率。
+    </div>
+  </div>
   <div id="wy-steps"></div>
   <div class="wy-fix-detbuts">
-    <div class="wy-fix-detbut" style="color:#3789F9;">派单</div>
-    <div class="wy-fix-detbut" style="color:#F18A29;">追记</div>
-    <div class="wy-fix-detbut" style="color:#D0021B;">撤销</div>
-    <div class="wy-fix-detbut" style="color:#3789F9;" @click="gotoRate">评价</div>
+    <div class="wy-fix-detbut" style="color:#3789F9;" v-if="serviceStatus==3">确认</div>
+    <!-- <div class="wy-fix-detbut" style="color:#F18A29;">追记</div> -->
+    <div class="wy-fix-detbut" style="color:#D0021B;" v-if="serviceStatus==1 || serviceStatus==2">撤销</div>
+    <div class="wy-fix-detbut" style="color:#F18A29;" @click="gotoRate"  v-if="serviceStatus==4">评价</div>
   </div>
 </div>
 
@@ -62,6 +74,8 @@ export default {
     return {
       phone:'',
       status:'',
+      steps:[],
+      serviceStatus:'',
       options: [{
         title:'报修单号',
         value:''
@@ -72,20 +86,7 @@ export default {
         title:'报修人员',
         value:''
       },{
-        title:'报修事件',
-        value:''
-      },{
-        title:'预约时间',
-        value:''
-      },{
-        title:'项目名称',
-        value:''
-      }],
-      problemOptions: [{
-        title:'到场时间',
-        value:''
-      },{
-        title:'报修类型',
+        title:'报修时间',
         value:''
       },{
         title:'故障地址',
@@ -96,29 +97,55 @@ export default {
       },{
         title:'故障图片',
         value:[]
-      }]
+      }],
+      problemOptions: [{
+        title:'维修人',
+        value:''
+      },{
+        title:'维修电话',
+        value:''
+      },{
+        title:'维修时间',
+        value:''
+      },{
+        title:'维修内容',
+        value:''
+      }
+      // ,{
+      //   title:'维修图片',
+      //   value:[]
+      // }
+      ]
     }
   },
   created(){
     // console.log(utils)
     // debugger;
     document.title = '报修详情';
-    this.$nextTick(()=>{
-      var steps1 = window.steps({
-        el: "#wy-steps",
-        data: [
-        { title: "<span class='wy-step-tag'>追记</span><span class='wy-step-time'>2020-10-12 12:30</span><span class='wy-step-person'>追记人：刘备</span>", description: "追记描述：这是一段描述" },
-            { title: "步骤2", description: "222" }
-        ],
-        active: 1,
-        direction: "vertical"
-      });
-    });
+
     var param = {
       id:''
     };
     param.id = window.location.href.split('id=')[1];
     this.getWyServiceInfo(param);
+  },
+  watch:{
+    steps(arr){
+      var tmp = arr.map(function(item){
+        return {
+           title: "<span class='wy-step-tag'>"+item.typeName+"</span><span class='wy-step-time'>"+item.createDate+"</span><span class='wy-step-person'>"+item.createName+"</span>",
+           description:'<br>'
+        }
+      });
+      this.$nextTick(()=>{
+        var steps1 = window.steps({
+          el: "#wy-steps",
+          data:tmp,
+          active: 1,
+          direction: "vertical"
+        });
+      });
+    }
   },
   methods:{
     gotoRate(){
@@ -130,8 +157,12 @@ export default {
       var that = this;
       utils.Get('getWyServiceInfo',param).then(function(res){
         if (res.data.code === 0 && res.data.wyService) {
+
           that.phone = 'tel:'+res.data.wyService.ownerMobile;
           that.status = res.data.wyService.serviceStatusName;
+          that.steps = res.data.wyService.serviceRecordList;
+          that.serviceStatus = res.data.wyService.serviceStatus;
+
           that.$set(that.options,0,{
             title:'报修单号',
             value:res.data.wyService.serviceNumber
@@ -148,35 +179,41 @@ export default {
             title:'报修时间',
             value:res.data.wyService.createDate
           });
+          // that.$set(that.options,4,{
+          //   title:'预约时间',
+          //   value:res.data.wyService.doorDate+' '+res.data.wyService.beginTime+'-'+res.data.wyService.endTime
+          // });
           that.$set(that.options,4,{
-            title:'预约时间',
-            value:res.data.wyService.doorDate+' '+res.data.wyService.beginTime+'-'+res.data.wyService.endTime
-          });
-          that.$set(that.options,5,{
-            title:'项目名称',
-            value:''
-          });
-
-          that.$set(that.problemOptions,0,{
-            title:'到场时间',
-            value:res.data.wyService.repairTime
-          });
-          that.$set(that.problemOptions,1,{
-            title:'报修类型',
-            value:res.data.wyService.serviceTypeName
-          });
-          that.$set(that.problemOptions,2,{
             title:'报修地址',
             value:res.data.wyService.serviceAddress
           });
-          that.$set(that.problemOptions,3,{
+          that.$set(that.options,5,{
             title:'报修内容',
             value:res.data.wyService.serviceContent
           });
-          that.$set(that.problemOptions,4,{
+          that.$set(that.options,6,{
             title:'故障图片',
             value:res.data.wyService.imgUrl.split(',')
           });
+
+
+          that.$set(that.problemOptions,0,{
+            title:'维修人',
+            value:res.data.wyService.repairUserName
+          });
+          that.$set(that.problemOptions,1,{
+            title:'维修电话',
+            value:res.data.wyService.repairUserMobile
+          });
+          that.$set(that.problemOptions,2,{
+            title:'维修时间',
+            value:res.data.wyService.repairTime
+          });
+          that.$set(that.problemOptions,3,{
+            title:'维修内容',
+            value:res.data.wyService.repairContent
+          });
+
 
           // that.options = [];
           // for (var key in res.data.wyService) {
@@ -303,7 +340,7 @@ display: inline-block;
     /* top: 100%; */
     float: right;
     position: relative;
-    top: -4px;
+    top: 2px;
     left: 6px;
     /* overflow: hidden; */
     width: 200px;

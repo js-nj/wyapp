@@ -30,31 +30,33 @@ export default {
     return {
       options: [{
         title:'支付方式',
-        value:'123'
+        value:''
       },{
         title:'创建时间',
-        value:'34'
-      },{
-        title:'交易订单号',
-        value:'6'
-      },{
+        value:''
+      }
+      // ,{
+      //   title:'交易订单号',
+      //   value:''
+      // }
+      ,{
         title:'商户订单号',
-        value:'7'
+        value:''
       },{
         title:'家庭住址',
-        value:'8'
+        value:''
       },{
         title:'缴纳费用项目',
-        value:'9'
+        value:''
       },{
         title:'缴纳时段',
-        value:'09'
+        value:''
       },{
         title:'费用金额',
-        value:'08'
+        value:''
       },{
         title:'订单备注',
-        value:'07'
+        value:''
       }]
     }
   },
@@ -65,15 +67,52 @@ export default {
     var param = {
       id:''
     };
+    var that = this;
     param.id = this.$route.params.item.id;
     utils.Get('getPayInfo',param).then(function(res){
         if (res.data.code === 0 && res.data.wyPay) {
-          this.options = [];
-          for (var key in res.data.wyPay) {
-            var tmpObj = {};
-            tmpObj[key] = res.data.wyPay[key];
-            this.options.push(tmpObj);
-          }
+          // this.options = [];
+          // for (var key in res.data.wyPay) {
+          //   var tmpObj = {};
+          //   tmpObj[key] = res.data.wyPay[key];
+          //   this.options.push(tmpObj);
+          // }
+          that.$set(that.options,0,{
+            title:'支付方式',
+            value:res.data.wyPay.payTypeName
+          });
+          that.$set(that.options,1,{
+            title:'创建时间',
+            value:res.data.wyPay.createDate
+          });
+          // that.$set(that.options,2,{
+          //   title:'交易订单号',
+          //   value:res.data.wyPay.id
+          // });
+          that.$set(that.options,2,{
+            title:'商户订单号',
+            value:res.data.wyPay.payNumber
+          });
+          that.$set(that.options,3,{
+            title:'家庭住址',
+            value:res.data.wyPay.payAddress
+          });
+          that.$set(that.options,4,{
+            title:'缴纳费用项目',
+            value:res.data.wyPay.payItemName
+          });
+          that.$set(that.options,5,{
+            title:'缴纳时段',
+            value:res.data.wyPay.needPayTime
+          });
+          that.$set(that.options,6,{
+            title:'费用金额',
+            value:res.data.wyPay.payMoney
+          });
+          that.$set(that.options,7,{
+            title:'订单备注',
+            value:res.data.wyPay.remarks
+          });
           // this.options =
           // "id": "bddcd5cf78e3475bbedee8c2895ab0e5",
           // "propertyId": "998bac69aeb0e363a455b28c32b3cfa9",

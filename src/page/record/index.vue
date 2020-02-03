@@ -6,56 +6,66 @@
   </mt-navbar>
 
   <!-- tab-container -->
-  <mt-tab-container v-model="selected" style="height:calc(100% - 46px);">
+  <mt-tab-container v-model="selected" style="padding-bottom: 64px;"><!-- height:calc(100% - 46px); -->
     <mt-tab-container-item id="1">
-      <div class="wy-rec-item" v-for="item in options">
-        <mt-checklist
-          v-model="item.value"
-          :options="item.options">
-        </mt-checklist>
-        <div class="wy-rec-item-des">
-          <div class="wy-rec-item-time">
-            <span>时间</span>
-            <div style="padding-top:2px;">2019年 9月-10月</div>
+      <div v-if="options.length!=0">
+        <div class="wy-rec-item" v-for="item in options">
+          <mt-checklist
+            v-model="item.value"
+            :options="item.options">
+          </mt-checklist>
+          <div class="wy-rec-item-des">
+            <div class="wy-rec-item-time">
+              <span>时间</span>
+              <div style="padding-top:2px;">{{item.time}}</div>
+            </div>
+            <div class="wy-rec-item-money">
+              <span>总金额</span>
+              <div style="padding-top:2px;">{{item.money}}</div>
+            </div>
+            <!-- <div class="wy-rec-icon" >></div> -->
           </div>
-          <div class="wy-rec-item-money">
-            <span>总金额</span>
-            <div style="padding-top:2px;">{{item.money}}</div>
-          </div>
-          <div class="wy-rec-icon" @click="gotoRecDetail(item)">></div>
+        </div>
+        <div class="wy-rec-action">
+          <!-- <mt-radio
+            style="width: 105px;display: inline-block;vertical-align:top;"
+            v-model="allCheck"
+            :options="['全选']">
+          </mt-radio> -->
+          <mt-checklist
+            style="width: 105px;display: inline-block;vertical-align:top;"
+            v-model="allCheck"
+            :options="['全选']">
+          </mt-checklist>
+          <label style="font-size: 14px;display: inline-block;padding: 0 16px 0 0;">
+            合计：<span style="color:#DE3116;">¥</span><span style="color:#DE3116;display:inline-block;min-width:32px;">{{allMoney}}</span>
+          </label>
+          <mt-button class="wy-rec-button" type="primary" @click="postCreateOrder">去支付</mt-button>
         </div>
       </div>
-      <div class="wy-rec-action">
-        <!-- <mt-radio
-          style="width: 105px;display: inline-block;vertical-align:top;"
-          v-model="allCheck"
-          :options="['全选']">
-        </mt-radio> -->
-        <mt-checklist
-          style="width: 105px;display: inline-block;vertical-align:top;"
-          v-model="allCheck"
-          :options="['全选']">
-        </mt-checklist>
-        <label style="font-size: 14px;display: inline-block;padding: 0 16px 0 0;">
-          合计：<span style="color:#DE3116;">¥</span><span style="color:#DE3116;display:inline-block;min-width:32px;">{{allMoney}}</span>
-        </label>
-        <mt-button class="wy-rec-button" type="primary" @click="postCreateOrder">去支付</mt-button>
+      <div v-else style="padding:16px 0;">
+        <img style="width:128px;height:103px;" src="../../../static/images/wy/none.png" />
+        <div style="color:#ADB7BA;font-size:15px;">暂无内容</div>
       </div>
     </mt-tab-container-item>
     <mt-tab-container-item id="2">
-      <div class="wy-rec-item wy-rec-mt-8" v-for="item in options">
-        <div class="wy-rec-item-title">物业费</div>
+      <div class="wy-rec-item wy-rec-mt-8" v-for="item in doneoptions">
+        <div class="wy-rec-item-title">{{item.options[0].label}}</div>
         <div class="wy-rec-item-des">
           <div class="wy-rec-item-time">
             <span>时间</span>
-            <div style="padding-top:2px;">2019年 9月-10月</div>
+            <div style="padding-top:2px;">{{item.time}}</div>
           </div>
           <div class="wy-rec-item-money">
             <span>金额</span>
             <div style="padding-top:2px;">{{item.money}}</div>
           </div>
-          <div class="wy-rec-icon">></div>
+          <div class="wy-rec-icon" @click="gotoRecDetail(item)">></div>
         </div>
+      </div>
+      <div v-if="doneoptions.length==0" style="padding:16px 0;">
+        <img style="width:128px;height:103px;" src="../../../static/images/wy/none.png" />
+        <div style="color:#ADB7BA;font-size:15px;">暂无内容</div>
       </div>
     </mt-tab-container-item>
   </mt-tab-container>
@@ -64,7 +74,7 @@
 </template>
 
 <script>
-import { Navbar, TabItem,TabContainer,TabContainerItem,Cell,Checklist,Radio,Button  } from 'mint-ui';
+import { Navbar, TabItem,TabContainer,TabContainerItem,Cell,Checklist,Radio,Button,Toast  } from 'mint-ui';
 import * as utils from '../../utils';
 export default {
   name: 'detail',
@@ -77,37 +87,40 @@ export default {
       [Checklist.name]: Checklist,
       [Radio.name]: Radio,
       [Button.name]: Button,
+      [Toast.name]: Toast,
+
   },
   data () {
     return {
       allCheck: [],
-      allMoney:666,
+      allMoney:0,
       selected:'1',
       chooseValue:[],
       options: [
-        {
-          time: '物业费2222',
-          id:'',
-          money: '1111',
-          value:[],
-          options:[{
-            label: '物业费',
-            value: '11111',
-          }]
-          // disabled: true
-        },
-        {
-          time: '物业费2222',
-          id:'',
-          money: '1111',
-          value:[],
-          options:[{
-            label: '物业费',
-            value: '11111',
-          }]
-          // disabled: true
-        },
-      ]
+        // {
+        //   time: '物业费2222',
+        //   id:'',
+        //   money: '1111',
+        //   value:[],
+        //   options:[{
+        //     label: '物业费',
+        //     value: '11111',
+        //   }]
+        //   // disabled: true
+        // },
+        // {
+        //   time: '物业费2222',
+        //   id:'',
+        //   money: '1111',
+        //   value:[],
+        //   options:[{
+        //     label: '物业费',
+        //     value: '11111',
+        //   }]
+        //   // disabled: true
+        // },
+      ],
+      doneoptions:[]
     }
   },
   created(){
@@ -126,6 +139,7 @@ export default {
           item.value.push(item.options[0].value);
           that.allMoney += Number(item.value[0]);
         });
+        that.allMoney = Number(that.allMoney).toFixed(2);
       }else {
         // console.log('else',this.options)
         this.options.forEach(function(item){
@@ -146,6 +160,7 @@ export default {
           }
 
         });
+        that.allMoney = Number(that.allMoney).toFixed(2);
       },
       deep: true
     }
@@ -154,25 +169,31 @@ export default {
     getPayList(){
       var param = {
         page:1,
-        limit:10,
-        ownerId:''
+        limit:100,
+        ownerId:window.userInfo.ownerId,
+        // payStatus:1
       };
       var that = this;
       utils.Get('getPayList',param).then(function(res){
         if (res.data.page.list && res.data.page.list.length>0) {
           that.options = [];
+          that.doneoptions = [];
           res.data.page.list.forEach(function(item){
               var objTmp ={
-                time: item.needPay,
-                money: item.payNeed,
-                wid:item.payNumber,
+                time: item.payStart+' - '+item.payEnd,
+                money: item.payMoney,
+                id:item.id,
                 value:[],
                 options:[{
-                  label: item.payItem,
-                  value: item.payNeed,
+                  label: item.payItemName+'-'+item.payAddress,
+                  value: item.payMoney,
                 }]
               };
-              that.options.push(objTmp);
+              if (item.payStatus == 1) {
+                that.options.push(objTmp);
+              }else {
+                that.doneoptions.push(objTmp);
+              }
           });
           // id (String, optional): id ,
           // propertyId (String, optional): 物业ID ,
@@ -216,9 +237,11 @@ export default {
         }
       });
 
-      utils.Post('postCreateOrder',param).then(function(res){
-        if (res.data.code === 0) {
-
+      utils.Get('postCreateOrder',param).then(function(res){
+        if (res.data.code === 0 && res.data.result.paymentUrl) {
+          window.location.href = res.data.result.paymentUrl;
+        }else {
+          Toast('缴费失败~')
         }
       });
     },

@@ -16,7 +16,8 @@
         </div>
       </div>
       <div class="wy-news-item-img">
-        <img src="../../../static/images/zxdefault.jpg" />
+        <img v-if="item.cmsImgUrl" :src="item.cmsImgUrl" />
+        <img v-else src="../../../static/images/zxdefault.jpg" />
       </div>
     </div>
     <div v-if="indexNews.length==0" style="padding:16px 0;">
@@ -62,6 +63,10 @@ export default {
       utils.Get('getGgType',{}).then(function(res){
         console.log('getGgType',res)
         that.ggMenu = res.data.page.list;
+        that.ggMenu.unshift({
+          id:0,
+          catName:'全部'
+        });
       });
     },
     ggmenuClick(item,index){
@@ -69,14 +74,16 @@ export default {
       $('.wy-ggmenu-item').eq(index).addClass('wy-ggmenu-item-selected');
       this.getZxList(item.id);
     },
-    getZxList(){
+    getZxList(id){
       var that = this;
       var param = {
         page:1,
         limit:10,
-        categoryId:(window.userInfo && window.userInfo.categoryId) || '1',
-        propertyId:'2'
+        propertyId:window.userInfo.propertyId
       };
+      if (id) {
+        param.categoryId = id;
+      }
       utils.Get('getGgList',param).then(function(res){
         console.log('getGgList',res)
         // that.ggNews = res.data.page.list;
