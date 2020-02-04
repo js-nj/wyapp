@@ -13,7 +13,7 @@ import 'mint-ui/lib/style.css'
 // Vue.use(vConsole)
 
 Vue.config.productionTip = false;
-console.log('process.env:', process.env)
+// console.log('process.env:', process.env)
 // console.log('WEBPACK_CONFIG_HOST:', WEBPACK_CONFIG_HOST)
 
 if (process.env.WEBPACK_CONFIG_HOST) {

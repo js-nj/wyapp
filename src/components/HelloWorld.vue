@@ -94,7 +94,6 @@ export default {
     }
   },
   created(){
-    weui.alert('alert');
   }
 }
 </script>

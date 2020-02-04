@@ -112,7 +112,7 @@ export default {
                     // that.list = res.data.page.list;
                   });
                 }else{
-                  alert(data.msg)
+                  Toast(data.msg)
                 }
             }
         })

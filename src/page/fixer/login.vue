@@ -75,7 +75,7 @@ export default {
       checkNumber: '',
       checkCodeContent: '获取验证码',
       isBtnLoading: false,
-      logType: 'yzm',
+      logType: 'pw',
       nowFlag: true,
       updatePassword: 0,
       nameholder: "请输入手机号"
@@ -131,9 +131,9 @@ export default {
           // data.result.userType = this.station;
           // localStorage.setItem('updatePassword', 1);
           // window.logoutFlag = false;
-          // localStorage.userInfo = JSON.stringify(data.result);
+            localStorage.wxuserInfo = JSON.stringify(data.result);
           // window.userInfo = data.result;
-
+            window.wxuserInfo = data.result;
             Toast('登录成功！');
             this.$router.push({
               name: 'fixerIndex'

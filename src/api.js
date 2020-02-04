@@ -26,6 +26,7 @@ export default {
   postWyserviceCancel: hostPath + '/app/wyservice/cancel',
   //维修工
   postLogin: hostPath + '/app/login',
+  postRepairSubmit: hostPath + '/app/wyservice/repairSubmit',
   //门禁
   getOpenDoor: hostPath + '/app/wydoor/info'
   //图片上传的接口在代码内

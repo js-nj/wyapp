@@ -1,75 +1,5 @@
 <template>
 <div class="wy-fix">
-
-  <!-- <mt-tab-container v-model="selected"> -->
-    <!-- <mt-tab-container-item id="kjbx">
-        <mt-navbar v-model="fixTypes">
-          <mt-tab-item id="public">公共区域</mt-tab-item>
-          <mt-tab-item id="private">个人区域</mt-tab-item>
-        </mt-navbar>
-
-        <mt-tab-container v-model="fixTypes">
-          <mt-tab-container-item id="public" class="wy-fix-public">
-            <div class="wy-fix-ggform" style="">
-              <mt-field label="报修地址" placeholder="请输入有故障的具体位置" v-model="ggfixplace"></mt-field>
-              <mt-cell class="wy-fix-name" title="故障描述"></mt-cell>
-              <mt-field label="" placeholder="请填写故障描述帮助我们尽快解决问题" type="textarea" rows="4" v-model="ggintroduction"></mt-field>
-            </div>
-            <div style="padding: 16px 24px;text-align: left;">
-              <img src="" class="show" style="width:60px;height:60px;display:none;" />
-              <div class="upload_item" v-for="(item,index) in gguploadImgs">
-                <i class="iconfont icon-weiwancheng cancel_upload_img" @click="ggdeleteImg(item)"></i>
-                <img class="upload_img" @click="ggpreviewImg(item)" :src="item" alt="">
-              </div>
-              <div class="upload_item">
-                <img class="upload_img" src="../../../static/images/upload.png" alt="无" @click="gghandleClick">
-                <input id="imageFile"  name="imageFile" onchange="changepic(this,'wy-fix-public')" type="file" accept="image/png, image/jpeg, image/gif, image/jpg" />
-              </div>
-            </div>
-            <mt-button class="wy-sug-button" type="primary" @click="postWyServiceSave">确认提交</mt-button>
-          </mt-tab-container-item>
-          <mt-tab-container-item id="private">
-            <div class="wy-fix-private" ref="privateDiv">
-              <div class="wy-fix-ggform" style="">
-                <mt-field label="家庭住址" placeholder="请填写地址" v-model="grfixplace"></mt-field>
-                <mt-field label="报修人" placeholder="请输入用户名" v-model="username"></mt-field>
-                <mt-field label="联系方式" placeholder="请输入手机号" type="tel" v-model="phone"></mt-field>
-                <mt-field label="上门日期" placeholder="请输入日期" type="date" v-model="problemday"></mt-field>
-
-                <mt-cell class="wy-fix-name" title="故障描述"></mt-cell>
-                <mt-field label="" placeholder="请填写故障描述帮助我们尽快解决问题" type="textarea" rows="4" v-model="grintroduction"></mt-field>
-              </div>
-              <div style="padding: 16px 24px;text-align: left;">
-                <img src="" class="show" style="width:60px;height:60px;display:none;" />
-                <div class="upload_item" v-for="(item,index) in gruploadImgs">
-                  <i class="iconfont icon-weiwancheng cancel_upload_img" @click="grdeleteImg(item)"></i>
-                  <img class="upload_img" @click="grpreviewImg(item)" :src="item" alt="">
-                </div>
-                <div class="upload_item">
-                  <img class="upload_img" src="../../../static/images/upload.png" alt="无" @click="grhandleClick">
-                  <input id="imageFile"  name="imageFile" onchange="changepic(this,'wy-fix-private')" type="file" accept="image/png, image/jpeg, image/gif, image/jpg" />
-
-                </div>
-              </div>
-              <div class="tkDiv" id="addLOGO" style="z-index:12;height:auto;">
-        </div>
-              <mt-button id="saveBtn" class="wy-sug-button" type="primary" @click="postWyServiceSave">确认提交</mt-button>
-            </div>
-          </mt-tab-container-item>
-        </mt-tab-container>
-        <mt-popup
-          v-model="ggsheetVisible"
-          position="bottom">
-            <span class="wy-fix-pop-btn" @click="ggokValuesChange">确定</span>
-            <mt-picker :slots="ggslots" @change="ggonValuesChange" valueKey="name"></mt-picker>
-        </mt-popup>
-        <mt-popup
-          v-model="grsheetVisible"
-          position="bottom">
-            <span class="wy-fix-pop-btn" @click="grokValuesChange">确定</span>
-            <mt-picker :slots="grslots" @change="gronValuesChange" valueKey="name"></mt-picker>
-        </mt-popup>
-    </mt-tab-container-item> -->
     <div id="bxjl">
         <mt-navbar v-model="listStatus">
           <mt-tab-item id="doing">处理中</mt-tab-item>
@@ -82,7 +12,8 @@
             <div class="wy-fix-list-item" v-for="item in options">
               <mt-cell :title="item.typeName">
                 <span :class="{'wy-color-blue':item.status=='待受理'||'待确认'}">{{item.serviceStatusName}}</span>
-                <img slot="icon" src="../../../static/images/wy/ggbx.png" width="24" height="24">
+                <img slot="icon" v-if="item.typeId =='1'" src="../../../static/images/wy/ggbx.png" width="24" height="24">
+                <img slot="icon" v-else src="../../../static/images/wy/jtbx.png" width="24" height="24">
               </mt-cell>
               <mt-cell :title="item.serviceAddress">
                 <img slot="icon" src="../../../static/images/wy/lddy.png" width="24" height="24">
@@ -103,7 +34,9 @@
             <div class="wy-fix-list-item" v-for="item in doneOptions">
               <mt-cell :title="item.typeName">
                 <span :class="{'wy-color-blue':item.status=='待受理'||'待确认'}">{{item.serviceStatusName}}</span>
-                <img slot="icon" src="../../../static/images/wy/jtbx.png" width="24" height="24">
+
+                <img slot="icon" v-if="item.typeId =='1'" src="../../../static/images/wy/ggbx.png" width="24" height="24">
+                <img slot="icon" v-else src="../../../static/images/wy/jtbx.png" width="24" height="24">
               </mt-cell>
               <mt-cell :title="item.serviceAddress">
                 <img slot="icon" src="../../../static/images/wy/lddy.png" width="24" height="24">
@@ -122,19 +55,6 @@
           </mt-tab-container-item>
         </mt-tab-container>
     </div>
-  <!-- </mt-tab-container> -->
-  <!-- <mt-tabbar v-model="selected" class="wy-fix-tabbar">
-    <mt-tab-item id="kjbx">
-      <img v-if="selected == 'kjbx'" slot="icon" src="../../../static/images/wy/kjbx_select.png" alt="" >
-      <img v-else slot="icon" src="../../../static/images/wy/kjbx.png" alt="" >
-      快捷报修
-    </mt-tab-item>
-    <mt-tab-item id="bxjl">
-      <img v-if="selected == 'bxjl'" slot="icon" src="../../../static/images/wy/wxjl_select.png" alt="" >
-      <img v-else slot="icon" src="../../../static/images/wy/wxjl.png" alt="" >
-      报修记录
-    </mt-tab-item>
-  </mt-tabbar> -->
 </div>
 
 </template>
@@ -250,7 +170,7 @@ export default {
   methods:{
     getWyserviceListIn(){
       var param = {
-        ownerId:'4f895cb1ac2ef28b2178089a1ead421d',
+        ownerId:window.userInfo.ownerId,
         page:1,
         limit:10
       };
@@ -266,7 +186,7 @@ export default {
     },
     getWyserviceListComplete(){
       var param = {
-        ownerId:'4f895cb1ac2ef28b2178089a1ead421d',
+        ownerId:window.userInfo.ownerId,
         page:1,
         limit:10
       };
@@ -279,83 +199,6 @@ export default {
         }
 
       });
-    },
-    postWyServiceSave(){
-      // 业主ID 4f895cb1ac2ef28b2178089a1ead421d
-      // 物业ID 998bac69aeb0e363a455b28c32b3cfa9
-      var that = this;
-      var imageFile = $("#imageFile").val();
-      if(imageFile && imageFile.length > 0){
-        var formData = new FormData();
-        formData.append("file", $("#imageFile")[0].files[0]);
-        $.ajax({
-            url:window.hostPath+"/app/upload/img",
-            type:"post",
-            data:formData,
-            dataType:"json",
-            // 告诉jQuery不要去处理发送的数据
-            processData: false,
-            // 告诉jQuery不要去设置Content-Type请求头
-            contentType: false,
-            beforeSend: function () {
-               console.log("正在进行，请稍候");
-            },
-            success:function(data){
-                if(data.code == 0){
-                    var param = {
-                      propertyId: '998bac69aeb0e363a455b28c32b3cfa9' ,
-                      companyId: '公司ID' ,
-                      communityId: '楼宇ID' ,
-                      ownerId: '4f895cb1ac2ef28b2178089a1ead421d' ,
-                      typeId: '故障类型ID' ,
-                      serviceAddress: that.ggfixplace ,
-                      serviceContent: that.ggintroduction ,
-                      ownerName: '大刘' ,
-                      ownerMobile: '1885173' ,
-                      doorDate: '预约上门时间' ,
-                      beginTime: '预约上门时间段1' ,
-                      endTime: '预约上门时间段2' ,
-                      imgUrl: 'www.baidu.com'
-                    };
-                    utils.Post('postWyServiceSave',param).then(function(res){
-                      if (res.data.code ==0) {
-                        Toast('提交成功~');
-                      }else {
-                        Toast('提交失败,'+res.data.msg+'！');
-                      }
-                      // that.list = res.data.page.list;
-                    });
-                }else{
-                  alert(data.msg)
-                    // $("#imageForm").submit();
-                }
-            }
-        })
-      }else {
-        var param = {
-          propertyId: '物业ID' ,
-          companyId: '公司ID' ,
-          communityId: '楼宇ID' ,
-          ownerId: '业主ID' ,
-          typeId: '故障类型ID' ,
-          serviceAddress: '故障位置' ,
-          serviceContent: '故障描述' ,
-          ownerName: '联系人' ,
-          ownerMobile: '电话' ,
-          doorDate: '预约上门时间' ,
-          beginTime: '预约上门时间段1' ,
-          endTime: '预约上门时间段2' ,
-          imgUrl: '图片地址（多个以逗号隔开）'
-        };
-        utils.Post('postWyServiceSave',param).then(function(res){
-          if (res.data.code ==0) {
-            Toast('提交成功~');
-          }else {
-            Toast('提交失败,'+res.data.msg+'！');
-          }
-          // that.list = res.data.page.list;
-        });
-      }
     },
     ggdeleteImg(){
 
@@ -428,10 +271,7 @@ export default {
 .wy-fix-ggform input.mint-field-core {
   background: #fff;
 }
-.wy-fix-list-item .mint-cell img {
-  height: 20px;
-  width: 20px;
-}
+
 .wy-fix {
  height: calc(100% - 16px);
     background: #fff;
@@ -476,7 +316,10 @@ color: #26a2ff;
 margin-top: 8px;
 
 }
-
+.wy-fix-list-item .mint-cell img {
+  height: 20px;
+  width: 20px;
+}
 .wy-fix-list-item .mint-cell:first-child .mint-cell-wrapper {
   background-image: none;
 }

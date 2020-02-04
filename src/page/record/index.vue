@@ -185,7 +185,7 @@ export default {
                 id:item.id,
                 value:[],
                 options:[{
-                  label: item.payItemName+'-'+item.payAddress,
+                  label: item.payItemName+'-'+item.communityName+'-'+item.payAddress,
                   value: item.payMoney,
                 }]
               };

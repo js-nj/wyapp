@@ -10,7 +10,7 @@
         <span>{{item.title}}</span>：
         <span class="wy-fix-det-desitemvalue" v-if="item.title != '故障图片'" >{{item.value}}</span>
         <div v-else class="wy-fix-det-desitemimgs">
-          <img :src="src" v-for="src in item.value" class="wy-fix-det-desitemimg" />
+          <img v-if="(item.value)" :src="src" v-for="src in item.value" class="wy-fix-det-desitemimg" />
         </div>
         <label v-if="item.title == '报修人员'" class="wy-fix-det-usertagdiv">
           <span class="wy-fix-det-usertag">
@@ -28,38 +28,29 @@
       <span class="wy-fix-det-title">维修信息</span>
     </div>
     <div style="">
-      <div v-for="item in problemOptions" class="wy-fix-det-desitem">
-        <span>{{item.title}}</span>：
-        <span class="wy-fix-det-desitemvalue" v-if="item.title != '故障图片'">{{item.value}}</span>
-        <div v-else class="wy-fix-det-desitemimgs">
-          <img v-if="item.value" :src="src" v-for="src in item.value" class="wy-fix-det-desitemimg" />
+      <div class="wy-sug-textarea">
+        <mt-field label="" placeholder="请填写维修备注" type="textarea" rows="4" v-model="introduction"></mt-field>
+      </div>
+      <div style="padding: 12px 0;">
+        <div class="wy-sug-index wy-fixer-detail">
+          <div id="wy-imgs-upload" style="display:inline-block;vertical-align:top;">
+            <!-- <img src="" class="show" style="width:60px;height:60px;display:none;" /> -->
+          </div>
+          <img style="width: 65px;" src="../../../static/images/upload.png" />
+          <input id="imageFile1"  name="imageFile" onchange="changepic(this,'wy-fixer-detail')" type="file" multiple accept="image/png, image/jpeg, image/gif, image/jpg" />
         </div>
-        <div style="clear:both;"></div>
       </div>
     </div>
   </div>
-  <div class="wy-fix-detItem" style="">
-    <div class="wy-fix-det-head">
-      <span class="wy-fix-det-title">评价信息</span>
-    </div>
-    <div style="padding: 8px 0;font-size: 14px;line-height: 16px;">
-      Mint UI 包含丰富的 CSS 和 JS 组件，能够满足日常的移动端开发需要。通过它，可以快速构建出风格统一的页面，提升开发效率。
-    </div>
-  </div>
-  <div id="wy-steps"></div>
-  <div class="wy-fix-detbuts">
-    <div class="wy-fix-detbut" style="color:#3789F9;" @click="gotoSure" v-if="serviceStatus==3">确认</div>
-    <!-- <div class="wy-fix-detbut" style="color:#F18A29;">追记</div> -->
-    <div class="wy-fix-detbut" style="color:#D0021B;" @click="gotoCancel" v-if="serviceStatus==1 || serviceStatus==2">撤销</div>
-    <div class="wy-fix-detbut" style="color:#F18A29;" @click="gotoRate"  v-if="serviceStatus==4">评价</div>
-  </div>
+  <mt-button class="wy-sug-button" type="primary" @click="postRepairSubmit">确认提交</mt-button>
 </div>
 
 </template>
 
 <script>
-import { Navbar, TabItem,TabContainer,TabContainerItem,Cell,Checklist  } from 'mint-ui';
+import { Navbar, TabItem,TabContainer,TabContainerItem,Cell,Checklist,Field,Button,Toast  } from 'mint-ui';
 import * as utils from '../../utils';
+import $ from 'jquery';
 export default {
   name: 'detail',
   components: {
@@ -69,6 +60,9 @@ export default {
       [TabContainerItem.name]: TabContainerItem,
       [Cell.name]: Cell,
       [Checklist.name]: Checklist,
+      [Field.name]: Field,
+      [Button.name]: Button,
+      [Toast.name]: Toast,
   },
   data () {
     return {
@@ -77,6 +71,7 @@ export default {
       status:'',
       steps:[],
       serviceStatus:'',
+      introduction:'',
       options: [{
         title:'报修单号',
         value:''
@@ -122,8 +117,8 @@ export default {
   created(){
     // console.log(utils)
     // debugger;
-    document.title = '报修详情';
-
+    document.title = '维修详情';
+    window.wxuserInfo = JSON.parse(localStorage.getItem('wxuserInfo'));
     var param = {
       id:''
     };
@@ -132,60 +127,78 @@ export default {
     this.getWyServiceInfo(param);
   },
   watch:{
-    steps(arr){
-      var tmp = arr.map(function(item){
-        return {
-           title: "<span class='wy-step-tag'>"+item.typeName+"</span><span class='wy-step-time'>"+item.createDate+"</span><span class='wy-step-person'>"+item.createName+"</span>",
-           description:'<br>'
-        }
-      });
-      this.$nextTick(()=>{
-        if (tmp && tmp.length>0) {
-          var steps1 = window.steps({
-            el: "#wy-steps",
-            data:tmp,
-            active: tmp.length-1,
-            direction: "vertical"
-          });
-        }
-      });
-    }
+
   },
   methods:{
-    gotoCancel(){
-      var param = {
-        id:this.id,
-        ownerId:window.userInfo.ownerId
-      };
+    postRepairSubmit(){
       var that = this;
-      utils.Get('postWyserviceCancel',param).then(function(res){
-        if (res.data.code ==0) {
-          Toast('撤销成功~');
-        }else {
-          Toast('撤销失败~');
-        }
-      });
+      var imageFile = $("#imageFile1").val();
+      // console.log('imageFile',$("#imageFile1")[0].files);
+      // var dateStr = new Date().toString();
+      // dateStr = String(dateStr).replace('T','');
+      // dateStr = dateStr.split('.')[0];
+      if(imageFile && imageFile.length > 0){
+        var formData = new FormData();
+        // for (var i = 0; i < imageFile.length; i++) {
+          // imageFile[i]
+          formData.append("file", $("#imageFile1")[0].files[0]);
+        // }
+        // debugger
+        $.ajax({
+            url:window.hostPath+"/app/upload/img",
+            type:"post",
+            data:formData,
+            dataType:"json",
+            // 告诉jQuery不要去处理发送的数据
+            processData: false,
+            // 告诉jQuery不要去设置Content-Type请求头
+            contentType: false,
+            beforeSend: function () {
+               console.log("正在进行，请稍候");
+            },
+            success:function(data){
+              console.log('img data',data);
+                if(data.code == 0){
+                  var param = {
+                    id: that.id ,
+                    repairUserId: window.wxuserInfo.id,
+                    repairTime:(new Date()).Format("yyyy-MM-dd hh:mm:ss"),
+                    repairContent: that.introduction,
+                    imgUrl : data.imgUrl,//图片地址（多个以逗号隔开）
+                  };
+                  utils.Post('postRepairSubmit',param).then(function(res){
+                    if (res.data.code ==0) {
+                      Toast('提交成功~');
+                      window.history.go(-1);
+                    }else {
+                      Toast('提交失败,'+res.data.msg+'！');
+                    }
+                    // that.list = res.data.page.list;
+                  });
+                }else{
+                  Toast(data.msg)
+                }
+            }
+        })
+      }else {
+        var param = {
+          id: that.id ,
+          repairUserId: window.wxuserInfo.id,
+          repairTime:(new Date()).Format("yyyy-MM-dd hh:mm:ss.S"),
+          repairContent: that.introduction,
+          // repairImgUrl:''
+        };
+        utils.Post('postRepairSubmit',param).then(function(res){
+          if (res.data.code ==0) {
+            Toast('提交成功~');
+            window.history.go(-1);
+          }else {
+            Toast('提交失败,'+res.data.msg+'！');
+          }
+          // that.list = res.data.page.list;
+        });
+      }
     },
-    gotoSure(){
-      var param = {
-        id:this.id,
-        ownerId:window.userInfo.ownerId
-      };
-      var that = this;
-      utils.Get('WyServiceSure',param).then(function(res){
-        if (res.data.code ==0) {
-          Toast('撤销成功~');
-        }else {
-          Toast('撤销失败~');
-        }
-      });
-    },
-    gotoRate(){
-      this.$router.push({
-        name:'fixRate',
-      })
-    },
-
     getWyServiceInfo(param){
       var that = this;
       utils.Get('getWyServiceInfo',param).then(function(res){
@@ -268,7 +281,7 @@ export default {
   padding: 16px;
     background: #fff;
     /*position: absolute;*/
-    /*width: calc(100% - 32px);*/
+    width: calc(100% - 32px);
     bottom: 0;
 }
 .wy-fix-detbuts .wy-fix-detbut{
@@ -383,5 +396,44 @@ display: inline-block;
   height: 50px;
   display: inline-block;
   margin-right: 4px;
+}
+.wy-sug-textarea{
+  /*padding-top: 12px;*/
+}
+.wy-sug-textarea .mint-cell {
+   /*background-color: #F6F8FA;*/
+}
+.wy-sug-textarea .mint-field.is-textarea textarea{
+ /*background-color: #F6F8FA;*/
+}
+.wy-sug-textarea .mint-field.is-textarea textarea::-webkit-input-placeholder { /* WebKit browsers */
+  color: #bbb;
+  font-size: 14px;
+}
+.wy-sug-textarea .mint-field.is-textarea .mint-cell-wrapper{
+  background-image: none;
+  padding: 0;
+  border-bottom: solid 1px #d9d9d9;
+}
+.wy-sug-textarea .mint-field.is-textarea .mint-cell-wrapper .mint-cell-value{
+  padding: 8px 0;
+}
+.wy-sug-button{
+  font-size: 16px;
+      width: 80%;
+    margin: 0 auto;
+    display: block;
+}
+#imageFile1 {
+      /* margin-left: 40px; */
+    /* display: inline-block; */
+    /* height: 34px; */
+    /* visibility: hidden; */
+    position: absolute;
+    /* top: -29px; */
+    width: 60px;
+    height: 60px;
+    left: 0px;
+    opacity: 0;
 }
 </style>

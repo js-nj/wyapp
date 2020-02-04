@@ -43,6 +43,9 @@ export default {
         title:'商户订单号',
         value:''
       },{
+        title:'小区名称',
+        value:''
+      },{
         title:'家庭住址',
         value:''
       },{
@@ -94,22 +97,26 @@ export default {
             value:res.data.wyPay.payNumber
           });
           that.$set(that.options,3,{
+            title:'小区名称',
+            value:res.data.wyPay.communityName
+          });
+          that.$set(that.options,4,{
             title:'家庭住址',
             value:res.data.wyPay.payAddress
           });
-          that.$set(that.options,4,{
+          that.$set(that.options,5,{
             title:'缴纳费用项目',
             value:res.data.wyPay.payItemName
           });
-          that.$set(that.options,5,{
+          that.$set(that.options,6,{
             title:'缴纳时段',
             value:res.data.wyPay.needPayTime
           });
-          that.$set(that.options,6,{
+          that.$set(that.options,7,{
             title:'费用金额',
             value:res.data.wyPay.payMoney
           });
-          that.$set(that.options,7,{
+          that.$set(that.options,8,{
             title:'订单备注',
             value:res.data.wyPay.remarks
           });

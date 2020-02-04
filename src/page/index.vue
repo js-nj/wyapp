@@ -13,7 +13,7 @@
                   <div class="wy-header">
                     <!-- <img class="wy-head-img" src="../../static/images/wy-1.jpg" /> -->
                     <mt-swipe :show-indicators="false" style="height:124px;">
-                      <mt-swipe-item v-for="item in swipes">
+                      <mt-swipe-item v-for="item in swipes" :key="item.id">
                         <img class="wy-head-img" :src="item.cmsImgUrl" />
                       </mt-swipe-item>
                     </mt-swipe>
@@ -166,7 +166,7 @@
 import 'weui';
 import weui from 'weui.js';
 import $ from "jquery";
-import { Search,Cell,Swipe, SwipeItem } from 'mint-ui';
+import { Search,Cell,Swipe, SwipeItem,Toast } from 'mint-ui';
 import * as utils from '../utils';
 export default {
   name: 'index',
@@ -174,7 +174,8 @@ export default {
       [Search.name]: Search,
       [Cell.name]: Cell,
       [Swipe.name]: Swipe,
-      [SwipeItem.name]: SwipeItem
+      [SwipeItem.name]: SwipeItem,
+      [Toast.name]: Toast
   },
   data () {
     return {
@@ -217,7 +218,7 @@ export default {
       };
       // debugger
       utils.Get('getOpenDoor',param).then(function(res){
-          console.log('getOpenDoor',res)
+          // console.log('getOpenDoor',res)
           if (res.data.code === 0 && res.data.wyDoor && res.data.wyDoor.doorOpenUrl) {
             if (res.data.wyDoor.doorOpenUrl.indexOf('http')>-1) {
               window.location.href = res.data.wyDoor.doorOpenUrl;
@@ -237,7 +238,7 @@ export default {
       };
       if (param.residentCode) {
         utils.Get('getUserInfo',param).then(function(res){
-          console.log('getUserInfo',res)
+          // console.log('getUserInfo',res)
           if (res.data.code == 0 && res.data.result) {
             window.userInfo = res.data.result;
             localStorage.setItem('_userInfo',JSON.stringify(res.data.result));
@@ -290,7 +291,7 @@ export default {
           // that.ggMenu = res.data.page.list;
         });
       }else {
-        alert('未获取到resident_code');
+        Toast('未获取到resident_code');
       }
     },
     gotoPage(route){
@@ -299,7 +300,6 @@ export default {
       })
     },
     gotoDetail(item){
-      // weui.alert('go to detail');
       this.$router.push({
         name:'detail',
         params:{
@@ -329,7 +329,7 @@ export default {
         propertyId:window.userInfo.propertyId
       };
       utils.Get('getGgList',param).then(function(res){
-        console.log('getGgList',res);
+        // console.log('getGgList',res);
         if (res.data.page.list.length>5) {
           that.swipes = res.data.page.list.splice(0, 4);
         } else {
@@ -353,7 +353,7 @@ export default {
         param.cmsContent=value;
       }
       utils.Get('getGgList',param).then(function(res){
-        console.log('getGgList',res)
+        // console.log('getGgList',res)
         that.ggNews = res.data.page.list;
         // that.indexNews = res.data.page.list;
       });
@@ -366,7 +366,7 @@ export default {
         propertyId:window.userInfo.propertyId
       };
       utils.Get('getGgList',param).then(function(res){
-        console.log('getGgList',res)
+        // console.log('getGgList',res)
         // that.ggNews = res.data.page.list;
         that.indexNews = res.data.page.list;
       });

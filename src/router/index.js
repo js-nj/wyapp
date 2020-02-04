@@ -11,6 +11,8 @@ import fixDetail from '@/page/fix/detail'
 import fixRate from '@/page/fix/rate';
 import fixerLogin from '@/page/fixer/login'
 import fixerIndex from '@/page/fixer/index'
+import fixerDetail from '@/page/fixer/detail'
+import fixerDoneDetail from '@/page/fixer/donedetail'
 import sugIndex from '@/page/suggest/index'
 import sugList from '@/page/suggest/list'
 import otherHouse from '@/page/other/house'
@@ -62,6 +64,14 @@ export default new Router({
     path: '/fixerIndex',
     name: 'fixerIndex',
     component: fixerIndex
+  }, {
+    path: '/fixerDetail',
+    name: 'fixerDetail',
+    component: fixerDetail
+  }, {
+    path: '/fixerDoneDetail',
+    name: 'fixerDoneDetail',
+    component: fixerDoneDetail
   }, {
     path: '/sugIndex',
     name: 'sugIndex',

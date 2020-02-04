@@ -50,7 +50,6 @@ export default {
   },
   methods:{
     gotoDetail(item){
-      // weui.alert('go to detail');
       this.$router.push({
         name:'detail',
         params:{

@@ -38,21 +38,15 @@
       </div>
     </div>
   </div>
-  <div class="wy-fix-detItem" style="">
+  <div class="wy-fix-detItem" v-if="evaluateContent">
     <div class="wy-fix-det-head">
       <span class="wy-fix-det-title">评价信息</span>
     </div>
     <div style="padding: 8px 0;font-size: 14px;line-height: 16px;">
-      Mint UI 包含丰富的 CSS 和 JS 组件，能够满足日常的移动端开发需要。通过它，可以快速构建出风格统一的页面，提升开发效率。
+      {{evaluateContent}}
     </div>
   </div>
   <div id="wy-steps"></div>
-  <div class="wy-fix-detbuts">
-    <div class="wy-fix-detbut" style="color:#3789F9;" @click="gotoSure" v-if="serviceStatus==3">确认</div>
-    <!-- <div class="wy-fix-detbut" style="color:#F18A29;">追记</div> -->
-    <div class="wy-fix-detbut" style="color:#D0021B;" @click="gotoCancel" v-if="serviceStatus==1 || serviceStatus==2">撤销</div>
-    <div class="wy-fix-detbut" style="color:#F18A29;" @click="gotoRate"  v-if="serviceStatus==4">评价</div>
-  </div>
 </div>
 
 </template>
@@ -77,6 +71,7 @@ export default {
       status:'',
       steps:[],
       serviceStatus:'',
+      evaluateContent:'',
       options: [{
         title:'报修单号',
         value:''
@@ -122,6 +117,7 @@ export default {
   created(){
     // console.log(utils)
     // debugger;
+    window.wxuserInfo = JSON.parse(localStorage.getItem('wxuserInfo'));
     document.title = '报修详情';
 
     var param = {
@@ -180,17 +176,12 @@ export default {
         }
       });
     },
-    gotoRate(){
-      this.$router.push({
-        name:'fixRate',
-      })
-    },
 
     getWyServiceInfo(param){
       var that = this;
       utils.Get('getWyServiceInfo',param).then(function(res){
         if (res.data.code === 0 && res.data.wyService) {
-
+          that.evaluateContent = res.data.wyService.evaluateContent;
           that.phone = 'tel:'+res.data.wyService.ownerMobile;
           that.status = res.data.wyService.serviceStatusName;
           that.steps = res.data.wyService.serviceRecordList;

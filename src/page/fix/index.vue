@@ -30,7 +30,7 @@
                 <input id="imageFile"  name="imageFile" onchange="changepic(this,'wy-fix-public')" type="file" accept="image/png, image/jpeg, image/gif, image/jpg" />
               </div>
             </div>
-            <mt-button class="wy-sug-button" type="primary" @click="postWyServiceSave">确认提交</mt-button>
+            <mt-button class="wy-sug-button" type="primary" @click="postWyServiceSave('pub')">确认提交</mt-button>
           </mt-tab-container-item>
           <mt-tab-container-item id="private">
             <div class="wy-fix-private" ref="privateDiv">
@@ -66,7 +66,7 @@
               </div>
               <div class="tkDiv" id="addLOGO" style="z-index:12;height:auto;">
         </div>
-              <mt-button id="saveBtn" class="wy-sug-button" type="primary" @click="postWyServiceSave">确认提交</mt-button>
+              <mt-button id="saveBtn" class="wy-sug-button" type="primary" @click="postWyServiceSave('prv')">确认提交</mt-button>
             </div>
           </mt-tab-container-item>
         </mt-tab-container>
@@ -213,6 +213,7 @@ export default {
       ggfixplace:'',
       ggintroduction:'',
       ggproblem:'',
+      ggproblemid:'',
       gguploadImgs:[],
       ggslots: [
         {
@@ -222,8 +223,10 @@ export default {
       ggchooseResult:{},
 
       grfixplace:'',
+      grfixplaceid:'',
       grintroduction:'',
       grproblem:'',
+      grproblemid:'',
       gruploadImgs:[],
       grslots: [
         {
@@ -265,18 +268,21 @@ export default {
       if (val && val.name) {
         console.log('val',val)
         this.ggproblem = val.name;
+        this.ggproblemid = val.id;
       }
     },
     grchooseResult(val){
       if (val && val.name) {
         console.log('val',val)
         this.grproblem = val.name;
+        this.grproblemid = val.id;
       }
     },
     grfpchooseResult(val){
       if (val && val.name) {
         console.log('val',val)
         this.grfixplace = val.name;
+        this.grfixplaceid = val.id;
       }
     }
   },
@@ -336,39 +342,7 @@ export default {
         // that.ggslots[0].value = res.data.page.list;
       });
     },
-    getWyserviceListIn(){
-      var param = {
-        ownerId:'4f895cb1ac2ef28b2178089a1ead421d',
-        page:1,
-        limit:10
-      };
-      var that = this;
-      utils.Post('getWyserviceListIn',param).then(function(res){
-        // if (res.data.code ==0) {
-        //   Toast('提交成功~');
-        // }else {
-        //   Toast('提交失败,'+res.data.msg+'！');
-        // }
-        that.options = res.data.page.list;
-      });
-    },
-    getWyserviceListComplete(){
-      var param = {
-        ownerId:'4f895cb1ac2ef28b2178089a1ead421d',
-        page:1,
-        limit:10
-      };
-      var that = this;
-      utils.Post('getWyserviceListComplete',param).then(function(res){
-        // if (res.data.code ==0) {
-        //   Toast('提交成功~');
-        // }else {
-        //   Toast('提交失败,'+res.data.msg+'！');
-        // }
-        that.doneOptions = res.data.page.list;
-      });
-    },
-    postWyServiceSave(){
+    postWyServiceSave(type){
       // 业主ID 4f895cb1ac2ef28b2178089a1ead421d
       // 物业ID 998bac69aeb0e363a455b28c32b3cfa9
       var that = this;
@@ -391,20 +365,26 @@ export default {
             success:function(data){
                 if(data.code == 0){
                     var param = {
-                      propertyId: '998bac69aeb0e363a455b28c32b3cfa9' ,
-                      companyId: '公司ID' ,
-                      communityId: '楼宇ID' ,
-                      ownerId: '4f895cb1ac2ef28b2178089a1ead421d' ,
-                      typeId: '故障类型ID' ,
-                      serviceAddress: that.ggfixplace ,
-                      serviceContent: that.ggintroduction ,
-                      ownerName: '大刘' ,
-                      ownerMobile: '1885173' ,
-                      doorDate: '预约上门时间' ,
-                      beginTime: '预约上门时间段1' ,
-                      endTime: '预约上门时间段2' ,
-                      imgUrl: 'www.baidu.com'
+                      propertyId: window.userInfo.propertyId,
+                      companyId: window.userInfo.companyId ,
+                      communityId: window.userInfo.companyId ,
+                      ownerId: window.userInfo.ownerId,
+                      ownerName: window.userInfo.ownerName ,
+                      ownerMobile: window.userInfo.ownerMobile ,
+                      imgUrl: data.imgUrl
                     };
+                    if (type == 'pub') {
+                      param.typeId = that.ggproblemid;
+                      param.serviceAddress = that.ggfixplace;
+                      param.serviceContent = that.ggintroduction;
+                    } else {
+                      param.serviceAddress = that.grfixplaceid;
+                      param.serviceContent = that.grintroduction;
+                      param.typeId = that.grproblemid;
+                      param.doorDate=that.problemday;
+                      param.beginTime=that.problemTime;
+                      param.endTime=that.problemTime;
+                    }
                     utils.Post('postWyServiceSave',param).then(function(res){
                       if (res.data.code ==0) {
                         Toast('提交成功~');
@@ -414,27 +394,32 @@ export default {
                       // that.list = res.data.page.list;
                     });
                 }else{
-                  alert(data.msg)
+                  Toast(data.msg)
                     // $("#imageForm").submit();
                 }
             }
         })
       }else {
         var param = {
-          propertyId: '物业ID' ,
-          companyId: '公司ID' ,
-          communityId: '楼宇ID' ,
-          ownerId: '业主ID' ,
-          typeId: '故障类型ID' ,
-          serviceAddress: '故障位置' ,
-          serviceContent: '故障描述' ,
-          ownerName: '联系人' ,
-          ownerMobile: '电话' ,
-          doorDate: '预约上门时间' ,
-          beginTime: '预约上门时间段1' ,
-          endTime: '预约上门时间段2' ,
-          imgUrl: '图片地址（多个以逗号隔开）'
+          propertyId: window.userInfo.propertyId,
+          companyId: window.userInfo.companyId ,
+          communityId: window.userInfo.companyId ,
+          ownerId: window.userInfo.ownerId,
+          ownerName: window.userInfo.ownerName ,
+          ownerMobile: window.userInfo.ownerMobile
         };
+        if (type == 'pub') {
+          param.typeId = that.ggproblemid;
+          param.serviceAddress = that.ggfixplace;
+          param.serviceContent = that.ggintroduction;
+        } else {
+          param.serviceAddress = that.grfixplaceid;
+          param.serviceContent = that.grintroduction;
+          param.typeId = that.grproblemid;
+          param.doorDate=that.problemday;
+          param.beginTime=that.problemTime;
+          param.endTime=that.problemTime;
+        }
         utils.Post('postWyServiceSave',param).then(function(res){
           if (res.data.code ==0) {
             Toast('提交成功~');
