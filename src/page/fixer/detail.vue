@@ -10,13 +10,13 @@
         <span>{{item.title}}</span>：
         <span class="wy-fix-det-desitemvalue" v-if="item.title != '故障图片'" >{{item.value}}</span>
         <div v-else class="wy-fix-det-desitemimgs">
-          <img v-if="(item.value)" :src="src" v-for="src in item.value" class="wy-fix-det-desitemimg" />
+          <img v-if="(item.value)" @click="previewImg(src)" :src="src" v-for="src in item.value" class="wy-fix-det-desitemimg" />
         </div>
-        <label v-if="item.title == '报修人员'" class="wy-fix-det-usertagdiv">
+        <!-- <label v-if="item.title == '报修人员'" class="wy-fix-det-usertagdiv">
           <span class="wy-fix-det-usertag">
             产权用户
           </span>
-        </label>
+        </label> -->
         <a :href="phone" class="wy-fix-det-userphone" v-if="item.title == '报修人员'">
           <img src="../../../static/images/wy/phone.png" />
         </a>
@@ -85,6 +85,12 @@ export default {
         title:'报修时间',
         value:''
       },{
+        title:'预约时间',
+        value:''
+      },{
+        title:'故障类型',
+        value:''
+      },{
         title:'故障地址',
         value:''
       },{
@@ -130,6 +136,9 @@ export default {
 
   },
   methods:{
+    previewImg(src){
+      window.location.href = src;
+    },
     postRepairSubmit(){
       var that = this;
       var imageFile = $("#imageFile1").val();
@@ -225,19 +234,23 @@ export default {
             title:'报修时间',
             value:res.data.wyService.createDate
           });
-          // that.$set(that.options,4,{
-          //   title:'预约时间',
-          //   value:res.data.wyService.doorDate+' '+res.data.wyService.beginTime+'-'+res.data.wyService.endTime
-          // });
           that.$set(that.options,4,{
+            title:'预约时间',
+            value:res.data.wyService.doorDate+' '+res.data.wyService.beginTime+'-'+res.data.wyService.endTime
+          });
+          that.$set(that.options,5,{
+            title:'故障类型',
+            value:res.data.wyService.serviceTypeName,
+          });
+          that.$set(that.options,6,{
             title:'报修地址',
             value:res.data.wyService.serviceAddress
           });
-          that.$set(that.options,5,{
+          that.$set(that.options,7,{
             title:'报修内容',
             value:res.data.wyService.serviceContent
           });
-          that.$set(that.options,6,{
+          that.$set(that.options,8,{
             title:'故障图片',
             value:(res.data.wyService.imgUrl && res.data.wyService.imgUrl.split(','))||''
           });
@@ -389,7 +402,8 @@ display: inline-block;
     top: 2px;
     left: 6px;
     /* overflow: hidden; */
-    width: 200px;
+    /*width: 200px;*/
+    width: calc(100% - 70px);
 }
 .wy-fix-det-desitemimg {
   width: 50px;

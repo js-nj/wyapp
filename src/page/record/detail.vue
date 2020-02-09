@@ -1,7 +1,7 @@
 <template>
 <div class="wy-rec wy-rec-detail">
   <div>
-    <img src="../../../static/images/success.jpg" />
+    <img src="../../../static/images/wy/success.png" />
     <div class="wy-rec-detail-title">支付成功</div>
   </div>
   <div style="padding:0 16px;background:#fff;">
@@ -28,25 +28,25 @@ export default {
   },
   data () {
     return {
+      msg:'',
       options: [{
         title:'支付方式',
         value:''
       },{
-        title:'创建时间',
+        title:'支付时间',
         value:''
       }
-      // ,{
-      //   title:'交易订单号',
-      //   value:''
-      // }
       ,{
-        title:'商户订单号',
+        title:'单号',
         value:''
       },{
         title:'小区名称',
         value:''
       },{
         title:'家庭住址',
+        value:''
+      },{
+        title:'业主',
         value:''
       },{
         title:'缴纳费用项目',
@@ -66,6 +66,9 @@ export default {
   created(){
     // console.log(utils)
     // debugger;
+    if (window.location.href.indexOf('MSG=')>-1) {
+      this.msg = window.location.href.split('MSG=')[1];
+    }
     document.title = '账单详情';
     var param = {
       id:''
@@ -85,15 +88,15 @@ export default {
             value:res.data.wyPay.payTypeName
           });
           that.$set(that.options,1,{
-            title:'创建时间',
-            value:res.data.wyPay.createDate
+            title:'支付时间',
+            value:res.data.wyPay.payTime
           });
           // that.$set(that.options,2,{
           //   title:'交易订单号',
           //   value:res.data.wyPay.id
           // });
           that.$set(that.options,2,{
-            title:'商户订单号',
+            title:'单号',
             value:res.data.wyPay.payNumber
           });
           that.$set(that.options,3,{
@@ -105,18 +108,22 @@ export default {
             value:res.data.wyPay.payAddress
           });
           that.$set(that.options,5,{
+            title:'业主',
+            value:res.data.wyPay.ownerName
+          });
+          that.$set(that.options,6,{
             title:'缴纳费用项目',
             value:res.data.wyPay.payItemName
           });
-          that.$set(that.options,6,{
-            title:'缴纳时段',
-            value:res.data.wyPay.needPayTime
-          });
           that.$set(that.options,7,{
+            title:'缴纳时段',
+            value:res.data.wyPay.payStart+'/'+res.data.wyPay.payEnd
+          });
+          that.$set(that.options,8,{
             title:'费用金额',
             value:res.data.wyPay.payMoney
           });
-          that.$set(that.options,8,{
+          that.$set(that.options,9,{
             title:'订单备注',
             value:res.data.wyPay.remarks
           });
@@ -201,4 +208,5 @@ padding-top: 12px;
   background-color: #f7f7f7;
   padding: 16px 0;
 }
+
 </style>

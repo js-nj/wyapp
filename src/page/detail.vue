@@ -2,8 +2,8 @@
 <div class="wy-detail">
   <div class="wy-detail-title">{{title}}</div>
   <div class="wy-detail-des">
-    <span class="wy-detail-des-item">{{auther}}</span>
-    <span class="wy-detail-des-item">{{mfrom}}</span>
+    <!-- <span class="wy-detail-des-item">{{auther}}</span>
+    <span class="wy-detail-des-item">{{mfrom}}</span> -->
     <span class="wy-detail-des-item">{{time}}</span>
   </div>
   <div class="wy-detail-body">{{content}}</div>
@@ -28,7 +28,7 @@ export default {
     }
   },
   created(){
-    document.title = '资讯公告详情';
+    document.title = '详情';
     // console.log(utils)
     // debugger;
     var param = {
@@ -64,14 +64,17 @@ export default {
 }
 .wy-detail-title {
   font-size: 20px;
+      word-break: break-all;
+
 }
 .wy-detail-des-item {
   display: inline-block;
-  padding-right: 6px;
+    padding: 4px 0 8px 0;
   font-size: 14px;
   color: #999;
 }
 .wy-detail-body {
   font-size: 13px;
 }
+
 </style>

@@ -25,6 +25,6 @@ html,body,.page,#app {
 }
 body {
   font-family:PingFang-SC-Medium,PingFang-SC;
-  background-color: #F6F8FA;
+  background-color: #F6F8FA !important;
 }
 </style>

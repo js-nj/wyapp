@@ -4,12 +4,24 @@
     <img style="width: 100%;" src="../../../static/images/feedback.jpg" />
   </div>
   <div class="wy-sug-body" style="">
-    <p class="wy-sug-name">请选择反馈类型</p>
-    <div class="wy-sug-types">
-      <span class="wy-sug-type" typeid="1">投诉</span>
-      <span typeid="2">建议</span>
-      <span typeid="3">表扬</span>
+    <div v-if="grfpslots[0].values.length>1" @click="grfpshowSheet" class="wy-select-problem">
+      <mt-cell title="选择住址" :value="grfixplace" is-link  ></mt-cell>
     </div>
+    <mt-popup
+      v-model="grfpsheetVisible"
+      position="bottom" style="text-align:center;">
+        <span class="wy-fix-pop-btn" @click="grfpokValuesChange">确定</span>
+        <mt-picker :slots="grfpslots" @change="grfponValuesChange" valueKey="name"></mt-picker>
+    </mt-popup>
+    <div style="padding-top:8px;">
+      <p class="wy-sug-name">请选择反馈类型</p>
+      <div class="wy-sug-types">
+        <span class="wy-sug-type" typeid="1">投诉</span>
+        <span typeid="2">建议</span>
+        <span typeid="3">表扬</span>
+      </div>
+    </div>
+
     <div class="wy-sug-textarea">
       <mt-field label="" placeholder="请输入您要反馈的内容" type="textarea" rows="4" v-model="introduction"></mt-field>
     </div>
@@ -30,7 +42,7 @@
 </template>
 
 <script>
-import { Field,Button,Toast } from 'mint-ui';
+import { Field,Button,Toast,Cell,Popup,Picker } from 'mint-ui';
 // import utils from '../utils.js';
 import * as utils from '../../utils';
 import $ from "jquery";
@@ -40,16 +52,46 @@ export default {
     return {
       msg: 'Welcome to Your Vue.js App',
       introduction:'',
-      typeId:'1'
+      typeId:'1',
+      grfpchooseResult:{},
+      grfixplace:'',
+      grfixplaceid:'',
+      grfpsheetVisible:false,
+      grfpslots: [
+        {
+          values: [],
+        }
+      ],
     }
   },
   components:{
     [Field.name]:Field,
     [Button.name]:Button,
-    [Toast.name]:Toast
+    [Toast.name]:Toast,
+    [Cell.name]:Cell,
+    [Popup.name]:Popup,
+    [Picker.name]:Picker,
+  },
+  watch:{
+    grfpchooseResult(val){
+      if (val && val.name) {
+        console.log('val',val)
+        this.grfixplace = val.name;
+        this.grfixplaceid = val.id;
+      }
+    }
   },
   created(){
     document.title = '提交建议';
+    var tmpArr= window.userInfo.communityEntityList.map(function(item){
+      var tmp = {
+        id:item.id,
+        name:item.address
+      };
+      return tmp
+    });
+    this.$set(this.grfpslots[0],'values',tmpArr);
+    this.grfixplaceid = window.userInfo.communityEntityList[0].id;
     var that = this;
     this.$nextTick(function(){
         $('span','.wy-sug-types').on('click', function (ele) {
@@ -63,6 +105,22 @@ export default {
 
   },
   methods:{
+    grfpshowSheet(){
+      // debugger;
+      this.grfpsheetVisible = true;
+    },
+    grfponValuesChange(e,val){
+      if (val) {
+        this.grfpchooseResult = val[0];
+      }
+      // console.log(values)
+    },
+    grfpokValuesChange(){
+      if (!this.grfpchooseResult.name) {
+        this.grfpchooseResult = this.grfpslots[0].values;
+      }
+      this.grfpsheetVisible = false;
+    },
     gotoSugList(){
       this.$router.push({
         name:'sugList'
@@ -97,7 +155,7 @@ export default {
                   var param = {
                     propertyId :window.userInfo.propertyId,// 物业ID ,
                     companyId :window.userInfo.companyId,// 公司ID ,
-                    communityId :window.userInfo.communityId,// 楼宇ID ,
+                    communityId :that.grfixplaceid,// 楼宇ID ,
                     ownerId : window.userInfo.ownerId,//业主ID ,
                     typeId : that.typeId,//类型ID ,
                     opinionContent : that.introduction,//投诉内容 ,
@@ -106,6 +164,7 @@ export default {
                   utils.Post('postWyOpinionSave',param).then(function(res){
                     if (res.data.code ==0) {
                       Toast('提交成功~');
+                      window.history.go(-1);
                     }else {
                       Toast('提交失败,'+res.data.msg+'！');
                     }
@@ -120,7 +179,7 @@ export default {
         var param = {
           propertyId :window.userInfo.propertyId,// 物业ID ,
           companyId :window.userInfo.companyId,// 公司ID ,
-          communityId :window.userInfo.communityId,// 楼宇ID ,
+          communityId :that.grfixplaceid,// 楼宇ID ,
           ownerId : window.userInfo.ownerId,//业主ID ,
           typeId : that.typeId,//类型ID ,
           opinionContent : that.introduction,//投诉内容 ,
@@ -129,6 +188,7 @@ export default {
         utils.Post('postWyOpinionSave',param).then(function(res){
           if (res.data.code ==0) {
             Toast('提交成功~');
+            window.history.go(-1);
           }else {
             Toast('提交失败,'+res.data.msg+'！');
           }
@@ -163,7 +223,7 @@ export default {
 .wy-sug-name {
   /*width:97px;*/
 /*height:20px;*/
-font-size:13px;
+font-size:16px;
 font-family:PingFang-SC-Medium,PingFang-SC;
 font-weight:500;
 color:rgba(85,85,85,1);
@@ -172,7 +232,7 @@ padding-bottom: 12px;
 }
 .wy-sug-types span {
   display: inline-block;
-  padding:0px 4px;
+      padding: 2px 8px;
   margin-right: 8px;
   color: #3789F9;
   border: solid 1px #3789F9;
@@ -209,5 +269,11 @@ padding-bottom: 12px;
       width: 80%;
     margin: 0 auto;
     display: block;
+}
+.wy-sug-body .wy-select-problem .mint-cell-wrapper{
+padding: 0;
+}
+.wy-sug-body .wy-select-problem .mint-cell-wrapper .mint-cell-title {
+  padding-left: 0;
 }
 </style>

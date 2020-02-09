@@ -20,7 +20,10 @@
               <mt-field label="" placeholder="请填写故障描述帮助我们尽快解决问题" type="textarea" rows="4" v-model="ggintroduction"></mt-field>
             </div>
             <div style="padding: 16px 24px;text-align: left;">
-              <img src="" class="show" style="width:60px;height:60px;display:none;" />
+              <div v-if="fixTypes=='public'" id="wy-imgs-upload" style="display:inline-block;vertical-align:top;">
+                  <!-- <img src="" class="show" style="width:60px;height:60px;display:none;" /> -->
+                </div>
+              <!-- <img src="" class="show" style="width:60px;height:60px;display:none;" /> -->
               <div class="upload_item" v-for="(item,index) in gguploadImgs">
                 <i class="iconfont icon-weiwancheng cancel_upload_img" @click="ggdeleteImg(item)"></i>
                 <img class="upload_img" @click="ggpreviewImg(item)" :src="item" alt="">
@@ -40,12 +43,24 @@
                 <div @click="grfpshowSheet" class="wy-select-problem">
                   <mt-cell title="选择住址" :value="grfixplace" is-link  ></mt-cell>
                 </div>
+                <mt-cell title="报修人" :value="username"></mt-cell>
+                <!-- <mt-field label="报修人" placeholder="请输入用户名" v-model="username"></mt-field> -->
 
-                <mt-field label="报修人" placeholder="请输入用户名" v-model="username"></mt-field>
-                <mt-field label="联系方式" placeholder="请输入手机号" type="tel" v-model="phone"></mt-field>
+                <mt-cell title="联系方式" :value="phone"></mt-cell>
+                <!-- <mt-field label="联系方式" placeholder="请输入手机号" type="tel" v-model="phone"></mt-field> -->
+
                 <mt-field label="上门日期" placeholder="请输入日期" type="date" v-model="problemday"></mt-field>
-                <div class="wy-fix-fixtime" @click="openTimePicker"><span>具体时间</span><label class="wy-fix-fixtimevalue">{{problemTime}}</label></div>
+
+                <div class="wy-fix-fixtime" @click="openTimePicker">
+                  <span>开始时间</span><label class="wy-fix-fixtimevalue">{{problemTime}}</label>
+                </div>
                 <mt-datetime-picker type="time" v-model="problemTime" ref="timepiker"></mt-datetime-picker>
+
+                <div class="wy-fix-fixtime" @click="openTimePickerEnd">
+                  <span>结束时间</span><label class="wy-fix-fixtimevalue">{{problemTimeEnd}}</label>
+                </div>
+                <mt-datetime-picker type="time" v-model="problemTimeEnd" ref="timepikerend"></mt-datetime-picker>
+
                 <div @click="grshowSheet" class="wy-select-problem">
                   <mt-cell title="故障类型" :value="grproblem" is-link  ></mt-cell>
                 </div>
@@ -53,7 +68,10 @@
                 <mt-field label="" placeholder="请填写故障描述帮助我们尽快解决问题" type="textarea" rows="4" v-model="grintroduction"></mt-field>
               </div>
               <div style="padding: 16px 24px;text-align: left;">
-                <img src="" class="show" style="width:60px;height:60px;display:none;" />
+                <!-- <img src="" class="show" style="width:60px;height:60px;display:none;" /> -->
+                <div v-if="fixTypes=='private'" id="wy-imgs-upload" style="display:inline-block;vertical-align:top;">
+                  <!-- <img src="" class="show" style="width:60px;height:60px;display:none;" /> -->
+                </div>
                 <div class="upload_item" v-for="(item,index) in gruploadImgs">
                   <i class="iconfont icon-weiwancheng cancel_upload_img" @click="grdeleteImg(item)"></i>
                   <img class="upload_img" @click="grpreviewImg(item)" :src="item" alt="">
@@ -150,7 +168,7 @@
 </template>
 
 <script>
-import { Navbar, TabItem,Tabbar,TabContainer,TabContainerItem,Cell,Checklist,Actionsheet,Field,Picker,Popup,Button,DatetimePicker} from 'mint-ui';
+import { Navbar, TabItem,Tabbar,TabContainer,TabContainerItem,Cell,Checklist,Actionsheet,Field,Picker,Popup,Button,DatetimePicker,Toast} from 'mint-ui';
 // import utils from '../utils.js';
 import * as utils from '../../utils';
 import $ from "jquery";
@@ -170,13 +188,16 @@ export default {
       [Popup.name]: Popup,
       [Button.name]: Button,
       [DatetimePicker.name]: DatetimePicker,
+      [Toast.name]: Toast,
+
   },
   data () {
     return {
       msg: 'Welcome to Your Vue.js App',
       problemTime:'',
-      username:'',
-      phone:'',
+      problemTimeEnd:'',
+      username:window.userInfo.ownerName,
+      phone:window.userInfo.ownerMobile,
       problemday:'',
       ggsheetVisible:false,
       grsheetVisible:false,
@@ -246,7 +267,7 @@ export default {
     // console.log(utils)
     // debugger;
     document.title = '快捷报修';
-    var tmpArr= window.userInfo.communityEntityList.map(function(item){
+    var tmpArr= window.userInfo.wyOwnerHouseEntityList.map(function(item){
       var tmp = {
         id:item.id,
         name:item.address
@@ -290,14 +311,17 @@ export default {
     openTimePicker(){
       this.$refs.timepiker.open();
     },
+    openTimePickerEnd(){
+      this.$refs.timepikerend.open();
+    },
     getProblemsInPublic(){
       var param = {
         page:1,
-        limit:10,
-        typeId:1
+        limit:100,
+        typeId:"1"
       };
       var that = this;
-      utils.Post('getWyservicecategory',param).then(function(res){
+      utils.Get('getWyservicecategory',param).then(function(res){
         if (res.data.code ==0) {
           var arr = res.data.page.list.map(function(item){
             var tmp = {
@@ -319,11 +343,11 @@ export default {
     getProblemsInPrivate(){
       var param = {
         page:1,
-        limit:10,
-        typeId:2
+        limit:100,
+        typeId:"2"
       };
       var that = this;
-      utils.Post('getWyservicecategory',param).then(function(res){
+      utils.Get('getWyservicecategory',param).then(function(res){
         if (res.data.code ==0) {
           var arr = res.data.page.list.map(function(item){
             var tmp = {
@@ -371,6 +395,7 @@ export default {
                       ownerId: window.userInfo.ownerId,
                       ownerName: window.userInfo.ownerName ,
                       ownerMobile: window.userInfo.ownerMobile ,
+                      houseId:that.grfixplaceid,
                       imgUrl: data.imgUrl
                     };
                     if (type == 'pub') {
@@ -378,16 +403,18 @@ export default {
                       param.serviceAddress = that.ggfixplace;
                       param.serviceContent = that.ggintroduction;
                     } else {
-                      param.serviceAddress = that.grfixplaceid;
+
+                      // param.serviceAddress = that.grfixplaceid;
                       param.serviceContent = that.grintroduction;
                       param.typeId = that.grproblemid;
                       param.doorDate=that.problemday;
                       param.beginTime=that.problemTime;
-                      param.endTime=that.problemTime;
+                      param.endTime=that.problemTimeEnd;
                     }
                     utils.Post('postWyServiceSave',param).then(function(res){
                       if (res.data.code ==0) {
                         Toast('提交成功~');
+                        window.history.go(-1);
                       }else {
                         Toast('提交失败,'+res.data.msg+'！');
                       }
@@ -406,6 +433,7 @@ export default {
           communityId: window.userInfo.companyId ,
           ownerId: window.userInfo.ownerId,
           ownerName: window.userInfo.ownerName ,
+          houseId:that.grfixplaceid,
           ownerMobile: window.userInfo.ownerMobile
         };
         if (type == 'pub') {
@@ -413,16 +441,18 @@ export default {
           param.serviceAddress = that.ggfixplace;
           param.serviceContent = that.ggintroduction;
         } else {
-          param.serviceAddress = that.grfixplaceid;
+          param.houseId = that.grfixplaceid;
+          // param.serviceAddress = that.grfixplaceid;
           param.serviceContent = that.grintroduction;
           param.typeId = that.grproblemid;
           param.doorDate=that.problemday;
           param.beginTime=that.problemTime;
-          param.endTime=that.problemTime;
+          param.endTime=that.problemTimeEnd;
         }
         utils.Post('postWyServiceSave',param).then(function(res){
           if (res.data.code ==0) {
             Toast('提交成功~');
+            window.history.go(-1);
           }else {
             Toast('提交失败,'+res.data.msg+'！');
           }
@@ -529,7 +559,7 @@ export default {
 .wy-fix .mint-navbar{
   width: 200px;
     margin: 0px auto 16px auto;
-    border: solid 1px #26a2ff;
+    border: solid 0.5px #26a2ff;
     border-radius: 42px;
     /*background: #ddd;*/
 }
@@ -538,6 +568,8 @@ export default {
   background-color: #26a2ff;
   border-bottom: none;
   margin-bottom: 0px;
+      position: relative;
+    right: -1px;
 }
 .wy-fix .mint-navbar .mint-tab-item {
   padding: 11.5px;
@@ -575,6 +607,7 @@ margin-top: 8px;
 .wy-fix-fixtime span {
   width: 105px;
   display: inline-block;
+  color: #747474;
 }
 .wy-fix-fixtimevalue {
 
@@ -693,5 +726,8 @@ font-size: 14px;
 .wy-fix-tabbar .mint-tab-item-icon img{
   width: 20px;
   height: 20px;
+}
+.wy-select-problem .mint-cell .mint-cell-value.is-link span {
+  font-size: 14px;
 }
 </style>

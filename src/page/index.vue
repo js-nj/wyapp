@@ -1,6 +1,6 @@
 <template>
 
-<div class="page">
+<div class="page" v-show="allready == '1'">
     <div class="page__bd" style="height: 100%;">
         <div class="weui-tab">
             <div class="weui-tab__panel">
@@ -14,7 +14,7 @@
                     <!-- <img class="wy-head-img" src="../../static/images/wy-1.jpg" /> -->
                     <mt-swipe :show-indicators="false" style="height:124px;">
                       <mt-swipe-item v-for="item in swipes" :key="item.id">
-                        <img class="wy-head-img" :src="item.cmsImgUrl" />
+                        <img class="wy-head-img" :src="item.cmsImgUrl" @click="clickSwipe(item)" />
                       </mt-swipe-item>
                     </mt-swipe>
                   </div>
@@ -101,10 +101,13 @@
               </div>
               <div v-else="tabId=='3'">
                 <div class="wy-myhead" style="background-color:#3789F9;color:#fff;">
-                  <div><img class="wy-myhead-img" src="../../static/images/wy/man.jpg" /></div>
                   <div>
-                    <p style="text-align:left;font-size:16px;">张三</p>
-                    <span style="font-size:14px;">1234567890</span>
+                    <img v-if="userHeadimgurl" class="wy-myhead-img" :src="userHeadimgurl" />
+                    <img v-else class="wy-myhead-img" src="../../static/images/wy/man.jpg" />
+                  </div>
+                  <div>
+                    <p style="text-align:left;font-size:16px;">{{ownerName}}</p>
+                    <span style="font-size:14px;">{{ownerMobile}}</span>
                   </div>
                   <div style="visibility:hidden;">
                     <p>30.00</p>
@@ -166,7 +169,7 @@
 import 'weui';
 import weui from 'weui.js';
 import $ from "jquery";
-import { Search,Cell,Swipe, SwipeItem,Toast } from 'mint-ui';
+import { Search,Cell,Swipe, SwipeItem,Toast,Indicator } from 'mint-ui';
 import * as utils from '../utils';
 export default {
   name: 'index',
@@ -175,28 +178,39 @@ export default {
       [Cell.name]: Cell,
       [Swipe.name]: Swipe,
       [SwipeItem.name]: SwipeItem,
-      [Toast.name]: Toast
+      [Toast.name]: Toast,
+      [Indicator.name]: Indicator,
   },
   data () {
     return {
+      allready:'0',
       tabId:'1',
       indexNews:[],
       ggNews:[],
       ggMenu:[],
       searchValue:'',
-      swipes:[]
+      swipes:[],
+      ownerName:'',
+      userHeadimgurl:'',
+      ownerMobile:''
     }
+  },
+  beforeCreate(){
+
   },
   created(){
     var that = this;
     document.title = '物业管理';
-    that.getUserInfo();
+    this.getUserInfo();
     this.$nextTick(function(){
         $('.weui-tabbar__item').on('click', function (ele) {
             // debugger;
             that.tabId = $(this).attr('tabid');
             $(this).addClass('weui-bar__item_on').siblings('.weui-bar__item_on').removeClass('weui-bar__item_on');
         });
+        if (sessionStorage.getItem('tabId') && sessionStorage.getItem('tabId') == '3') {
+          $('.weui-tabbar__item').eq(2).trigger('click');
+        }
     });
 
   },
@@ -206,9 +220,10 @@ export default {
         // this.getGgType();
         this.getGgList();
       }
+      sessionStorage.setItem('tabId',id);
     },
     searchValue(value){
-      this.getGgList('1',value);
+      this.getGgList(value);
     }
   },
   methods:{
@@ -232,6 +247,7 @@ export default {
       // window.location.href = "http://www.baidu.com";
     },
     getUserInfo(){
+      Indicator.open()
       var that = this;
       var param = {
         residentCode:window.location.href.split('resident_code=')[1].split('&open_id=')[0]
@@ -241,53 +257,21 @@ export default {
           // console.log('getUserInfo',res)
           if (res.data.code == 0 && res.data.result) {
             window.userInfo = res.data.result;
+            window.open_id = window.location.href.split('resident_code=')[1].split('&open_id=')[1];
+
             localStorage.setItem('_userInfo',JSON.stringify(res.data.result));
+            localStorage.setItem('open_id',window.open_id);
           }else {
             window.userInfo = JSON.parse(localStorage.getItem('_userInfo'));
-            // window.userInfo = {
-            //   id: "4f895cb1ac2ef28b2178089a1ead421d",
-            //   ownerId: "4f895cb1ac2ef28b2178089a1ead421d",
-            //   propertyId: "998bac69aeb0e363a455b28c32b3cfa9",
-            //   ownerName: "徐宾",
-            //   userNickName: "just believe",
-            //   userHeadimgurl: "http://thirdwx.qlogo.cn/mmopen/r2nqKJ7Ss7eKgbczia9dTyd5yFZE9Uw9nicSyX9V5RkhOdqgOcvXaicOSnNC2I2Xa3FCNjh1jibImlicoosUWP88q0w/132",
-            //   userSex: "男",
-            //   ownerMobile: "18851730242",
-            //   openId: "oLoB71d1j0hg0gVMLjIYUHTF0HXs",
-            //   unionId: "bd403077e60f7d5ee167e56dd6b968c3",
-            //   idNumber: null,
-            //   remarks: null,
-            //   createBy: null,
-            //   createDate: null,
-            //   updateBy: "4f895cb1ac2ef28b2178089a1ead421d",
-            //   updateDate: "2020-02-02 13:06:20",
-            //   propertyName: "江海物业",
-            //   communityEntityList: [{
-            //     id: "8a59832ab1e0c8ef236dde5f8c978f71",
-            //     propertyId: null,
-            //     communityName: "天地新城",
-            //     structName: null,
-            //     structCode: null,
-            //     layerSize: null,
-            //     province: "江苏省",
-            //     city: "南京市",
-            //     district: "雨花台区",
-            //     communityAddress: "岱善路",
-            //     longitude: null,
-            //     latitude: null,
-            //     remarks: null,
-            //     createBy: null,
-            //     createDate: null,
-            //     updateBy: null,
-            //     updateDate: null,
-            //     delFlag: null,
-            //     address: "A组/1幢/1单元/102室"
-            //   }],
-            //   delFlag: null,
-            // };
+            window.open_id =localStorage.getItem('open_id');
           }
+          that.allready = '1';
+          that.ownerName=window.userInfo.ownerName;
+          that.userHeadimgurl=window.userInfo.userHeadimgurl;
+          that.ownerMobile=window.userInfo.ownerMobile;
           that.getZxList();
           that.getSwipeImgs();
+          Indicator.close()
           // that.ggMenu = res.data.page.list;
         });
       }else {
@@ -325,8 +309,9 @@ export default {
         page:1,
         limit:10,
         isCarousel:'1',
-        isIndex:'1',
-        propertyId:window.userInfo.propertyId
+        categoryId:'1',
+        propertyId:window.userInfo.propertyId,
+        ownerId:window.userInfo.ownerId,
       };
       utils.Get('getGgList',param).then(function(res){
         // console.log('getGgList',res);
@@ -338,19 +323,20 @@ export default {
         // that.indexNews = res.data.page.list;
       });
     },
-    getGgList(id,value){
+    getGgList(value){
       var that = this;
       var param = {
         page:1,
         limit:10,
         categoryId:'1',
-        propertyId:window.userInfo.propertyId
+        propertyId:window.userInfo.propertyId,
+        ownerId:window.userInfo.ownerId,
       };
-      if (id) {
-        param.typeId=id;
-      }
+      // if (id) {
+      //   param.typeId=id;
+      // }
       if (value) {
-        param.cmsContent=value;
+        param.cmsTitle=value;
       }
       utils.Get('getGgList',param).then(function(res){
         // console.log('getGgList',res)
@@ -363,7 +349,9 @@ export default {
       var param = {
         page:1,
         limit:10,
-        propertyId:window.userInfo.propertyId
+        categoryId:'2',
+        propertyId:window.userInfo.propertyId,
+        ownerId:window.userInfo.ownerId,
       };
       utils.Get('getGgList',param).then(function(res){
         // console.log('getGgList',res)
@@ -377,6 +365,11 @@ export default {
       this.$router.push({
         name:'otherZxlist'
       })
+    },
+    clickSwipe(param){
+      if (param && param.cmsUrlUrl) {
+        window.location.href = param.cmsUrlUrl;
+      }
     }
   }
 }
@@ -467,6 +460,7 @@ a {
 .wy-news-item-img {
   /*width: 100px;*/
   line-height: 1;
+  padding-top: 10px;
 }
 .wy-news-item-body {
   width: calc(100% - 96px);
@@ -477,9 +471,16 @@ a {
   padding: 4px 0;
   color: #333;
   width: 184px;
+/*    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;*/
+
     overflow: hidden;
     text-overflow: ellipsis;
-    white-space: nowrap;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
 }
 .wy-news-item-des {
   font-size: 12px;
@@ -493,8 +494,8 @@ a {
   width: 90px;
   height: 60px;
 }
-.wy-gg-search {
-  height: auto;
+.wy-gg-search.mint-search {
+  height: auto !important;
 }
 .wy-gg-search .mint-searchbar {
   padding: 16px;
@@ -596,7 +597,7 @@ border-radius:9px;
     line-height: 1;
 }
 .weui-tabbar__item.weui-bar__item_on .weui-tabbar__icon, .weui-tabbar__item.weui-bar__item_on .weui-tabbar__icon > i, .weui-tabbar__item.weui-bar__item_on .weui-tabbar__label {
-    color: rgb(55, 137, 249);
+    color: rgb(55, 137, 249) !important;
 }
 .weui-tabbar .weui-tabbar__icon {
   height: 22px;
@@ -613,5 +614,14 @@ border-radius:9px;
 }
 .wy-my-mj .mint-cell-wrapper{
       background-image: linear-gradient(180deg, #d9d9d9, #d9d9d9 50%, transparent 50%) !important;
+      padding: 0;
+    margin: 0px 0px 0 10px;
+}
+.wy-my-mj .mint-cell {
+  background-image: none !important;
+}
+.wy-gg-search .mint-search-list {
+padding-top: 0;
+position: unset;
 }
 </style>

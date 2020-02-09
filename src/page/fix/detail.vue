@@ -10,7 +10,7 @@
         <span>{{item.title}}</span>：
         <span class="wy-fix-det-desitemvalue" v-if="item.title != '故障图片'" >{{item.value}}</span>
         <div v-else class="wy-fix-det-desitemimgs">
-          <img :src="src" v-for="src in item.value" class="wy-fix-det-desitemimg" />
+          <img :src="src" v-for="src in item.value" @click="previewImg(src)" class="wy-fix-det-desitemimg" />
         </div>
         <label v-if="item.title == '报修人员'" class="wy-fix-det-usertagdiv">
           <span class="wy-fix-det-usertag">
@@ -23,42 +23,47 @@
       </div>
     </div>
   </div>
-  <div class="wy-fix-detItem" style="">
+  <div class="wy-fix-detItem" v-if="serviceStatus >=3" style="">
     <div class="wy-fix-det-head">
       <span class="wy-fix-det-title">维修信息</span>
     </div>
     <div style="">
       <div v-for="item in problemOptions" class="wy-fix-det-desitem">
         <span>{{item.title}}</span>：
-        <span class="wy-fix-det-desitemvalue" v-if="item.title != '故障图片'">{{item.value}}</span>
+        <span class="wy-fix-det-desitemvalue" v-if="item.title != '维修图片'">{{item.value}}</span>
         <div v-else class="wy-fix-det-desitemimgs">
-          <img v-if="item.value" :src="src" v-for="src in item.value" class="wy-fix-det-desitemimg" />
+          <img v-if="item.value" :src="src" @click="previewImg(src)" v-for="src in item.value" class="wy-fix-det-desitemimg" />
         </div>
         <div style="clear:both;"></div>
       </div>
     </div>
   </div>
-  <div class="wy-fix-detItem" style="">
+  <div class="wy-fix-detItem" v-if="serviceStatus >=5" style="">
     <div class="wy-fix-det-head">
       <span class="wy-fix-det-title">评价信息</span>
     </div>
     <div style="padding: 8px 0;font-size: 14px;line-height: 16px;">
-      Mint UI 包含丰富的 CSS 和 JS 组件，能够满足日常的移动端开发需要。通过它，可以快速构建出风格统一的页面，提升开发效率。
+      {{evaluateTime +'-'+evaluateLevel+'-'+evaluateContent}}
     </div>
   </div>
   <div id="wy-steps"></div>
   <div class="wy-fix-detbuts">
-    <div class="wy-fix-detbut" style="color:#3789F9;" @click="gotoSure" v-if="serviceStatus==3">确认</div>
+
+    <mt-button class="wy-sug-button" type="primary" @click="gotoSure" v-if="serviceStatus==3">确认</mt-button>
+    <mt-button class="wy-sug-button" type="primary" @click="gotoCancel" v-if="serviceStatus==1 || serviceStatus==2">撤销</mt-button>
+    <mt-button class="wy-sug-button" type="primary" @click="gotoRate" v-if="serviceStatus==4">评价</mt-button>
+
+    <!-- <div class="wy-fix-detbut" style="color:#3789F9;" @click="gotoSure" v-if="serviceStatus==3">确认</div> -->
     <!-- <div class="wy-fix-detbut" style="color:#F18A29;">追记</div> -->
-    <div class="wy-fix-detbut" style="color:#D0021B;" @click="gotoCancel" v-if="serviceStatus==1 || serviceStatus==2">撤销</div>
-    <div class="wy-fix-detbut" style="color:#F18A29;" @click="gotoRate"  v-if="serviceStatus==4">评价</div>
+    <!-- <div class="wy-fix-detbut" style="color:#D0021B;" @click="gotoCancel" v-if="serviceStatus==1 || serviceStatus==2">撤销</div> -->
+    <!-- <div class="wy-fix-detbut" style="color:#F18A29;" @click="gotoRate"  v-if="serviceStatus==4">评价</div> -->
   </div>
 </div>
 
 </template>
 
 <script>
-import { Navbar, TabItem,TabContainer,TabContainerItem,Cell,Checklist  } from 'mint-ui';
+import { Navbar, TabItem,TabContainer,TabContainerItem,Cell,Checklist,Button,Toast  } from 'mint-ui';
 import * as utils from '../../utils';
 export default {
   name: 'detail',
@@ -69,6 +74,8 @@ export default {
       [TabContainerItem.name]: TabContainerItem,
       [Cell.name]: Cell,
       [Checklist.name]: Checklist,
+      [Button.name]: Button,
+      [Toast.name]: Toast,
   },
   data () {
     return {
@@ -77,6 +84,11 @@ export default {
       status:'',
       steps:[],
       serviceStatus:'',
+      serviceContent:'',
+      serviceTypeName:'',
+      evaluateContent:'',
+      evaluateLevel:'',
+      evaluateTime:'',
       options: [{
         title:'报修单号',
         value:''
@@ -88,6 +100,12 @@ export default {
         value:''
       },{
         title:'报修时间',
+        value:''
+      },{
+        title:'预约时间',
+        value:''
+      },{
+        title:'故障类型',
         value:''
       },{
         title:'故障地址',
@@ -112,10 +130,10 @@ export default {
         title:'维修内容',
         value:''
       }
-      // ,{
-      //   title:'维修图片',
-      //   value:[]
-      // }
+      ,{
+        title:'维修图片',
+        value:[]
+      }
       ]
     }
   },
@@ -123,7 +141,7 @@ export default {
     // console.log(utils)
     // debugger;
     document.title = '报修详情';
-
+    window.userInfo = JSON.parse(localStorage.getItem('_userInfo'));
     var param = {
       id:''
     };
@@ -152,15 +170,19 @@ export default {
     }
   },
   methods:{
+    previewImg(src){
+      window.location.href = src;
+    },
     gotoCancel(){
       var param = {
         id:this.id,
         ownerId:window.userInfo.ownerId
       };
       var that = this;
-      utils.Get('postWyserviceCancel',param).then(function(res){
+      utils.Post('postWyserviceCancel',param).then(function(res){
         if (res.data.code ==0) {
           Toast('撤销成功~');
+          window.history.go(-1);
         }else {
           Toast('撤销失败~');
         }
@@ -172,17 +194,25 @@ export default {
         ownerId:window.userInfo.ownerId
       };
       var that = this;
-      utils.Get('WyServiceSure',param).then(function(res){
+      utils.Post('WyServiceSure',param).then(function(res){
         if (res.data.code ==0) {
-          Toast('撤销成功~');
+          Toast('确认成功~');
+          window.history.go(-1);
         }else {
-          Toast('撤销失败~');
+          Toast('确认失败~');
         }
       });
     },
-    gotoRate(){
+    gotoRate(item){
       this.$router.push({
         name:'fixRate',
+        params:{
+          id:this.id,
+          serviceStatus:this.serviceStatus,
+          status:this.status,
+          serviceTypeName:this.serviceTypeName,
+          serviceContent:this.serviceContent
+        }
       })
     },
 
@@ -191,10 +221,15 @@ export default {
       utils.Get('getWyServiceInfo',param).then(function(res){
         if (res.data.code === 0 && res.data.wyService) {
 
-          that.phone = 'tel:'+res.data.wyService.ownerMobile;
-          that.status = res.data.wyService.serviceStatusName;
-          that.steps = res.data.wyService.serviceRecordList;
-          that.serviceStatus = res.data.wyService.serviceStatus;
+          that.phone = 'tel:'+res.data.wyService.ownerMobile||'';
+          that.status = res.data.wyService.serviceStatusName||'';
+          that.steps = res.data.wyService.serviceRecordList||'';
+          that.serviceStatus = res.data.wyService.serviceStatus||'';
+          that.evaluateContent = res.data.wyService.evaluateContent||'';
+          that.evaluateTime = res.data.wyService.evaluateTime||'';
+          that.evaluateLevel = res.data.wyService.evaluateLevel||'';
+          that.serviceContent = res.data.wyService.serviceContent||'';
+          that.serviceTypeName = res.data.wyService.serviceTypeName||'';
 
           that.$set(that.options,0,{
             title:'报修单号',
@@ -212,19 +247,23 @@ export default {
             title:'报修时间',
             value:res.data.wyService.createDate
           });
-          // that.$set(that.options,4,{
-          //   title:'预约时间',
-          //   value:res.data.wyService.doorDate+' '+res.data.wyService.beginTime+'-'+res.data.wyService.endTime
-          // });
           that.$set(that.options,4,{
+            title:'预约时间',
+            value:res.data.wyService.doorDate+' '+res.data.wyService.beginTime+'-'+res.data.wyService.endTime
+          });
+          that.$set(that.options,5,{
+            title:'故障类型',
+            value:res.data.wyService.serviceTypeName,
+          });
+          that.$set(that.options,6,{
             title:'报修地址',
             value:res.data.wyService.serviceAddress
           });
-          that.$set(that.options,5,{
+          that.$set(that.options,7,{
             title:'报修内容',
             value:res.data.wyService.serviceContent
           });
-          that.$set(that.options,6,{
+          that.$set(that.options,8,{
             title:'故障图片',
             value:(res.data.wyService.imgUrl && res.data.wyService.imgUrl.split(','))||''
           });
@@ -246,7 +285,10 @@ export default {
             title:'维修内容',
             value:res.data.wyService.repairContent
           });
-
+          that.$set(that.problemOptions,4,{
+            title:'维修图片',
+            value:res.data.wyService.repairImgUrl
+          });
 
           // that.options = [];
           // for (var key in res.data.wyService) {
@@ -376,12 +418,19 @@ display: inline-block;
     top: 2px;
     left: 6px;
     /* overflow: hidden; */
-    width: 200px;
+    /*width: 200px;*/
+    width: calc(100% - 70px);
 }
 .wy-fix-det-desitemimg {
   width: 50px;
   height: 50px;
   display: inline-block;
   margin-right: 4px;
+}
+    .wy-sug-button{
+  font-size: 16px;
+      width: 90%;
+    margin: 0 auto 32px auto;
+    display: block;
 }
 </style>

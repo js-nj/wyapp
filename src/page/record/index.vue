@@ -229,21 +229,25 @@ export default {
     postCreateOrder(){
       var param = {
         ids:'',
-        redirectUrl:'http://www.waiqinzx.com/index.html#/recResult'
+        redirectUrl:'http://www.waiqinzx.com/index.html#/recSucList'
       };
-      this.options.forEach(function(item){
-        if (item.value[0]) {
-          param.ids = param.ids + item.id + ',';
-        }
-      });
-
-      utils.Get('postCreateOrder',param).then(function(res){
-        if (res.data.code === 0 && res.data.result.paymentUrl) {
-          window.location.href = res.data.result.paymentUrl;
-        }else {
-          Toast('缴费失败~')
-        }
-      });
+      if (this.options.length>0) {
+        this.options.forEach(function(item){
+          if (item.value[0]) {
+            param.ids = param.ids + item.id + ',';
+          }
+        });
+        param.ids = param.ids.slice(0,param.ids.length -1);
+        utils.Get('postCreateOrder',param).then(function(res){
+          if (res.data.code === 0 && res.data.result.paymentUrl) {
+            window.location.href = res.data.result.paymentUrl+'&openId='+window.open_id;
+          }else {
+            Toast('缴费失败~')
+          }
+        });
+      }else {
+        Toast('请至少选择一单~')
+      }
     },
     gotoRecDetail(item){
       this.$router.push({
@@ -283,7 +287,7 @@ export default {
     width: 100%;
     bottom: 0;
 }
-.wy-rec-button{
+.wy-rec-button.mint-button{
   font-size: 16px;
     padding: 0 16px;
     height: 34px;
@@ -336,5 +340,8 @@ background-image:none;
 }
 .wy-rec-mt-8 {
   margin-top: 8px;
+}
+.wy-rec .mint-tab-item-label {
+  font-size: 16px;
 }
 </style>

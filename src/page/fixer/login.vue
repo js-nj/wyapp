@@ -157,9 +157,11 @@ body {
   margin: 0;
   font-size: 16px;
   font-family: PingFang-SC;
-  background-color: #fff;
+  /*background-color: #fff;*/
 }
-
+.jy-login {
+  background: #fff;
+}
 .jy-log {
   position: relative;
   text-align: left;

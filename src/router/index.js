@@ -4,7 +4,7 @@ import index from '@/page/index'
 import detail from '@/page/detail'
 import recIndex from '@/page/record/index'
 import recDetail from '@/page/record/detail'
-import recResult from '@/page/record/result'
+import recSucList from '@/page/record/suclist'
 import fixIndex from '@/page/fix/index'
 import fixList from '@/page/fix/list'
 import fixDetail from '@/page/fix/detail'
@@ -37,9 +37,9 @@ export default new Router({
     name: 'recDetail',
     component: recDetail
   }, {
-    path: '/recResult',
-    name: 'recResult',
-    component: recResult
+    path: '/recSucList',
+    name: 'recSucList',
+    component: recSucList
   }, {
     path: '/fixIndex',
     name: 'fixIndex',

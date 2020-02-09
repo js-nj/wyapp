@@ -17,15 +17,19 @@
         <div>{{item.opinionNumber}}</div>
       </div>
       <div>
-        <span>房屋地址</span>
-        <div>{{item.place}}</div>
-      </div>
-      <div>
         <span>投诉内容</span>
         <div>{{item.opinionContent}}</div>
       </div>
       <div v-if="item.img">
         <img style="width: 60px;height:60px;" :src="item.img" />
+      </div>
+      <div>
+        <span>回复内容</span>
+        <div>{{item.returnContent}}</div>
+      </div>
+      <div>
+        <span>回复时间</span>
+        <div>{{item.updateDate}}</div>
       </div>
     </div>
   </div>
@@ -65,7 +69,7 @@ export default {
     [Button.name]:Button
   },
   created(){
-    document.title = '我的建议';
+    document.title = '我的投诉';
     this.$nextTick(function(){
         $('span','.wy-sug-typeIds').on('click', function (ele) {
             // debugger;

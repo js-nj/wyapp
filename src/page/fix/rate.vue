@@ -3,28 +3,28 @@
   <div class="wy-fix-rateItem" style="">
     <div class="wy-fix-rate-head">
       <img  style="width:20px;height:20px;" src="../../../static/images/wy/kjbx_tmp.png" />
-      <span class="wy-fix-rate-title">维修</span>
-      <label class="wy-fix-rate-status" style="color:#333;">已完成</label>
+      <span class="wy-fix-rate-title">{{serviceTypeName}}</span>
+      <label class="wy-fix-rate-status" style="color:#333;">{{status}}</label>
     </div>
     <div class="wy-fix-rate-content">
-      3楼洗脸台下面的开关坏了，需要师傅重新换一下，材料已经买好，请师傅上户处理。
+      {{serviceContent}}
     </div>
   </div>
   <div class="wy-fix-rateItem" style="">
     <div class="wy-fix-rate-head">
       <span class="wy-fix-rate-title">评价</span>
       <div class="wy-fix-rate-levs">
-        <label class="wy-fix-rate-lev wy-fix-ratelev-select" level="hp">
+        <label class="wy-fix-rate-lev wy-fix-ratelev-select" level="1">
           <img class="fix-img-rate" src="../../../static/images/wy/pj_hp.png" />
           <img class="fix-img-rate-select" src="../../../static/images/wy/pj_hp_select.png" />
           <span class="fix-rate-span">好评</span>
         </label>
-        <label class="wy-fix-rate-lev" level="zp">
+        <label class="wy-fix-rate-lev" level="2">
           <img class="fix-img-rate" src="../../../static/images/wy/pj_zp.png" />
           <img class="fix-img-rate-select" src="../../../static/images/wy/pj_zp_select.png" />
           <span class="fix-rate-span">中评</span>
         </label>
-        <label class="wy-fix-rate-lev" level="cp">
+        <label class="wy-fix-rate-lev" level="3">
           <img class="fix-img-rate" src="../../../static/images/wy/pj_cp.png" />
           <img class="fix-img-rate-select" src="../../../static/images/wy/pj_cp_select.png" />
           <span class="fix-rate-span">差评</span>
@@ -54,13 +54,18 @@ export default {
   data () {
     return {
       introduction:'',
-      level:'hp'
+      level:'hp',
+      serviceStatus:this.$route.params.serviceStatus,
+      status:this.$route.params.status,
+      serviceContent:this.$route.params.serviceContent,
+      serviceTypeName:this.$route.params.serviceTypeName,
     }
 
   },
   created(){
     var that = this;
     document.title = '报修评价';
+    // param.id = this.$route.params.id;
     this.$nextTick(()=>{
       $('.wy-fix-rate-lev','.wy-fix-rate-levs').on('click', function (ele) {
             // debugger;
@@ -72,14 +77,15 @@ export default {
   methods:{
     postWyserviceEvaluate(){
       var param = {
-        id : '' ,
+        id : this.$route.params.id ,
         evaluateLevel : this.level ,
         evaluateContent : this.introduction ,
-        ownerId : '业主ID'
+        ownerId : window.userInfo.ownerId
       };
       utils.Post('postWyserviceEvaluate',param).then(function(res){
         if (res.data.code == 0) {
           Toast('评价成功');
+          window.history.go(-1);
         }
       });
     }

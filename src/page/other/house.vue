@@ -2,6 +2,7 @@
 <div class="wy-houses">
   <div class="wy-house" v-for="item in options">
     {{item.communityName +'&nbsp;&nbsp;'+ item.address}}
+    <!-- {{item.address}} -->
   </div>
 </div>
 
@@ -20,7 +21,7 @@ export default {
   },
   created(){
     document.title = '我的房屋';
-    this.options = window.userInfo.communityEntityList;
+    this.options = window.userInfo.wyOwnerHouseEntityList;
   },
   methods:{
 
@@ -38,5 +39,9 @@ export default {
   padding:8px 16px;
   text-align: left;
   margin-bottom: 4px;
+  border-bottom: solid 1px #d9d9d9;
+}
+.wy-houses .wy-house:last-child {
+  border-bottom: none;
 }
 </style>

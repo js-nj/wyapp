@@ -78,7 +78,9 @@ export default {
       var param = {
         page:1,
         limit:10,
-        propertyId:window.userInfo.propertyId
+        categoryId:'2',
+        propertyId:window.userInfo.propertyId,
+        ownerId:window.userInfo.ownerId,
       };
       if (id) {
         param.categoryId = id;

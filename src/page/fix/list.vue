@@ -1,6 +1,6 @@
 <template>
 <div class="wy-fix">
-    <div id="bxjl">
+    <div id="bxjl" style="background-color:#fff;">
         <mt-navbar v-model="listStatus">
           <mt-tab-item id="doing">处理中</mt-tab-item>
           <mt-tab-item id="done">已完成</mt-tab-item>
@@ -9,22 +9,42 @@
         <!-- tab-container -->
         <mt-tab-container v-model="listStatus">
           <mt-tab-container-item id="doing">
-            <div class="wy-fix-list-item" v-for="item in options">
-              <mt-cell :title="item.typeName">
-                <span :class="{'wy-color-blue':item.status=='待受理'||'待确认'}">{{item.serviceStatusName}}</span>
-                <img slot="icon" v-if="item.typeId =='1'" src="../../../static/images/wy/ggbx.png" width="24" height="24">
-                <img slot="icon" v-else src="../../../static/images/wy/jtbx.png" width="24" height="24">
-              </mt-cell>
-              <mt-cell :title="item.serviceAddress">
-                <img slot="icon" src="../../../static/images/wy/lddy.png" width="24" height="24">
-              </mt-cell>
-              <mt-cell :title="item.createDate ">
-                <img slot="icon" src="../../../static/images/wy/bxsj.png" width="24" height="24">
-              </mt-cell>
-              <mt-cell :title="item.serviceContent " value="详情" is-link :to="'./fixDetail?id='+item.id">
-                <img slot="icon" src="../../../static/images/wy/bxnr.png" width="24" height="24" >
-              </mt-cell>
+            <div class="wy-fix-list-items">
+              <div class="wy-fix-list-item" v-for="item in options">
+                <!-- <mt-cell :title="item.typeName">
+                  <span :class="{'wy-color-blue':item.status=='待受理'||'待确认'}">{{item.serviceStatusName}}</span>
+                  <img slot="icon" v-if="item.typeId =='1'" src="../../../static/images/wy/ggbx.png" width="24" height="24">
+                  <img slot="icon" v-else src="../../../static/images/wy/jtbx.png" width="24" height="24">
+                </mt-cell>
+                <mt-cell :title="item.serviceAddress">
+                  <img slot="icon" src="../../../static/images/wy/lddy.png" width="24" height="24">
+                </mt-cell>
+                <mt-cell :title="item.createDate ">
+                  <img slot="icon" src="../../../static/images/wy/bxsj.png" width="24" height="24">
+                </mt-cell>
+                <mt-cell :title="item.serviceContent " value="详情" is-link :to="'./fixDetail?id='+item.id">
+                  <img slot="icon" src="../../../static/images/wy/bxnr.png" width="24" height="24" >
+                </mt-cell> -->
+
+                  <div class="wy-fix-list-item-img" style="">
+                    <img  style="width:35px;height:35px;" src="../../../static/images/wy/kjbx_tmp.png" />
+                  </div>
+                  <div class="wy-fix-list-item-body" style="">
+                    <div style="font-size:14px;color:#333;">{{item.serviceAddress}}</div>
+                    <div style="color:#444;">{{item.typeName+'-'+item.serviceTypeName}}</div>
+                    <div style="position:relative;">
+                      <span style="color:#999;">{{item.createDate}}</span>
+                      <label class="wy-fix-list-item-more" @click="gotoDetail(item.id)" style="">
+                        <span v-if="item.serviceStatusName && item.serviceStatusName.indexOf('待')>-1" style="color: #3789F9;">{{item.serviceStatusName}}</span>
+                        <span v-else style="color: #999;">{{item.serviceStatusName}}</span>
+                        <i class="mint-cell-allow-right"></i>
+                      </label>
+                    </div>
+                  </div>
+
+              </div>
             </div>
+
             <div v-if="options.length==0" style="padding:16px 0;">
               <img style="width:128px;height:103px;" src="../../../static/images/wy/none.png" />
               <div style="color:#ADB7BA;font-size:15px;">暂无内容</div>
@@ -32,7 +52,22 @@
           </mt-tab-container-item>
           <mt-tab-container-item id="done">
             <div class="wy-fix-list-item" v-for="item in doneOptions">
-              <mt-cell :title="item.typeName">
+              <div class="wy-fix-list-item-img" style="">
+                <img  style="width:35px;height:35px;" src="../../../static/images/wy/kjbx_tmp.png" />
+              </div>
+              <div class="wy-fix-list-item-body" style="">
+                <div style="font-size:14px;color:#333;">{{item.serviceAddress}}</div>
+                <div style="color:#444;">{{item.typeName+'-'+item.serviceTypeName}}</div>
+                <div style="position:relative;">
+                  <span style="color:#999;">{{item.createDate}}</span>
+                  <label class="wy-fix-list-item-more" @click="gotoDetail(item.id)" style="">
+                    <span v-if="item.serviceStatusName && item.serviceStatusName.indexOf('待')>-1" style="color: #3789F9;">{{item.serviceStatusName}}</span>
+                    <span v-else style="color: #999;">{{item.serviceStatusName}}</span>
+                    <i class="mint-cell-allow-right"></i>
+                  </label>
+                </div>
+              </div>
+              <!-- <mt-cell :title="item.typeName">
                 <span :class="{'wy-color-blue':item.status=='待受理'||'待确认'}">{{item.serviceStatusName}}</span>
 
                 <img slot="icon" v-if="item.typeId =='1'" src="../../../static/images/wy/ggbx.png" width="24" height="24">
@@ -46,7 +81,7 @@
               </mt-cell>
               <mt-cell :title="item.serviceContent " value="详情" is-link :to="'./fixDetail?id='+item.id">
                 <img slot="icon" src="../../../static/images/wy/bxnr.png" width="24" height="24" >
-              </mt-cell>
+              </mt-cell> -->
             </div>
             <div v-if="doneOptions.length==0" style="padding:16px 0;">
               <img style="width:128px;height:103px;" src="../../../static/images/wy/none.png" />
@@ -94,39 +129,15 @@ export default {
       selected:'kjbx',
       listStatus:'doing',
       fixTypes:'public',
-      options:[{
-        name:'公共报修',
-        status:'待受理',
-        place:'龙湖 22栋1605',
-        time:'2019-01-07 12:23',
-        content:'公共电梯'
-      },{
-        name:'个人报修',
-        status:'已受理',
-        place:'龙湖 22栋1605',
-        time:'2019-01-07 12:23',
-        content:'马桶堵了'
-      }],
-      doneOptions:[{
-        name:'公共报修',
-        status:'已完成',
-        place:'龙湖 22栋1605',
-        time:'2019-01-07 12:23',
-        content:'公共电梯'
-      },{
-        name:'个人报修',
-        status:'已完成',
-        place:'龙湖 22栋1605',
-        time:'2019-01-07 12:23',
-        content:'马桶堵了'
-      }],
+      options:[],
+      doneOptions:[],
       ggfixplace:'',
       ggintroduction:'',
       ggproblem:'',
       gguploadImgs:[],
       ggslots: [
         {
-          values: [{name:'马桶坏了',id:'12'},{name:'马桶坏了2',id:'122'},],
+          values: [],
         }
       ],
       ggchooseResult:{},
@@ -137,7 +148,7 @@ export default {
       gruploadImgs:[],
       grslots: [
         {
-          values: [{name:'马桶坏了',id:'12'},{name:'马桶坏了2',id:'122'},],
+          values: [],
         }
       ],
       grchooseResult:{},
@@ -149,6 +160,7 @@ export default {
     // this.$nextTick(() => {
     //     this.$refs['privateDiv'].style.height = (document.body.clientHeight - 90) + 'px';
     // });
+    window.userInfo = JSON.parse(localStorage.getItem('_userInfo'));
     document.title = '我的报修';
     this.getWyserviceListIn();
     this.getWyserviceListComplete();
@@ -168,6 +180,9 @@ export default {
     }
   },
   methods:{
+    gotoDetail(id){
+      window.location.href = window.location.origin+window.location.pathname + '#/fixDetail?id='+id;
+    },
     getWyserviceListIn(){
       var param = {
         ownerId:window.userInfo.ownerId,
@@ -273,14 +288,15 @@ export default {
 }
 
 .wy-fix {
- height: calc(100% - 16px);
+  height: calc(100%);
+ /*height: calc(100% - 16px);*/
     background: #fff;
     padding-top: 16px;
 }
 .wy-fix .mint-navbar{
   width: 200px;
     margin: 0px auto 16px auto;
-    border: solid 1px #26a2ff;
+    border: solid 0.5px #26a2ff;
     border-radius: 42px;
     /*background: #ddd;*/
 }
@@ -289,6 +305,8 @@ export default {
   background-color: #26a2ff;
   border-bottom: none;
   margin-bottom: 0px;
+      position: relative;
+    right: -1px;
 }
 .wy-fix .mint-navbar .mint-tab-item {
   padding: 11.5px;
@@ -314,7 +332,10 @@ color: #26a2ff;
 }
 .wy-fix-list-item {
 margin-top: 8px;
-
+border-bottom: solid 1px #ddd;
+position: relative;
+text-align: left;
+    padding-left: 8px;
 }
 .wy-fix-list-item .mint-cell img {
   height: 20px;
@@ -351,7 +372,7 @@ color: #333;
   width:100%
 }
 .wy-select-problem .mint-cell-title{
-  padding-left: 20px;
+  /*padding-left: 20px;*/
   text-align: left;
 }
 .upload_item {
@@ -434,5 +455,32 @@ font-size: 14px;
 .wy-fix-tabbar .mint-tab-item-icon img{
   width: 20px;
   height: 20px;
+}
+.wy-fix-list-items {
+  padding: 0 16px;
+}
+.wy-fix-list-item-img {
+display:inline-block;vertical-align:top;position: relative;top: 16px;
+}
+.wy-fix-list-item-body {
+display:inline-block;vertical-align:top;padding-left: 16px;
+font-size: 12px;
+width: calc(100% - 62px);
+}
+.wy-fix-list-item-body>div {
+      padding: 0px 0 4px 0;
+}
+.wy-fix-list-item-more {
+    display: inline-block;
+    /* padding-left: 48px; */
+    position: absolute;
+
+    width: 40px;
+    right: 0px;
+}
+.wy-fix-list-item-more .mint-cell-allow-right::after{
+right: -12px;
+width: 7px;
+    height: 7px;
 }
 </style>
