@@ -54,7 +54,7 @@ export default {
   data () {
     return {
       introduction:'',
-      level:'hp',
+      level:'1',
       serviceStatus:this.$route.params.serviceStatus,
       status:this.$route.params.status,
       serviceContent:this.$route.params.serviceContent,

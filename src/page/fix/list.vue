@@ -9,23 +9,9 @@
         <!-- tab-container -->
         <mt-tab-container v-model="listStatus">
           <mt-tab-container-item id="doing">
-            <div class="wy-fix-list-items">
-              <div class="wy-fix-list-item" v-for="item in options">
-                <!-- <mt-cell :title="item.typeName">
-                  <span :class="{'wy-color-blue':item.status=='待受理'||'待确认'}">{{item.serviceStatusName}}</span>
-                  <img slot="icon" v-if="item.typeId =='1'" src="../../../static/images/wy/ggbx.png" width="24" height="24">
-                  <img slot="icon" v-else src="../../../static/images/wy/jtbx.png" width="24" height="24">
-                </mt-cell>
-                <mt-cell :title="item.serviceAddress">
-                  <img slot="icon" src="../../../static/images/wy/lddy.png" width="24" height="24">
-                </mt-cell>
-                <mt-cell :title="item.createDate ">
-                  <img slot="icon" src="../../../static/images/wy/bxsj.png" width="24" height="24">
-                </mt-cell>
-                <mt-cell :title="item.serviceContent " value="详情" is-link :to="'./fixDetail?id='+item.id">
-                  <img slot="icon" src="../../../static/images/wy/bxnr.png" width="24" height="24" >
-                </mt-cell> -->
-
+            <div v-if="options.length>0" class="wy-fix-list-items" :style="{'height':newsHeightDoing,'overflow':'scroll'}">
+              <mt-loadmore :bottom-method="loadBottomDoing" :bottom-all-loaded="allLoadedDoing" ref="wyfixDoingloadmore">
+                <div class="wy-fix-list-item" v-for="item in options" :show="item.show">
                   <div class="wy-fix-list-item-img" style="">
                     <img  style="width:35px;height:35px;" src="../../../static/images/wy/kjbx_tmp.png" />
                   </div>
@@ -34,54 +20,42 @@
                     <div style="color:#444;">{{item.typeName+'-'+item.serviceTypeName}}</div>
                     <div style="position:relative;">
                       <span style="color:#999;">{{item.createDate}}</span>
-                      <label class="wy-fix-list-item-more" @click="gotoDetail(item.id)" style="">
+                      <label class="wy-fix-list-item-more" @click="gotoDetail(item.id,item.typeId)" style="">
                         <span v-if="item.serviceStatusName && item.serviceStatusName.indexOf('待')>-1" style="color: #3789F9;">{{item.serviceStatusName}}</span>
                         <span v-else style="color: #999;">{{item.serviceStatusName}}</span>
                         <i class="mint-cell-allow-right"></i>
                       </label>
                     </div>
                   </div>
-
-              </div>
+                </div>
+              </mt-loadmore>
             </div>
-
             <div v-if="options.length==0" style="padding:16px 0;">
               <img style="width:128px;height:103px;" src="../../../static/images/wy/none.png" />
               <div style="color:#ADB7BA;font-size:15px;">暂无内容</div>
             </div>
           </mt-tab-container-item>
           <mt-tab-container-item id="done">
-            <div class="wy-fix-list-item" v-for="item in doneOptions">
-              <div class="wy-fix-list-item-img" style="">
-                <img  style="width:35px;height:35px;" src="../../../static/images/wy/kjbx_tmp.png" />
-              </div>
-              <div class="wy-fix-list-item-body" style="">
-                <div style="font-size:14px;color:#333;">{{item.serviceAddress}}</div>
-                <div style="color:#444;">{{item.typeName+'-'+item.serviceTypeName}}</div>
-                <div style="position:relative;">
-                  <span style="color:#999;">{{item.createDate}}</span>
-                  <label class="wy-fix-list-item-more" @click="gotoDetail(item.id)" style="">
-                    <span v-if="item.serviceStatusName && item.serviceStatusName.indexOf('待')>-1" style="color: #3789F9;">{{item.serviceStatusName}}</span>
-                    <span v-else style="color: #999;">{{item.serviceStatusName}}</span>
-                    <i class="mint-cell-allow-right"></i>
-                  </label>
+            <div v-if="doneOptions.length>0" class="wy-fix-list-items" :style="{'height':newsHeightDone,'overflow':'scroll'}">
+              <mt-loadmore :bottom-method="loadBottomDone" :bottom-all-loaded="allLoadedDone" ref="wyfixDoneloadmore">
+                <div class="wy-fix-list-item" v-for="item in doneOptions" :show="item.show">
+                  <div class="wy-fix-list-item-img" style="">
+                    <img  style="width:35px;height:35px;" src="../../../static/images/wy/kjbx_tmp.png" />
+                  </div>
+                  <div class="wy-fix-list-item-body" style="">
+                    <div style="font-size:14px;color:#333;">{{item.serviceAddress}}</div>
+                    <div style="color:#444;">{{item.typeName+'-'+item.serviceTypeName}}</div>
+                    <div style="position:relative;">
+                      <span style="color:#999;">{{item.createDate}}</span>
+                      <label class="wy-fix-list-item-more" @click="gotoDetail(item.id,item.typeId)" style="">
+                        <span v-if="item.serviceStatusName && item.serviceStatusName.indexOf('待')>-1" style="color: #3789F9;">{{item.serviceStatusName}}</span>
+                        <span v-else style="color: #999;">{{item.serviceStatusName}}</span>
+                        <i class="mint-cell-allow-right"></i>
+                      </label>
+                    </div>
+                  </div>
                 </div>
-              </div>
-              <!-- <mt-cell :title="item.typeName">
-                <span :class="{'wy-color-blue':item.status=='待受理'||'待确认'}">{{item.serviceStatusName}}</span>
-
-                <img slot="icon" v-if="item.typeId =='1'" src="../../../static/images/wy/ggbx.png" width="24" height="24">
-                <img slot="icon" v-else src="../../../static/images/wy/jtbx.png" width="24" height="24">
-              </mt-cell>
-              <mt-cell :title="item.serviceAddress">
-                <img slot="icon" src="../../../static/images/wy/lddy.png" width="24" height="24">
-              </mt-cell>
-              <mt-cell :title="item.createDate ">
-                <img slot="icon" src="../../../static/images/wy/bxsj.png" width="24" height="24">
-              </mt-cell>
-              <mt-cell :title="item.serviceContent " value="详情" is-link :to="'./fixDetail?id='+item.id">
-                <img slot="icon" src="../../../static/images/wy/bxnr.png" width="24" height="24" >
-              </mt-cell> -->
+              </mt-loadmore>
             </div>
             <div v-if="doneOptions.length==0" style="padding:16px 0;">
               <img style="width:128px;height:103px;" src="../../../static/images/wy/none.png" />
@@ -95,7 +69,7 @@
 </template>
 
 <script>
-import { Navbar, TabItem,Tabbar,TabContainer,TabContainerItem,Cell,Checklist,Actionsheet,Field,Picker,Popup,Button,DatetimePicker,Toast} from 'mint-ui';
+import { Navbar, TabItem,Tabbar,TabContainer,TabContainerItem,Toast,Loadmore} from 'mint-ui';
 // import utils from '../utils.js';
 import * as utils from '../../utils';
 import $ from "jquery";
@@ -106,21 +80,22 @@ export default {
       [TabItem.name]: TabItem,
       [TabContainer.name]: TabContainer,
       [TabContainerItem.name]: TabContainerItem,
-      [Cell.name]: Cell,
-      [Checklist.name]: Checklist,
       [Tabbar.name]: Tabbar,
-      [Actionsheet.name]: Actionsheet,
-      [Field.name]: Field,
-      [Picker.name]: Picker,
-      [Popup.name]: Popup,
-      [Button.name]: Button,
       [Toast.name]: Toast,
-      [DatetimePicker.name]: DatetimePicker,
+      [Loadmore.name]: Loadmore,
   },
   data () {
     return {
-      msg: 'Welcome to Your Vue.js App',
-      // problemTime:'',
+      allLoadedDoing:false,
+      totalCountDoing:0,
+      currPageDoing:1,
+      newsHeightDoing:(document.documentElement.clientHeight - 53)+'px',
+
+      allLoadedDone:false,
+      totalCountDone:0,
+      currPageDone:1,
+      newsHeightDone:(document.documentElement.clientHeight - 53)+'px',
+
       username:'',
       phone:'',
       problemday:'',
@@ -129,7 +104,15 @@ export default {
       selected:'kjbx',
       listStatus:'doing',
       fixTypes:'public',
-      options:[],
+      options:[{
+          show:'hide',
+          serviceAddress:'',
+          typeName:'',
+          createDate:'',
+          createDate:'',
+          serviceTypeName:'',
+          serviceStatusName:''
+        }],
       doneOptions:[],
       ggfixplace:'',
       ggintroduction:'',
@@ -162,8 +145,11 @@ export default {
     // });
     window.userInfo = JSON.parse(localStorage.getItem('_userInfo'));
     document.title = '我的报修';
-    this.getWyserviceListIn();
-    this.getWyserviceListComplete();
+    var wyFixList = sessionStorage.getItem('wyFixList');
+    if (wyFixList) {
+      this.listStatus = wyFixList;
+    }
+
   },
   watch:{
     ggchooseResult(val){
@@ -177,22 +163,69 @@ export default {
         console.log('val',val)
         this.grproblem = val.name;
       }
+    },
+    listStatus(val){
+      sessionStorage.setItem('wyFixList',val);
+      if (val == 'done' && this.doneOptions.length == 0) {
+        this.doneOptions.push({
+          show:'hide',
+          serviceAddress:'',
+          typeName:'',
+          createDate:'',
+          createDate:'',
+          serviceTypeName:'',
+          serviceStatusName:''
+        });
+        // this.doneOptions.pop();
+      }else if((val == 'doing' && this.options.length == 0)) {
+        this.options.push({
+          show:'hide',
+          serviceAddress:'',
+          typeName:'',
+          createDate:'',
+          createDate:'',
+          serviceTypeName:'',
+          serviceStatusName:''
+        });
+      }
     }
   },
   methods:{
-    gotoDetail(id){
-      window.location.href = window.location.origin+window.location.pathname + '#/fixDetail?id='+id;
+    loadBottomDoing(){
+      console.log('doing~~~~')
+      this.getWyserviceListIn();
+    },
+    loadBottomDone(){
+      this.getWyserviceListComplete();
+    },
+    gotoDetail(id,from1){
+      window.location.href = window.location.origin+window.location.pathname + '#/fixDetail?from='+from1+'&id='+id;
     },
     getWyserviceListIn(){
+      var that = this;
       var param = {
         ownerId:window.userInfo.ownerId,
-        page:1,
+        page:that.currPageDoing,
         limit:10
       };
-      var that = this;
+
       utils.Get('getWyserviceListIn',param).then(function(res){
         if (res.data.code ==0) {
-          that.options = res.data.page.list;
+          if (that.currPageDoing == 1) {
+            that.options = res.data.page.list;
+          }else {
+            that.options = that.options.concat(res.data.page.list)
+          }
+          that.totalCountDoing = res.data.page.totalCount;
+          if ((that.totalCountDoing == that.options.length) || that.currPageDoing == that.totalPageDoing) {
+            that.allLoadedDoing = true;// 若数据已全部获取完毕
+            that.$refs.wyfixDoingloadmore && that.$refs.wyfixDoingloadmore.onBottomLoaded();
+          }else {
+            that.allLoadedDoing = false;
+            that.currPageDoing++
+            that.$refs.wyfixDoingloadmore && that.$refs.wyfixDoingloadmore.onBottomLoaded();
+          }
+          // that.options = res.data.page.list;
         }else {
           Toast('获取数据失败');
         }
@@ -200,15 +233,30 @@ export default {
       });
     },
     getWyserviceListComplete(){
+      var that = this;
       var param = {
         ownerId:window.userInfo.ownerId,
-        page:1,
+        page:that.currPageDone,
         limit:10
       };
-      var that = this;
+
       utils.Get('getWyserviceListComplete',param).then(function(res){
         if (res.data.code ==0) {
-          that.doneOptions = res.data.page.list;
+          if (that.currPageDone == 1) {
+            that.doneOptions = res.data.page.list;
+          }else {
+            that.doneOptions = that.doneOptions.concat(res.data.page.list)
+          }
+          that.totalCountDone = res.data.page.totalCount;
+          if ((that.totalCountDone == that.doneOptions.length) || that.currPageDone == that.totalPageDone) {
+            that.allLoadedDone = true;// 若数据已全部获取完毕
+            that.$refs.wyfixDoneloadmore && that.$refs.wyfixDoneloadmore.onBottomLoaded();
+          }else {
+            that.allLoadedDone = false;
+            that.currPageDone++
+            that.$refs.wyfixDoneloadmore && that.$refs.wyfixDoneloadmore.onBottomLoaded();
+          }
+          // that.doneOptions = res.data.page.list;
         }else {
           Toast('获取数据失败');
         }
@@ -281,6 +329,7 @@ export default {
     width: 60px;
     height: 60px;
     left: 0px;
+    top:0;
     opacity: 0;
 }
 .wy-fix-ggform input.mint-field-core {
@@ -288,7 +337,7 @@ export default {
 }
 
 .wy-fix {
-  height: calc(100%);
+  /*height: calc(100%);*/
  /*height: calc(100% - 16px);*/
     background: #fff;
     padding-top: 16px;
@@ -306,7 +355,7 @@ export default {
   border-bottom: none;
   margin-bottom: 0px;
       position: relative;
-    right: -1px;
+    /*right: -1px;*/
 }
 .wy-fix .mint-navbar .mint-tab-item {
   padding: 11.5px;
@@ -336,6 +385,9 @@ border-bottom: solid 1px #ddd;
 position: relative;
 text-align: left;
     padding-left: 8px;
+}
+.wy-fix-list-item[show="hide"] {
+  display: none;
 }
 .wy-fix-list-item .mint-cell img {
   height: 20px;

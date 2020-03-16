@@ -6,8 +6,8 @@
   </mt-navbar>
 
   <!-- tab-container -->
-  <mt-tab-container v-model="selected" style="padding-bottom: 64px;"><!-- height:calc(100% - 46px); -->
-    <mt-tab-container-item id="1">
+  <mt-tab-container v-model="selected" ><!-- height:calc(100% - 46px); -->
+    <mt-tab-container-item id="1" style="padding-bottom: 64px;">
       <div v-if="options.length!=0">
         <div class="wy-rec-item" v-for="item in options">
           <mt-checklist
@@ -16,11 +16,11 @@
           </mt-checklist>
           <div class="wy-rec-item-des">
             <div class="wy-rec-item-time">
-              <span>时间</span>
+              <span>费用周期</span>
               <div style="padding-top:2px;">{{item.time}}</div>
             </div>
             <div class="wy-rec-item-money">
-              <span>总金额</span>
+              <span>金额</span>
               <div style="padding-top:2px;">{{item.money}}</div>
             </div>
             <!-- <div class="wy-rec-icon" >></div> -->
@@ -48,20 +48,24 @@
         <div style="color:#ADB7BA;font-size:15px;">暂无内容</div>
       </div>
     </mt-tab-container-item>
-    <mt-tab-container-item id="2">
-      <div class="wy-rec-item wy-rec-mt-8" v-for="item in doneoptions">
-        <div class="wy-rec-item-title">{{item.options[0].label}}</div>
-        <div class="wy-rec-item-des">
-          <div class="wy-rec-item-time">
-            <span>时间</span>
-            <div style="padding-top:2px;">{{item.time}}</div>
+    <mt-tab-container-item id="2" class="wy-rec-index-done-tabcon">
+      <div v-if="doneoptions.length>0" :style="{'height':newsHeight,'overflow':'scroll'}">
+        <mt-loadmore :bottom-method="loadBottom" :bottom-all-loaded="allLoaded" ref="wyrecindexloadmore">
+          <div class="wy-rec-item wy-rec-mt-8" v-for="item in doneoptions" :show="item.show">
+            <div class="wy-rec-item-title">{{item.options[0].label}}</div>
+            <div class="wy-rec-item-des">
+              <div class="wy-rec-item-time">
+                <span>费用周期</span>
+                <div style="padding-top:2px;">{{item.time}}</div>
+              </div>
+              <div class="wy-rec-item-money">
+                <span>金额</span>
+                <div style="padding-top:2px;">{{item.money}}</div>
+              </div>
+              <div class="wy-rec-icon mint-cell-allow-right" @click="gotoRecDetail(item)" ></div>
+            </div>
           </div>
-          <div class="wy-rec-item-money">
-            <span>金额</span>
-            <div style="padding-top:2px;">{{item.money}}</div>
-          </div>
-          <div class="wy-rec-icon" @click="gotoRecDetail(item)">></div>
-        </div>
+        </mt-loadmore>
       </div>
       <div v-if="doneoptions.length==0" style="padding:16px 0;">
         <img style="width:128px;height:103px;" src="../../../static/images/wy/none.png" />
@@ -74,7 +78,7 @@
 </template>
 
 <script>
-import { Navbar, TabItem,TabContainer,TabContainerItem,Cell,Checklist,Radio,Button,Toast  } from 'mint-ui';
+import { Navbar, TabItem,TabContainer,TabContainerItem,Cell,Checklist,Radio,Button,Toast,Loadmore  } from 'mint-ui';
 import * as utils from '../../utils';
 export default {
   name: 'detail',
@@ -88,7 +92,7 @@ export default {
       [Radio.name]: Radio,
       [Button.name]: Button,
       [Toast.name]: Toast,
-
+      [Loadmore.name]: Loadmore,
   },
   data () {
     return {
@@ -120,15 +124,43 @@ export default {
         //   // disabled: true
         // },
       ],
-      doneoptions:[]
+      doneoptions:[],
+      allLoaded:false,
+      totalCount:0,
+      currPage:1,
+      newsHeight:(document.documentElement.clientHeight - 53)+'px',
     }
   },
   created(){
     document.title = '账单列表';
-    this.getPayList();
-
+    window.userInfo = JSON.parse(localStorage.getItem('_userInfo'));
+    this.getPayDoingList();
+    var wyRecIndex = sessionStorage.getItem('wyRecIndex');
+    if (wyRecIndex) {
+      this.selected = wyRecIndex;
+    }
   },
   watch:{
+    selected(val){
+      sessionStorage.setItem('wyRecIndex',val);
+      if (val == '1') {
+        this.getPayDoingList();
+      } else if(val == '2' && this.doneoptions.length == 0) {
+        this.doneoptions.push({
+          show:'hide',
+          time: '',
+          money: '',
+          id:'',
+          value:'',
+          options:[{
+            label: '',
+            value: '',
+          }]
+        });
+      }else if (val == '2' && this.doneoptions.length > 0) {
+        this.getPayDoneList();
+      }
+    },
     allCheck(val){
       // console.log(val)
       var that = this;
@@ -143,9 +175,11 @@ export default {
       }else {
         // console.log('else',this.options)
         this.options.forEach(function(item){
-          item.value.pop();
+          // item.value.pop();
+          item.value = [];
         });
         this.allMoney = 0;
+        console.log('else',this.options)
       }
     },
     options:{
@@ -166,18 +200,20 @@ export default {
     }
   },
   methods:{
-    getPayList(){
+    loadBottom(){
+      this.getPayDoneList();
+    },
+    getPayDoingList(){
       var param = {
         page:1,
-        limit:100,
+        limit:9999,
         ownerId:window.userInfo.ownerId,
-        // payStatus:1
+        payStatus:1
       };
       var that = this;
       utils.Get('getPayList',param).then(function(res){
         if (res.data.page.list && res.data.page.list.length>0) {
           that.options = [];
-          that.doneoptions = [];
           res.data.page.list.forEach(function(item){
               var objTmp ={
                 time: item.payStart+' - '+item.payEnd,
@@ -185,51 +221,65 @@ export default {
                 id:item.id,
                 value:[],
                 options:[{
-                  label: item.payItemName+'-'+item.communityName+'-'+item.payAddress,
+                  label: item.payItemName+'-'+item.payAddress,//item.payItemName+'-'+item.communityName+'-'+item.payAddress,
                   value: item.payMoney,
                 }]
               };
-              if (item.payStatus == 1) {
-                that.options.push(objTmp);
-              }else {
-                that.doneoptions.push(objTmp);
-              }
+              that.options.push(objTmp);
           });
-          // id (String, optional): id ,
-          // propertyId (String, optional): 物业ID ,
-          // companyId (String, optional): 公司ID ,
-          // communityId (String, optional): 楼宇ID ,
-          // ownerId (String, optional): 业主ID ,
-          // typeId (String, optional): 类型ID ,
-          // payNumber (String, optional): 单号 ,
-          // payAddress (String, optional): 位置 ,
-          // ownerName (String, optional): 联系人 ,
-          // ownerMobile (String, optional): 电话 ,
-          // needPay (String, optional): 应付时间 ,
-          // orderId (String, optional): 排序ID ,
-          // payStart (String, optional): 付款周期开始 ,
-          // payEnd (String, optional): 付款周期结束 ,
-          // payNeed (String, optional): 应付金额 ,
-          // payItem (String, optional): 应收项目 ,
-          // payType (String, optional): 收款方式 ,
-          // payTime (String, optional): 实收时间 ,
-          // payMoney (String, optional): 实收金额 ,
-          // waiverAmount (String, optional): 减免金额 ,
-          // payLeft (String, optional): 欠款金额 ,
-          // payLeftReason (String, optional): 欠款原因 ,
-          // payStatus (String, optional): 付款状态 ,
-          // checkStatus (String, optional): 审核状态 ,
-          // checkUser (String, optional): 审核人 ,
-          // checkTime (String, optional): 审核时间 ,
-          // remarks (String, optional): 备注
         }
-        // that.list = res.data.page.list;
+      });
+    },
+    getPayDoneList(){
+      var that = this;
+      var param = {
+        page:that.currPage,
+        limit:10,
+        ownerId:window.userInfo.ownerId,
+        payStatus:3
+      };
+
+      utils.Get('getPayList',param).then(function(res){
+        if (res.data.page.list && res.data.page.list.length>0) {
+
+          if (that.currPage == 1) {
+            console.log('9999')
+            that.doneoptions = [];
+          }
+          res.data.page.list.forEach(function(item){
+              var objTmp ={
+                time: item.payStart+' - '+item.payEnd,
+                money: item.payMoney,
+                id:item.id,
+                value:[],
+                options:[{
+                  label: item.payItemName+'-'+item.payAddress,//item.payItemName+'-'+item.communityName+'-'+item.payAddress,
+                  value: item.payMoney,
+                }]
+              };
+              that.doneoptions.push(objTmp);
+          });
+
+
+          that.totalCount = res.data.page.totalCount;
+
+          if ((that.totalCount == that.doneoptions.length) || that.currPage == that.totalPage) {
+            that.allLoaded = true;// 若数据已全部获取完毕
+            that.$refs.wyrecindexloadmore.onBottomLoaded();
+          }else {
+            that.allLoaded = false;
+            that.currPage++
+            that.$refs.wyrecindexloadmore.onBottomLoaded();
+          }
+        }else {
+          that.doneoptions = [];
+        }
       });
     },
     postCreateOrder(){
       var param = {
         ids:'',
-        redirectUrl:'http://www.waiqinzx.com/index.html#/recSucList'
+        redirectUrl:window.location.origin + '/index.html#/recResult'
       };
       if (this.options.length>0) {
         this.options.forEach(function(item){
@@ -303,11 +353,19 @@ export default {
   background-color: #fff;
   font-size: 12px;
 }
+.wy-rec-item[show="hide"] {
+  display: none;
+}
 .wy-rec-item .mint-checklist .mint-checklist-label {
   text-align: left;
 }
 .wy-rec-item .mint-checklist .mint-cell,.wy-rec-item .mint-checklist .mint-cell .mint-cell-wrapper{
 background-image:none;
+padding: 0 0 0 10px;
+}
+.wy-rec-item .mint-checklist .mint-cell,.wy-rec-item .mint-checklist .mint-cell .mint-cell-wrapper .mint-checklist-label{
+  padding: 0 0 0 10px;
+  font-size: 14px;
 }
 .wy-rec-item-des >div {
   display: inline-block;
@@ -336,12 +394,27 @@ background-image:none;
     line-height: 48px;
     text-align: left;
     font-size: 16px;
-    padding: 0 32px;
+    padding: 0 0 0 32px;
 }
 .wy-rec-mt-8 {
   margin-top: 8px;
 }
 .wy-rec .mint-tab-item-label {
   font-size: 16px;
+}
+.wy-rec-index-done-tabcon .wy-rec-item-title{
+font-size: 14px;
+padding: 0 0 0 32px;
+}
+.wy-rec-index-done-tabcon .wy-rec-item-des {
+margin-left: 32px;
+}
+.wy-rec-icon.mint-cell-allow-right::after {
+border: solid 1px #c8c8cd;
+    border-bottom-width: 0;
+    border-left-width: 0;
+    width: 8px;
+    height: 8px;
+    top: 12px;
 }
 </style>

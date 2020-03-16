@@ -1,5 +1,5 @@
-var hostPath = 'http://121.196.192.110:2057/zhwy';
-window.hostPath = hostPath;
+var hostPath = window.hostPath;
+
 export default {
   //海纳个人信息
   // getInfo: 'http://localhost:3000/users/info',
@@ -11,6 +11,10 @@ export default {
   //投诉建议
   getWyOpinionList: hostPath + '/app/wyopinion/list',
   postWyOpinionSave: hostPath + '/app/wyopinion/save',
+  postWyoptionCancel: hostPath + '/app/wyopinion/cancel',
+  getWyopinionlistforwy: hostPath + '/app/wyopinion/listforwy',
+  getWyopinioninfo: hostPath + '/app/wyopinion/info',
+  postWyopinionreplay: hostPath + '/app/wyopinion/replay',
   //支付
   getPayList: hostPath + '/app/wypay/list',
   getPayInfo: hostPath + '/app/wypay/info',
@@ -24,10 +28,17 @@ export default {
   getWyservicecategory: hostPath + '/app/wyservicecategory/list',
   postWyserviceSure: hostPath + '/app/wyservice/sure',
   postWyserviceCancel: hostPath + '/app/wyservice/cancel',
+  //获取待分配与已分配维修单
+  getListwaitallocate: hostPath + '/app/wyservice/listwaitallocate',
+  getListcompleteallocate: hostPath + '/app/wyservice/listcompleteallocate',
+  getListrepairuser: hostPath + '/app/wyservice/listrepairuser',
+  postAllocation: hostPath + '/app/wyservice/allocation',
   //维修工
   postLogin: hostPath + '/app/login',
   postRepairSubmit: hostPath + '/app/wyservice/repairSubmit',
   //门禁
-  getOpenDoor: hostPath + '/app/wydoor/info'
+  getOpenDoor: hostPath + '/app/wydoor/info',
+  //物业设置接口
+  getwysetting: hostPath + '/app/wysetting/list',
   //图片上传的接口在代码内
 }

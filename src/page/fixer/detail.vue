@@ -6,11 +6,11 @@
       <label class="wy-fix-det-status">{{status}}</label>
     </div>
     <div style="padding-bottom: 32px;">
-      <div v-for="item in options" class="wy-fix-det-desitem" style="">
+      <div v-for="item in options" class="wy-fix-det-desitem" v-if="!item.hidden" style="">
         <span>{{item.title}}</span>：
-        <span class="wy-fix-det-desitemvalue" v-if="item.title != '故障图片'" >{{item.value}}</span>
-        <div v-else class="wy-fix-det-desitemimgs">
-          <img v-if="(item.value)" @click="previewImg(src)" :src="src" v-for="src in item.value" class="wy-fix-det-desitemimg" />
+        <span class="wy-fix-det-desitemvalue" style="width: calc(100% - 80px);" v-if="item.title != '故障图片'" >{{item.value}}</span>
+        <div v-else class="wy-fix-det-desitemimgs post">
+          <img v-if="(item.value)"  :src="src" v-for="src in item.value" class="wy-fix-det-desitemimg" />
         </div>
         <!-- <label v-if="item.title == '报修人员'" class="wy-fix-det-usertagdiv">
           <span class="wy-fix-det-usertag">
@@ -28,21 +28,45 @@
       <span class="wy-fix-det-title">维修信息</span>
     </div>
     <div style="">
-      <div class="wy-sug-textarea">
-        <mt-field label="" placeholder="请填写维修备注" type="textarea" rows="4" v-model="introduction"></mt-field>
-      </div>
-      <div style="padding: 12px 0;">
-        <div class="wy-sug-index wy-fixer-detail">
-          <div id="wy-imgs-upload" style="display:inline-block;vertical-align:top;">
-            <!-- <img src="" class="show" style="width:60px;height:60px;display:none;" /> -->
+      <div v-if="serviceStatus == '2'">
+        <div class="wy-sug-textarea">
+          <mt-field label="" placeholder="请填写维修内容" type="textarea" rows="4" v-model="introduction"></mt-field>
+        </div>
+        <div style="padding: 12px 0;">
+          <div class="wy-sug-index wy-fixer-detail">
+            <div id="wy-imgs-upload" style="display:inline-block;vertical-align:top;">
+              <!-- <img src="" class="show" style="width:60px;height:60px;display:none;" /> -->
+            </div>
+            <div id="wy-fixer-postimgs" style="display:inline-block;vertical-align:top;position:relative;">
+              <img id="uploaderBox" style="width: 65px;" src="../../../static/images/upload.png" />
+              <!-- <input id="imageFile2"  name="imageFile" onchange="changepic(this,'wy-fixer-detail')" type="file" multiple accept="image/*" /> -->
+            </div>
           </div>
-          <img style="width: 65px;" src="../../../static/images/upload.png" />
-          <input id="imageFile1"  name="imageFile" onchange="changepic(this,'wy-fixer-detail')" type="file" multiple accept="image/png, image/jpeg, image/gif, image/jpg" />
+        </div>
+      </div>
+      <div v-if="serviceStatus == '3' || serviceStatus == '4' || serviceStatus == '5' || serviceStatus == '6'">
+        <div v-for="item in problemOptions" class="wy-fix-det-desitem">
+          <span>{{item.title}}</span>：
+          <span class="wy-fix-det-desitemvalue" v-if="item.title != '维修图片'">{{item.value}}</span>
+          <div v-else class="wy-fix-det-desitemimgs post">
+            <img v-if="item.value" :src="src"  v-for="src in item.value" class="wy-fix-det-desitemimg" />
+          </div>
+          <div style="clear:both;"></div>
         </div>
       </div>
     </div>
   </div>
-  <mt-button class="wy-sug-button" type="primary" @click="postRepairSubmit">确认提交</mt-button>
+  <div class="wy-fix-detItem" v-if="serviceStatus == '5' || serviceStatus == '6'" style="">
+    <div class="wy-fix-det-head">
+      <span class="wy-fix-det-title">评价信息</span>
+    </div>
+    <div v-for="item in pjOptions" class="wy-fix-det-desitem">
+        <span>{{item.title}}</span>：
+        <span class="wy-fix-det-desitemvalue">{{item.value}}</span>
+        <div style="clear:both;"></div>
+      </div>
+  </div>
+  <mt-button v-if="serviceStatus == '2'" class="wy-sug-button" type="primary" @click="postRepairSubmit">确认提交</mt-button>
 </div>
 
 </template>
@@ -101,7 +125,7 @@ export default {
         value:[]
       }],
       problemOptions: [{
-        title:'维修人',
+        title:'维修人员',
         value:''
       },{
         title:'维修电话',
@@ -113,10 +137,21 @@ export default {
         title:'维修内容',
         value:''
       }
-      // ,{
-      //   title:'维修图片',
-      //   value:[]
-      // }
+      ,{
+        title:'维修图片',
+        value:[]
+      }
+      ],
+      pjOptions:[{
+        title:'评价时间',
+        value:''
+      },{
+        title:'评价等级',
+        value:''
+      },{
+        title:'评价内容',
+        value:''
+      }
       ]
     }
   },
@@ -124,7 +159,7 @@ export default {
     // console.log(utils)
     // debugger;
     document.title = '维修详情';
-    window.wxuserInfo = JSON.parse(localStorage.getItem('wxuserInfo'));
+    window.userInfo = JSON.parse(localStorage.getItem('_userInfo'));
     var param = {
       id:''
     };
@@ -141,58 +176,69 @@ export default {
     },
     postRepairSubmit(){
       var that = this;
-      var imageFile = $("#imageFile1").val();
-      // console.log('imageFile',$("#imageFile1")[0].files);
-      // var dateStr = new Date().toString();
-      // dateStr = String(dateStr).replace('T','');
-      // dateStr = dateStr.split('.')[0];
+      var imageFile = $("#wy-fixer-postimgs").find('input');
+      // var imageFile = $("#imageFile2").val();
       if(imageFile && imageFile.length > 0){
-        var formData = new FormData();
-        // for (var i = 0; i < imageFile.length; i++) {
-          // imageFile[i]
-          formData.append("file", $("#imageFile1")[0].files[0]);
-        // }
-        // debugger
-        $.ajax({
-            url:window.hostPath+"/app/upload/img",
-            type:"post",
-            data:formData,
-            dataType:"json",
-            // 告诉jQuery不要去处理发送的数据
-            processData: false,
-            // 告诉jQuery不要去设置Content-Type请求头
-            contentType: false,
-            beforeSend: function () {
-               console.log("正在进行，请稍候");
-            },
-            success:function(data){
-              console.log('img data',data);
-                if(data.code == 0){
-                  var param = {
-                    id: that.id ,
-                    repairUserId: window.wxuserInfo.id,
-                    repairTime:(new Date()).Format("yyyy-MM-dd hh:mm:ss"),
-                    repairContent: that.introduction,
-                    imgUrl : data.imgUrl,//图片地址（多个以逗号隔开）
-                  };
-                  utils.Post('postRepairSubmit',param).then(function(res){
-                    if (res.data.code ==0) {
-                      Toast('提交成功~');
-                      window.history.go(-1);
-                    }else {
-                      Toast('提交失败,'+res.data.msg+'！');
-                    }
-                    // that.list = res.data.page.list;
-                  });
-                }else{
-                  Toast(data.msg)
-                }
+        sendMoreRequest("#wy-fixer-postimgs",function(res){
+          var param = {
+            id: that.id ,
+            repairUserId: window.userInfo.id,
+            repairTime:(new Date()).Format("yyyy-MM-dd hh:mm:ss"),
+            repairContent: that.introduction,
+            repairImgUrl : res.join(','),//图片地址（多个以逗号隔开）
+          };
+          utils.Post('postRepairSubmit',param).then(function(res){
+            if (res.data.code ==0) {
+              Toast('提交成功~');
+              window.history.go(-1);
+            }else {
+              Toast('提交失败,'+res.data.msg+'！');
             }
-        })
+          });
+        });
+
+        // var formData = new FormData();
+        // formData.append("file", $("#imageFile2")[0].files[0]);
+        // $.ajax({
+        //     url:window.hostPath+"/app/upload/img",
+        //     type:"post",
+        //     data:formData,
+        //     dataType:"json",
+        //     // 告诉jQuery不要去处理发送的数据
+        //     processData: false,
+        //     // 告诉jQuery不要去设置Content-Type请求头
+        //     contentType: false,
+        //     beforeSend: function () {
+        //        console.log("正在进行，请稍候");
+        //     },
+        //     success:function(data){
+        //       console.log('img data',data);
+        //         if(data.code == 0){
+        //           var param = {
+        //             id: that.id ,
+        //             repairUserId: window.wxuserInfo.id,
+        //             repairTime:(new Date()).Format("yyyy-MM-dd hh:mm:ss"),
+        //             repairContent: that.introduction,
+        //             imgUrl : data.imgUrl,//图片地址（多个以逗号隔开）
+        //           };
+        //           utils.Post('postRepairSubmit',param).then(function(res){
+        //             if (res.data.code ==0) {
+        //               Toast('提交成功~');
+        //               window.history.go(-1);
+        //             }else {
+        //               Toast('提交失败,'+res.data.msg+'！');
+        //             }
+        //             // that.list = res.data.page.list;
+        //           });
+        //         }else{
+        //           Toast(data.msg)
+        //         }
+        //     }
+        // })
       }else {
         var param = {
           id: that.id ,
-          repairUserId: window.wxuserInfo.id,
+          repairUserId: window.userInfo.id,
           repairTime:(new Date()).Format("yyyy-MM-dd hh:mm:ss.S"),
           repairContent: that.introduction,
           // repairImgUrl:''
@@ -234,10 +280,18 @@ export default {
             title:'报修时间',
             value:res.data.wyService.createDate
           });
-          that.$set(that.options,4,{
-            title:'预约时间',
-            value:res.data.wyService.doorDate+' '+res.data.wyService.beginTime+'-'+res.data.wyService.endTime
-          });
+          if (res.data.wyService.typeId == '1') {
+            that.$set(that.options,4,{
+              title:'上门时间',
+              value:res.data.wyService.doorDate+' '+res.data.wyService.beginTime+'-'+res.data.wyService.endTime,
+              hidden:true
+            });
+          }else {
+            that.$set(that.options,4,{
+              title:'上门时间',
+              value:res.data.wyService.doorDate+' '+res.data.wyService.beginTime+'-'+res.data.wyService.endTime
+            });
+          }
           that.$set(that.options,5,{
             title:'故障类型',
             value:res.data.wyService.serviceTypeName,
@@ -247,31 +301,71 @@ export default {
             value:res.data.wyService.serviceAddress
           });
           that.$set(that.options,7,{
-            title:'报修内容',
+            title:'故障描述',
             value:res.data.wyService.serviceContent
           });
           that.$set(that.options,8,{
             title:'故障图片',
             value:(res.data.wyService.imgUrl && res.data.wyService.imgUrl.split(','))||''
           });
+          if (that.serviceStatus == '2') {
+            that.$nextTick(function(){
+              $("#uploaderBox").on("click", function(e) {
+                 var newFileInput = "<input id='uploaderInput' type='file' name='imageFile' accept='image/*' multiple />";
+                 $(this).parent().append($(newFileInput));
+                 $("#uploaderInput").bind("change", function(e){
+                   //onFileUploaded(e);预览等操作
+                   $(this).removeAttr("id");
+                   changepic(this,'.wy-fixer-detail')
+                 });
+                 $("#uploaderInput").click();
+              });
+            });
+          }
+          if (that.serviceStatus == '3' || that.serviceStatus == '4' || that.serviceStatus == '5'|| that.serviceStatus == '6') {
+            that.$set(that.problemOptions,0,{
+              title:'维修人员',
+              value:res.data.wyService.repairUserName
+            });
+            that.$set(that.problemOptions,1,{
+              title:'维修电话',
+              value:res.data.wyService.repairUserMobile
+            });
+            that.$set(that.problemOptions,2,{
+              title:'维修时间',
+              value:res.data.wyService.repairTime
+            });
+            that.$set(that.problemOptions,3,{
+              title:'维修内容',
+              value:res.data.wyService.repairContent
+            });
+            that.$set(that.problemOptions,4,{
+              title:'维修图片',
+              value:res.data.wyService.repairImgUrl && res.data.wyService.repairImgUrl.split(',')
+            });
+          }
 
-
-          that.$set(that.problemOptions,0,{
-            title:'维修人',
-            value:res.data.wyService.repairUserName
-          });
-          that.$set(that.problemOptions,1,{
-            title:'维修电话',
-            value:res.data.wyService.repairUserMobile
-          });
-          that.$set(that.problemOptions,2,{
-            title:'维修时间',
-            value:res.data.wyService.repairTime
-          });
-          that.$set(that.problemOptions,3,{
-            title:'维修内容',
-            value:res.data.wyService.repairContent
-          });
+          if (that.serviceStatus == '5' || that.serviceStatus == '6') {
+            that.$set(that.pjOptions,0,{
+              title:'评价时间',
+              value:res.data.wyService.evaluateTime
+            });
+            that.$set(that.pjOptions,2,{
+                title:'评价内容',
+                value:res.data.wyService.evaluateContent
+              });
+            if (res.data.wyService.evaluateLevel == '1') {
+              that.evaluateLevel = '好评';
+            } else if(res.data.wyService.evaluateLevel == '2') {
+              that.evaluateLevel = '中评';
+            }else {
+              that.evaluateLevel = '差评';
+            }
+            that.$set(that.pjOptions,1,{
+              title:'评价等级',
+              value:that.evaluateLevel
+            });
+          }
 
 
           // that.options = [];
@@ -290,11 +384,17 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style >
+#wy-fixer-postimgs input {
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index:-1;
+}
 .wy-fix-detbuts {
   padding: 16px;
     background: #fff;
     /*position: absolute;*/
-    width: calc(100% - 32px);
+    /*width: calc(100% - 32px);*/
     bottom: 0;
 }
 .wy-fix-detbuts .wy-fix-detbut{
@@ -319,7 +419,7 @@ border-radius: 8px;
     font-size: 10px;
     display: inline-block;
     line-height: 10px;
-    padding: 2px 4px 1px 4px;
+    padding: 4px 4px 2px 4px;
     vertical-align: text-bottom;
 }
 .wy-step-time,.wy-step-person {
@@ -438,7 +538,7 @@ display: inline-block;
     margin: 0 auto;
     display: block;
 }
-#imageFile1 {
+#imageFile2 {
       /* margin-left: 40px; */
     /* display: inline-block; */
     /* height: 34px; */
@@ -448,6 +548,7 @@ display: inline-block;
     width: 60px;
     height: 60px;
     left: 0px;
+    top:0;
     opacity: 0;
 }
 </style>

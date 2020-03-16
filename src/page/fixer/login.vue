@@ -82,15 +82,20 @@ export default {
     }
   },
   created() {
-
-    document.title = "";
-
-    this.$nextTick(() => {
-      // debugger;
-      if (this.logType == 'pw') {
-        changePassword(this, 'password', 'password2');
-      }
-    })
+    if (localStorage.wxuserInfo) {
+      window.wxuserInfo = JSON.parse(localStorage.wxuserInfo);
+      this.$router.push({
+        name: 'fixerIndex'
+      });
+    }else {
+      document.title = "";
+      this.$nextTick(() => {
+        // debugger;
+        if (this.logType == 'pw') {
+          changePassword(this, 'password', 'password2');
+        }
+      })
+    }
   },
   watch: {
     logType(val) {
@@ -198,7 +203,7 @@ body {
   border-radius: 2px;
   position: absolute;
   top: 100px;
-  z-index: -1;
+  z-index: 1;
 }
 
 .login_form {

@@ -1,8 +1,8 @@
 <template>
 <div class="wy-fixer">
 <mt-navbar v-model="selected">
-  <mt-tab-item id="1">待维修</mt-tab-item>
-  <mt-tab-item id="2">已维修</mt-tab-item>
+  <mt-tab-item id="1">待分配</mt-tab-item>
+  <mt-tab-item id="2">已分配</mt-tab-item>
 </mt-navbar>
 
 <!-- tab-container -->
@@ -120,7 +120,7 @@ export default {
     }
   },
   created(){
-    document.title = '我的接单';
+    document.title = '我的派单';
     window.userInfo = JSON.parse(localStorage.getItem('_userInfo'));
     var wyFixerIndex = sessionStorage.getItem('wyFixerIndex');
     if (wyFixerIndex) {
@@ -137,16 +137,16 @@ export default {
       // });
     },
     gotoDetail(id){
-      window.location.href = window.location.origin+window.location.pathname + '#/fixerDetail?id='+id;
+      window.location.href = window.location.origin+window.location.pathname + '#/disDetail?id='+id;
     },
     getWyserviceListIn(){
       var param = {
-        repairUserId:window.userInfo.id,
+        // repairUserId:window.userInfo.id,
         page:1,
-        limit:10
+        limit:9999
       };
       var that = this;
-      utils.Get('getWyserviceListIn',param).then(function(res){
+      utils.Get('getListwaitallocate',param).then(function(res){
         if (res.data.code ==0) {
           that.options = res.data.page.list;
         }else {
@@ -157,12 +157,12 @@ export default {
     },
     getWyserviceListComplete(){
       var param = {
-        repairUserId:window.userInfo.id,
+        // repairUserId:window.userInfo.id,
         page:1,
-        limit:10
+        limit:9999
       };
       var that = this;
-      utils.Get('getWyserviceListComplete',param).then(function(res){
+      utils.Get('getListcompleteallocate',param).then(function(res){
         if (res.data.code ==0) {
           that.doneOptions = res.data.page.list;
         }else {

@@ -1,8 +1,5 @@
 <template>
 <div class="wy-fix">
-  <!-- tab-container -->
-  <!-- <mt-tab-container v-model="selected"> -->
-    <!-- <mt-tab-container-item id="kjbx"> -->
         <mt-navbar v-model="fixTypes">
           <mt-tab-item id="public">公共区域</mt-tab-item>
           <mt-tab-item id="private">个人区域</mt-tab-item>
@@ -12,15 +9,20 @@
         <mt-tab-container v-model="fixTypes">
           <mt-tab-container-item id="public" class="wy-fix-public">
             <div class="wy-fix-ggform" style="">
-              <mt-field label="报修地址" placeholder="请输入有故障的具体位置" v-model="ggfixplace"></mt-field>
+
+              <div @click="ggfpshowSheet" class="wy-select-problem">
+                <mt-cell title="选择住址" :value="ggfixplace" is-link  ></mt-cell>
+              </div>
+              <!-- <mt-field label="报修地址" placeholder="请输入有故障的具体位置" v-model="ggfixplace"></mt-field> -->
+
               <div @click="ggshowSheet" class="wy-select-problem">
                 <mt-cell title="故障类型" :value="ggproblem" is-link  ></mt-cell>
               </div>
               <mt-cell class="wy-fix-name" title="故障描述"></mt-cell>
               <mt-field label="" placeholder="请填写故障描述帮助我们尽快解决问题" type="textarea" rows="4" v-model="ggintroduction"></mt-field>
             </div>
-            <div style="padding: 16px 24px;text-align: left;">
-              <div v-if="fixTypes=='public'" id="wy-imgs-upload" style="display:inline-block;vertical-align:top;">
+            <div style="padding: 16px 24px;text-align: left;" v-if="fixTypes=='public'">
+              <div id="wy-imgs-upload" style="display:inline-block;vertical-align:top;">
                   <!-- <img src="" class="show" style="width:60px;height:60px;display:none;" /> -->
                 </div>
               <!-- <img src="" class="show" style="width:60px;height:60px;display:none;" /> -->
@@ -28,12 +30,12 @@
                 <i class="iconfont icon-weiwancheng cancel_upload_img" @click="ggdeleteImg(item)"></i>
                 <img class="upload_img" @click="ggpreviewImg(item)" :src="item" alt="">
               </div>
-              <div class="upload_item">
-                <img class="upload_img" src="../../../static/images/upload.png" alt="无" @click="gghandleClick">
-                <input id="imageFile"  name="imageFile" onchange="changepic(this,'wy-fix-public')" type="file" accept="image/png, image/jpeg, image/gif, image/jpg" />
+              <div id="wy-fix-postimgs" class="upload_item">
+                <img class="upload_img" id="uploaderBox" src="../../../static/images/upload.png" alt="无" >
+                <!-- <input id="imageFile"  name="imageFile" onchange="changepic(this,'wy-fix-public')" type="file" multiple accept="image/*" /> -->
               </div>
             </div>
-            <mt-button class="wy-sug-button" type="primary" @click="postWyServiceSave('pub')">确认提交</mt-button>
+            <mt-button class="wy-sug-button" :disabled="disabled" type="primary" @click="postWyServiceSave('pub')">确认提交</mt-button>
           </mt-tab-container-item>
           <mt-tab-container-item id="private">
             <div class="wy-fix-private" ref="privateDiv">
@@ -52,12 +54,12 @@
                 <mt-field label="上门日期" placeholder="请输入日期" type="date" v-model="problemday"></mt-field>
 
                 <div class="wy-fix-fixtime" @click="openTimePicker">
-                  <span>开始时间</span><label class="wy-fix-fixtimevalue">{{problemTime}}</label>
+                  <span style="color:#333;">上门时间起</span><label class="wy-fix-fixtimevalue">{{problemTime}}</label>
                 </div>
                 <mt-datetime-picker type="time" v-model="problemTime" ref="timepiker"></mt-datetime-picker>
 
                 <div class="wy-fix-fixtime" @click="openTimePickerEnd">
-                  <span>结束时间</span><label class="wy-fix-fixtimevalue">{{problemTimeEnd}}</label>
+                  <span style="color:#333;">上门时间止</span><label class="wy-fix-fixtimevalue">{{problemTimeEnd}}</label>
                 </div>
                 <mt-datetime-picker type="time" v-model="problemTimeEnd" ref="timepikerend"></mt-datetime-picker>
 
@@ -67,24 +69,24 @@
                 <mt-cell class="wy-fix-name" title="故障描述"></mt-cell>
                 <mt-field label="" placeholder="请填写故障描述帮助我们尽快解决问题" type="textarea" rows="4" v-model="grintroduction"></mt-field>
               </div>
-              <div style="padding: 16px 24px;text-align: left;">
+              <div style="padding: 16px 24px;text-align: left;" v-if="fixTypes=='private'">
                 <!-- <img src="" class="show" style="width:60px;height:60px;display:none;" /> -->
-                <div v-if="fixTypes=='private'" id="wy-imgs-upload" style="display:inline-block;vertical-align:top;">
+                <div  id="wy-imgs-upload" style="display:inline-block;vertical-align:top;">
                   <!-- <img src="" class="show" style="width:60px;height:60px;display:none;" /> -->
                 </div>
                 <div class="upload_item" v-for="(item,index) in gruploadImgs">
                   <i class="iconfont icon-weiwancheng cancel_upload_img" @click="grdeleteImg(item)"></i>
                   <img class="upload_img" @click="grpreviewImg(item)" :src="item" alt="">
                 </div>
-                <div class="upload_item">
-                  <img class="upload_img" src="../../../static/images/upload.png" alt="无" @click="grhandleClick">
-                  <input id="imageFile"  name="imageFile" onchange="changepic(this,'wy-fix-private')" type="file" accept="image/png, image/jpeg, image/gif, image/jpg" />
+                <div id="wy-fix-postimgs" class="upload_item">
+                  <img class="upload_img" id="uploaderBox" src="../../../static/images/upload.png" alt="无" @click="grhandleClick">
+                  <!-- <input id="imageFile"  name="imageFile" onchange="changepic(this,'wy-fix-private')"  type="file" multiple accept="image/*" /> -->
 
                 </div>
               </div>
               <div class="tkDiv" id="addLOGO" style="z-index:12;height:auto;">
         </div>
-              <mt-button id="saveBtn" class="wy-sug-button" type="primary" @click="postWyServiceSave('prv')">确认提交</mt-button>
+              <mt-button id="saveBtn" class="wy-sug-button" :disabled="disabled" type="primary" @click="postWyServiceSave('prv')">确认提交</mt-button>
             </div>
           </mt-tab-container-item>
         </mt-tab-container>
@@ -106,63 +108,12 @@
             <span class="wy-fix-pop-btn" @click="grfpokValuesChange">确定</span>
             <mt-picker :slots="grfpslots" @change="grfponValuesChange" valueKey="name"></mt-picker>
         </mt-popup>
-    <!-- </mt-tab-container-item> -->
-    <!-- <mt-tab-container-item id="bxjl">
-        <mt-navbar v-model="listStatus">
-          <mt-tab-item id="doing">处理中</mt-tab-item>
-          <mt-tab-item id="done">已完成</mt-tab-item>
-        </mt-navbar>
-
-        <mt-tab-container v-model="listStatus">
-          <mt-tab-container-item id="doing">
-            <div class="wy-fix-list-item" v-for="item in options">
-              <mt-cell :title="item.name">
-                <span :class="{'wy-color-blue':item.status=='待受理'}">{{item.status}}</span>
-                <img slot="icon" src="../../../static/images/wy/ggbx.png" width="24" height="24">
-              </mt-cell>
-              <mt-cell :title="item.place">
-                <img slot="icon" src="../../../static/images/wy/lddy.png" width="24" height="24">
-              </mt-cell>
-              <mt-cell :title="item.time">
-                <img slot="icon" src="../../../static/images/wy/bxsj.png" width="24" height="24">
-              </mt-cell>
-              <mt-cell :title="item.content" value="详情" is-link to="./fixDetail">
-                <img slot="icon" src="../../../static/images/wy/bxnr.png" width="24" height="24" >
-              </mt-cell>
-            </div>
-          </mt-tab-container-item>
-          <mt-tab-container-item id="done">
-            <div class="wy-fix-list-item" v-for="item in doneOptions">
-              <mt-cell :title="item.name">
-                <span :class="{'wy-color-blue':item.status=='待受理'}">{{item.status}}</span>
-                <img slot="icon" src="../../../static/images/wy/jtbx.png" width="24" height="24">
-              </mt-cell>
-              <mt-cell :title="item.place">
-                <img slot="icon" src="../../../static/images/wy/lddy.png" width="24" height="24">
-              </mt-cell>
-              <mt-cell :title="item.time">
-                <img slot="icon" src="../../../static/images/wy/bxsj.png" width="24" height="24">
-              </mt-cell>
-              <mt-cell :title="item.content" value="详情" is-link to="./fixDetail">
-                <img slot="icon" src="../../../static/images/wy/bxnr.png" width="24" height="24" >
-              </mt-cell>
-            </div>
-          </mt-tab-container-item>
-        </mt-tab-container>
-    </mt-tab-container-item> -->
-  <!-- </mt-tab-container> -->
-  <!-- <mt-tabbar v-model="selected" class="wy-fix-tabbar">
-    <mt-tab-item id="kjbx">
-      <img v-if="selected == 'kjbx'" slot="icon" src="../../../static/images/wy/kjbx_select.png" alt="" >
-      <img v-else slot="icon" src="../../../static/images/wy/kjbx.png" alt="" >
-      快捷报修
-    </mt-tab-item>
-    <mt-tab-item id="bxjl">
-      <img v-if="selected == 'bxjl'" slot="icon" src="../../../static/images/wy/wxjl_select.png" alt="" >
-      <img v-else slot="icon" src="../../../static/images/wy/wxjl.png" alt="" >
-      报修记录
-    </mt-tab-item>
-  </mt-tabbar> -->
+        <mt-popup
+          v-model="ggfpsheetVisible"
+          position="bottom">
+            <span class="wy-fix-pop-btn" @click="ggfpokValuesChange">确定</span>
+            <mt-picker :slots="ggfpslots" @change="ggfponValuesChange" valueKey="name"></mt-picker>
+        </mt-popup>
 </div>
 
 </template>
@@ -193,44 +144,19 @@ export default {
   },
   data () {
     return {
-      msg: 'Welcome to Your Vue.js App',
+      disabled: false,
       problemTime:'',
       problemTimeEnd:'',
-      username:window.userInfo.ownerName,
-      phone:window.userInfo.ownerMobile,
+      username:'',
+      phone:'',
       problemday:'',
       ggsheetVisible:false,
       grsheetVisible:false,
       grfpsheetVisible:false,
+      ggfpsheetVisible:false,
       selected:'kjbx',
       listStatus:'doing',
       fixTypes:'public',
-      options:[{
-        name:'公共报修',
-        status:'待受理',
-        place:'龙湖 22栋1605',
-        time:'2019-01-07 12:23',
-        content:'公共电梯'
-      },{
-        name:'个人报修',
-        status:'已受理',
-        place:'龙湖 22栋1605',
-        time:'2019-01-07 12:23',
-        content:'马桶堵了'
-      }],
-      doneOptions:[{
-        name:'公共报修',
-        status:'已完成',
-        place:'龙湖 22栋1605',
-        time:'2019-01-07 12:23',
-        content:'公共电梯'
-      },{
-        name:'个人报修',
-        status:'已完成',
-        place:'龙湖 22栋1605',
-        time:'2019-01-07 12:23',
-        content:'马桶堵了'
-      }],
       ggfixplace:'',
       ggintroduction:'',
       ggproblem:'',
@@ -238,7 +164,7 @@ export default {
       gguploadImgs:[],
       ggslots: [
         {
-          values: [{name:'马桶坏了',id:'12'},{name:'马桶坏了2',id:'122'}],
+          values: [],
         }
       ],
       ggchooseResult:{},
@@ -251,7 +177,7 @@ export default {
       gruploadImgs:[],
       grslots: [
         {
-          values: [{name:'马桶坏了',id:'12'},{name:'马桶坏了2',id:'122'},],
+          values: [],
         }
       ],
       grchooseResult:{},
@@ -260,27 +186,52 @@ export default {
           values: [],
         }
       ],
-      grfpchooseResult:{}
+      ggfpslots: [
+        {
+          values: [],
+        }
+      ],
+      grfpchooseResult:{},
+      ggfpchooseResult:{}
     }
   },
   created(){
     // console.log(utils)
     // debugger;
     document.title = '快捷报修';
+    window.userInfo = JSON.parse(localStorage.getItem('_userInfo'));
+    this.username=window.userInfo.ownerName;
+    this.phone=window.userInfo.ownerMobile;
     var tmpArr= window.userInfo.wyOwnerHouseEntityList.map(function(item){
       var tmp = {
         id:item.id,
-        name:item.address
+        name:item.communityName +'/'+item.address
       };
       return tmp
     });
     this.$set(this.grfpslots[0],'values',tmpArr);
+    this.$set(this.ggfpslots[0],'values',tmpArr);
 
     this.$nextTick(() => {
         this.$refs['privateDiv'].style.height = (document.body.clientHeight - 90) + 'px';
     });
     this.getProblemsInPublic();
     this.getProblemsInPrivate();
+
+    this.$nextTick(function(){
+
+        $(".wy-fix").on("click",'#uploaderBox', function(e) {
+           var newFileInput = "<input id='uploaderInput' type='file' name='imageFile' accept='image/*' multiple />";
+           $(e.currentTarget).parent().append($(newFileInput));
+           $("#uploaderInput").bind("change", function(e){
+             //onFileUploaded(e);预览等操作
+             $(e.currentTarget).removeAttr("id");
+             changepic(this,'.wy-fix')
+           });
+           $("#uploaderInput").click();
+        });
+    });
+
     // this.getWyserviceListIn();
     // this.getWyserviceListComplete();
   },
@@ -304,6 +255,13 @@ export default {
         console.log('val',val)
         this.grfixplace = val.name;
         this.grfixplaceid = val.id;
+      }
+    },
+    ggfpchooseResult(val){
+      if (val && val.name) {
+        console.log('val',val)
+        this.ggfixplace = val.name;
+        this.ggfixplaceid = val.id;
       }
     }
   },
@@ -367,106 +325,101 @@ export default {
       });
     },
     postWyServiceSave(type){
+
       // 业主ID 4f895cb1ac2ef28b2178089a1ead421d
       // 物业ID 998bac69aeb0e363a455b28c32b3cfa9
       var that = this;
-      var imageFile = $("#imageFile").val();
-      if(imageFile && imageFile.length > 0){
-        var formData = new FormData();
-        formData.append("file", $("#imageFile")[0].files[0]);
-        $.ajax({
-            url:window.hostPath+"/app/upload/img",
-            type:"post",
-            data:formData,
-            dataType:"json",
-            // 告诉jQuery不要去处理发送的数据
-            processData: false,
-            // 告诉jQuery不要去设置Content-Type请求头
-            contentType: false,
-            beforeSend: function () {
-               console.log("正在进行，请稍候");
-            },
-            success:function(data){
-                if(data.code == 0){
-                    var param = {
-                      propertyId: window.userInfo.propertyId,
-                      companyId: window.userInfo.companyId ,
-                      communityId: window.userInfo.companyId ,
-                      ownerId: window.userInfo.ownerId,
-                      ownerName: window.userInfo.ownerName ,
-                      ownerMobile: window.userInfo.ownerMobile ,
-                      houseId:that.grfixplaceid,
-                      imgUrl: data.imgUrl
-                    };
-                    if (type == 'pub') {
-                      param.typeId = that.ggproblemid;
-                      param.serviceAddress = that.ggfixplace;
-                      param.serviceContent = that.ggintroduction;
-                    } else {
-
-                      // param.serviceAddress = that.grfixplaceid;
-                      param.serviceContent = that.grintroduction;
-                      param.typeId = that.grproblemid;
-                      param.doorDate=that.problemday;
-                      param.beginTime=that.problemTime;
-                      param.endTime=that.problemTimeEnd;
-                    }
-                    utils.Post('postWyServiceSave',param).then(function(res){
-                      if (res.data.code ==0) {
-                        Toast('提交成功~');
-                        window.history.go(-1);
-                      }else {
-                        Toast('提交失败,'+res.data.msg+'！');
-                      }
-                      // that.list = res.data.page.list;
-                    });
-                }else{
-                  Toast(data.msg)
-                    // $("#imageForm").submit();
-                }
+      if (type == 'pub' && !this.ggintroduction) {
+        Toast('请填写故障描述~~！');
+        return;
+      }else if (type == 'prv' && !this.grintroduction) {
+        Toast('请填写故障描述~~！');
+        return;
+      }
+      var imageFile = $("#wy-fix-postimgs").find('input');
+      // var imageFile = $("#imageFile").val();
+      // console.log('imageFile',imageFile)
+      if (!this.disabled) {
+        this.disabled = true;
+        if(imageFile && imageFile.length > 0){
+          sendMoreRequest("#wy-fix-postimgs",function(res){
+            var param = {
+              propertyId: window.userInfo.propertyId,
+              companyId: window.userInfo.companyId ,
+              communityId: window.userInfo.companyId ,
+              ownerId: window.userInfo.ownerId,
+              ownerName: window.userInfo.ownerName ,
+              ownerMobile: window.userInfo.ownerMobile ,
+              houseId:that.grfixplaceid,
+              imgUrl: res.join(',')
+            };
+            if (type == 'pub') {
+              param.typeId = "1";
+              param.serviceType  = that.ggproblemid;
+              param.serviceAddress = that.ggfixplace;
+              param.serviceContent = that.ggintroduction;
+            } else {
+              // param.serviceAddress = that.grfixplaceid;
+              param.serviceContent = that.grintroduction;
+              param.typeId = "2";
+              param.serviceAddress = that.grfixplace;
+              param.serviceType  = that.grproblemid;
+              param.doorDate=that.problemday;
+              param.beginTime=that.problemTime;
+              param.endTime=that.problemTimeEnd;
             }
-        })
-      }else {
-        var param = {
-          propertyId: window.userInfo.propertyId,
-          companyId: window.userInfo.companyId ,
-          communityId: window.userInfo.companyId ,
-          ownerId: window.userInfo.ownerId,
-          ownerName: window.userInfo.ownerName ,
-          houseId:that.grfixplaceid,
-          ownerMobile: window.userInfo.ownerMobile
-        };
-        if (type == 'pub') {
-          param.typeId = that.ggproblemid;
-          param.serviceAddress = that.ggfixplace;
-          param.serviceContent = that.ggintroduction;
-        } else {
-          param.houseId = that.grfixplaceid;
-          // param.serviceAddress = that.grfixplaceid;
-          param.serviceContent = that.grintroduction;
-          param.typeId = that.grproblemid;
-          param.doorDate=that.problemday;
-          param.beginTime=that.problemTime;
-          param.endTime=that.problemTimeEnd;
+            utils.Post('postWyServiceSave',param).then(function(res){
+              if (res.data.code ==0) {
+                Toast('提交成功~');
+                window.history.go(-1);
+              }else {
+                Toast('提交失败,'+res.data.msg+'！');
+              }
+              // that.list = res.data.page.list;
+            });
+          });
+        }else {
+          var param = {
+            propertyId: window.userInfo.propertyId,
+            companyId: window.userInfo.companyId ,
+            communityId: window.userInfo.companyId ,
+            ownerId: window.userInfo.ownerId,
+            ownerName: window.userInfo.ownerName ,
+            houseId:that.grfixplaceid,
+            ownerMobile: window.userInfo.ownerMobile
+          };
+          if (type == 'pub') {
+              param.typeId = "1";
+              param.serviceType  = that.ggproblemid;
+              param.serviceAddress = that.ggfixplace;
+              param.serviceContent = that.ggintroduction;
+            } else {
+              // param.serviceAddress = that.grfixplaceid;
+              param.serviceContent = that.grintroduction;
+              param.typeId = "2";
+              param.serviceAddress = that.grfixplace;
+              param.serviceType  = that.grproblemid;
+              param.doorDate=that.problemday;
+              param.beginTime=that.problemTime;
+              param.endTime=that.problemTimeEnd;
+            }
+
+          utils.Post('postWyServiceSave',param).then(function(res){
+            if (res.data.code ==0) {
+              Toast('提交成功~');
+              window.history.go(-1);
+            }else {
+              Toast('提交失败,'+res.data.msg+'！');
+            }
+            // that.list = res.data.page.list;
+          });
         }
-        utils.Post('postWyServiceSave',param).then(function(res){
-          if (res.data.code ==0) {
-            Toast('提交成功~');
-            window.history.go(-1);
-          }else {
-            Toast('提交失败,'+res.data.msg+'！');
-          }
-          // that.list = res.data.page.list;
-        });
       }
     },
     ggdeleteImg(){
 
     },
     ggpreviewImg(){
-
-    },
-    gghandleClick(){
 
     },
     ggshowSheet(){
@@ -510,6 +463,22 @@ export default {
       }
       this.grsheetVisible = false;
     },
+    ggfpshowSheet(){
+      // debugger;
+      this.ggfpsheetVisible = true;
+    },
+    ggfponValuesChange(e,val){
+      if (val) {
+        this.ggfpchooseResult = val[0];
+      }
+      // console.log(values)
+    },
+    ggfpokValuesChange(){
+      if (!this.ggfpchooseResult.name) {
+        this.ggfpchooseResult = this.ggfpslots[0].values;
+      }
+      this.ggfpsheetVisible = false;
+    },
     grfpshowSheet(){
       // debugger;
       this.grfpsheetVisible = true;
@@ -532,6 +501,35 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style >
+.wy-fix .mint-cell-allow-right::after {
+    border: solid 1px #c8c8cd;
+    border-bottom-width: 0;
+    border-left-width: 0;
+     right: 10px;
+    width: 6px;
+    height: 6px;
+}
+.wy-fix .mint-cell-value.is-link{
+margin-right: 10px;
+}
+.mint-field .mint-cell-value input[type="date"] {
+      text-align: right;
+}
+.mint-field .mint-cell-value input[type="date"] ::placeholder {
+  text-align: right;
+}
+.wy-fix-ggform .wy-select-problem:first-child .mint-cell .mint-cell-value.is-link {
+  /*width: 190px;*/
+  width: calc(100% - 90px);
+  text-align: left;
+  margin-right: 0;
+}
+#wy-fix-postimgs input {
+   position: absolute;
+  top: 0;
+  right: 0;
+  z-index:-1;
+}
 #imageFile {
       /* margin-left: 40px; */
     /* display: inline-block; */
@@ -542,6 +540,7 @@ export default {
     width: 60px;
     height: 60px;
     left: 0px;
+        top: 0;
     opacity: 0;
 }
 .wy-fix-ggform input.mint-field-core {
@@ -569,7 +568,7 @@ export default {
   border-bottom: none;
   margin-bottom: 0px;
       position: relative;
-    right: -1px;
+    /*right: -1px;*/
 }
 .wy-fix .mint-navbar .mint-tab-item {
   padding: 11.5px;
@@ -597,8 +596,16 @@ color: #26a2ff;
 margin-top: 8px;
 
 }
+.wy-select-problem .mint-cell-value.is-link span{
+  color:#333;
+}
+.wy-fix-private .mint-cell-value span {
+  color:#333;
+  font-size: 14px;
+}
 .wy-fix-fixtime{
-  padding: 12px 16px;
+      padding: 12px 0 12px 18px;
+  /*padding: 12px 10px;*/
     text-align: left;
     font-size: 14px;
     color: inherit;
@@ -610,7 +617,9 @@ margin-top: 8px;
   color: #747474;
 }
 .wy-fix-fixtimevalue {
-
+float: right;
+color: #333;
+/*font-size: 16px;*/
 }
 .wy-fix-list-item .mint-cell:first-child .mint-cell-wrapper {
   background-image: none;
@@ -704,6 +713,7 @@ font-size: 14px;
 .wy-fix-ggform ::placeholder {
   /*color: red;*/
   font-size: 12px;
+  /*text-align: right;*/
 }
 .wy-fix-ggform .mint-cell:last-child {
   background-image: none;
@@ -729,5 +739,6 @@ font-size: 14px;
 }
 .wy-select-problem .mint-cell .mint-cell-value.is-link span {
   font-size: 14px;
+  word-break: break-all;
 }
 </style>

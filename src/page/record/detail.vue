@@ -37,28 +37,25 @@ export default {
         value:''
       }
       ,{
-        title:'单号',
+        title:'订单号',
+        value:''
+      },{
+        title:'支付号',
         value:''
       },{
         title:'小区名称',
         value:''
       },{
-        title:'家庭住址',
+        title:'住址',
         value:''
       },{
-        title:'业主',
+        title:'费用类型',
         value:''
       },{
-        title:'缴纳费用项目',
-        value:''
-      },{
-        title:'缴纳时段',
+        title:'费用周期',
         value:''
       },{
         title:'费用金额',
-        value:''
-      },{
-        title:'订单备注',
         value:''
       }]
     }
@@ -96,37 +93,41 @@ export default {
           //   value:res.data.wyPay.id
           // });
           that.$set(that.options,2,{
-            title:'单号',
+            title:'订单号',
             value:res.data.wyPay.payNumber
           });
           that.$set(that.options,3,{
+            title:'支付号',
+            value:res.data.wyPay.batchPaymentNo
+          });
+          that.$set(that.options,4,{
             title:'小区名称',
             value:res.data.wyPay.communityName
           });
-          that.$set(that.options,4,{
-            title:'家庭住址',
+          that.$set(that.options,5,{
+            title:'住址',
             value:res.data.wyPay.payAddress
           });
-          that.$set(that.options,5,{
-            title:'业主',
-            value:res.data.wyPay.ownerName
-          });
+          // that.$set(that.options,5,{
+          //   title:'业主',
+          //   value:res.data.wyPay.ownerName
+          // });
           that.$set(that.options,6,{
-            title:'缴纳费用项目',
+            title:'费用类型',
             value:res.data.wyPay.payItemName
           });
           that.$set(that.options,7,{
-            title:'缴纳时段',
-            value:res.data.wyPay.payStart+'/'+res.data.wyPay.payEnd
+            title:'费用周期',
+            value:res.data.wyPay.payStart+'--'+res.data.wyPay.payEnd
           });
           that.$set(that.options,8,{
             title:'费用金额',
             value:res.data.wyPay.payMoney
           });
-          that.$set(that.options,9,{
-            title:'订单备注',
-            value:res.data.wyPay.remarks
-          });
+          // that.$set(that.options,9,{
+          //   title:'订单备注',
+          //   value:res.data.wyPay.remarks
+          // });
           // this.options =
           // "id": "bddcd5cf78e3475bbedee8c2895ab0e5",
           // "propertyId": "998bac69aeb0e363a455b28c32b3cfa9",

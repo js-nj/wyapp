@@ -31,12 +31,14 @@
         <div id="wy-imgs-upload" style="display:inline-block;vertical-align:top;">
           <!-- <img src="" class="show" style="width:60px;height:60px;display:none;" /> -->
         </div>
-        <img style="width: 65px;" src="../../../static/images/upload.png" />
-        <input id="imageFile1"  name="imageFile" onchange="changepic(this,'wy-sug-index')" type="file" multiple accept="image/png, image/jpeg, image/gif, image/jpg" />
+        <div id="wy-sug-postimgs" style="display:inline-block;vertical-align:top;position:relative;">
+          <img id="uploaderBox" style="width: 65px;" src="../../../static/images/upload.png" />
+          <!-- <input id="imageFile1"  name="imageFile" onchange="changepic(this,'.wy-sug-index')" type="file" multiple accept="image/*" /> -->
+        </div>
       </div>
     </div>
   </div>
-  <mt-button class="wy-sug-button" type="primary" @click="postWyOpitionSave">确认提交</mt-button>
+  <mt-button class="wy-sug-button" :disabled="disabled" type="primary" @click="postWyOpitionSave">确认提交</mt-button>
 </div>
 
 </template>
@@ -50,7 +52,7 @@ export default {
   name: 'detail',
   data () {
     return {
-      msg: 'Welcome to Your Vue.js App',
+      disabled:false,
       introduction:'',
       typeId:'1',
       grfpchooseResult:{},
@@ -83,16 +85,18 @@ export default {
   },
   created(){
     document.title = '提交建议';
-    var tmpArr= window.userInfo.communityEntityList.map(function(item){
+    var that = this;
+    window.userInfo = JSON.parse(localStorage.getItem('_userInfo'));
+    var tmpArr= window.userInfo.wyOwnerHouseEntityList.map(function(item){
       var tmp = {
         id:item.id,
-        name:item.address
+        name:item.communityName +'/'+item.address
       };
       return tmp
     });
     this.$set(this.grfpslots[0],'values',tmpArr);
-    this.grfixplaceid = window.userInfo.communityEntityList[0].id;
-    var that = this;
+    this.grfixplaceid = window.userInfo.wyOwnerHouseEntityList[0].id;
+
     this.$nextTick(function(){
         $('span','.wy-sug-types').on('click', function (ele) {
             // debugger;
@@ -100,7 +104,17 @@ export default {
             that.typeId = $(this).attr('typeid');
             $(this).addClass('wy-sug-type').siblings('.wy-sug-type').removeClass('wy-sug-type');
         });
-        // that.getGgList();
+
+        $("#uploaderBox").on("click", function(e) {
+           var newFileInput = "<input id='uploaderInput' type='file' name='imageFile' accept='image/*' multiple />";
+           $(this).parent().append($(newFileInput));
+           $("#uploaderInput").bind("change", function(e){
+             //onFileUploaded(e);预览等操作
+             $(this).removeAttr("id");
+             changepic(this,'.wy-sug-index')
+           });
+           $("#uploaderInput").click();
+        });
     });
 
   },
@@ -128,72 +142,54 @@ export default {
     },
     postWyOpitionSave(){
       var that = this;
-      var imageFile = $("#imageFile1").val();
-      console.log('imageFile',$("#imageFile1")[0].files)
-      if(imageFile && imageFile.length > 0){
-        var formData = new FormData();
-        // for (var i = 0; i < imageFile.length; i++) {
-          // imageFile[i]
-          formData.append("file", $("#imageFile1")[0].files[0]);
-        // }
-        // debugger
-        $.ajax({
-            url:window.hostPath+"/app/upload/img",
-            type:"post",
-            data:formData,
-            dataType:"json",
-            // 告诉jQuery不要去处理发送的数据
-            processData: false,
-            // 告诉jQuery不要去设置Content-Type请求头
-            contentType: false,
-            beforeSend: function () {
-               console.log("正在进行，请稍候");
-            },
-            success:function(data){
-              console.log('img data',data);
-                if(data.code == 0){
-                  var param = {
-                    propertyId :window.userInfo.propertyId,// 物业ID ,
-                    companyId :window.userInfo.companyId,// 公司ID ,
-                    communityId :that.grfixplaceid,// 楼宇ID ,
-                    ownerId : window.userInfo.ownerId,//业主ID ,
-                    typeId : that.typeId,//类型ID ,
-                    opinionContent : that.introduction,//投诉内容 ,
-                    imgUrl : data.imgUrl,//图片地址（多个以逗号隔开）
-                  };
-                  utils.Post('postWyOpinionSave',param).then(function(res){
-                    if (res.data.code ==0) {
-                      Toast('提交成功~');
-                      window.history.go(-1);
-                    }else {
-                      Toast('提交失败,'+res.data.msg+'！');
-                    }
-                    // that.list = res.data.page.list;
-                  });
-                }else{
-                  Toast(data.msg)
-                }
+      if (!that.disabled) {
+        that.disabled = true;
+        var imageFile = $("#wy-sug-postimgs").find('input');
+        // var imageFile = $("#imageFile1").val();
+        if(imageFile && imageFile.length > 0){
+
+          sendMoreRequest("#wy-sug-postimgs",function(res){
+            console.log('res~~~',res);
+            var param = {
+              propertyId :window.userInfo.propertyId,// 物业ID ,
+              // companyId :window.userInfo.companyId,// 公司ID ,
+              // communityId :that.grfixplaceid,// 楼宇ID ,
+              ownerId : window.userInfo.ownerId,//业主ID ,
+              houseId:that.grfixplaceid,
+              typeId : that.typeId,//类型ID ,
+              opinionContent : that.introduction,//投诉内容 ,
+              imgUrl : res.join(','),//图片地址（多个以逗号隔开）
+            };
+            utils.Post('postWyOpinionSave',param).then(function(res){
+              if (res.data.code ==0) {
+                Toast('提交成功~');
+                window.history.go(-1);
+              }else {
+                Toast('提交失败,'+res.data.msg+'！');
+              }
+            });
+          })
+        }else {
+          var param = {
+            propertyId :window.userInfo.propertyId,// 物业ID ,
+            // companyId :window.userInfo.companyId,// 公司ID ,
+            // communityId :that.grfixplaceid,// 楼宇ID ,
+            ownerId : window.userInfo.ownerId,//业主ID ,
+            houseId:that.grfixplaceid,
+            typeId : that.typeId,//类型ID ,
+            opinionContent : that.introduction,//投诉内容 ,
+            // imgUrl : res.join(','),//图片地址（多个以逗号隔开）
+          };
+          utils.Post('postWyOpinionSave',param).then(function(res){
+            if (res.data.code ==0) {
+              Toast('提交成功~');
+              window.history.go(-1);
+            }else {
+              Toast('提交失败,'+res.data.msg+'！');
             }
-        })
-      }else {
-        var param = {
-          propertyId :window.userInfo.propertyId,// 物业ID ,
-          companyId :window.userInfo.companyId,// 公司ID ,
-          communityId :that.grfixplaceid,// 楼宇ID ,
-          ownerId : window.userInfo.ownerId,//业主ID ,
-          typeId : that.typeId,//类型ID ,
-          opinionContent : that.introduction,//投诉内容 ,
-          // imgUrl : '',//图片地址（多个以逗号隔开）
-        };
-        utils.Post('postWyOpinionSave',param).then(function(res){
-          if (res.data.code ==0) {
-            Toast('提交成功~');
-            window.history.go(-1);
-          }else {
-            Toast('提交失败,'+res.data.msg+'！');
-          }
-          // that.list = res.data.page.list;
-        });
+            // that.list = res.data.page.list;
+          });
+        }
       }
     }
   }
@@ -202,6 +198,15 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style >
+textarea.mint-field-core {
+  color: rgba(85,85,85,1);
+}
+#wy-sug-postimgs input {
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index:-1;
+}
 #imageFile1 {
       /* margin-left: 40px; */
     /* display: inline-block; */
@@ -212,6 +217,7 @@ export default {
     width: 60px;
     height: 60px;
     left: 0px;
+    top:0;
     opacity: 0;
 }
 .wy-sug-body {
@@ -275,5 +281,11 @@ padding: 0;
 }
 .wy-sug-body .wy-select-problem .mint-cell-wrapper .mint-cell-title {
   padding-left: 0;
+}
+.wy-sug-body .wy-select-problem .mint-cell-wrapper .mint-cell-text{
+padding-left: 0 !important;
+}
+.mint-cell-value.is-link {
+  color: rgba(85,85,85,1) !important;
 }
 </style>

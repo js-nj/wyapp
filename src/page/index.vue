@@ -12,7 +12,7 @@
                 <div class="wy-head">
                   <div class="wy-header">
                     <!-- <img class="wy-head-img" src="../../static/images/wy-1.jpg" /> -->
-                    <mt-swipe :show-indicators="false" style="height:124px;">
+                    <mt-swipe :show-indicators="false" style="height:144px;">
                       <mt-swipe-item v-for="item in swipes" :key="item.id">
                         <img class="wy-head-img" :src="item.cmsImgUrl" @click="clickSwipe(item)" />
                       </mt-swipe-item>
@@ -40,14 +40,14 @@
                 <div class="wy-news">
                     <div class="wy-news-head">
                       <span class="wy-news-head-name">热门资讯</span>
-                      <span class="wy-news-head-more" @click="clickMoreNews">更多资讯 ></span>
+                      <span class="wy-news-head-more mint-cell-allow-right" @click="clickMoreNews">更多资讯</span>
                     </div>
                     <div class="wy-news-items">
                       <div class="wy-news-item" v-for="item in indexNews" @click="gotoDetail(item)">
                         <div class="wy-news-item-body">
-                          <div class="wy-news-item-title">{{item.cmsTitle}}</div>
+                          <div class="wy-news-item-title">{{htmlDecodeByRegEx(item.cmsTitle)}}</div>
                           <div class="wy-news-item-des">
-                            <span>{{item.checkTime}}</span>
+                            <span>{{item.createDate}}</span>
                             <span class="wy-news-item-read">{{item.hits+'人阅读'}}</span>
                           </div>
                         </div>
@@ -77,20 +77,22 @@
                     </div>
                   </div> -->
                   <div class="wy-gg-body">
-                    <div class="wy-news-items">
-                      <div class="wy-news-item" v-for="item in ggNews" @click="gotoDetail(item)">
-                        <div class="wy-news-item-img">
-                          <img v-if="item.cmsImgUrl" :src="item.cmsImgUrl" />
-                          <img v-else src="../../static/images/ggdefault.jpg" />
-                        </div>
-                        <div class="wy-news-item-body">
-                          <div class="wy-news-item-title">{{item.cmsTitle}}</div>
-                          <div class="wy-news-item-des">
-                            <span>{{item.checkTime}}</span>
-                            <span class="wy-news-item-read">{{item.hits+'人阅读'}}</span>
+                    <div class="wy-news-items" :style="{'height':newsHeight}">
+                      <mt-loadmore :bottom-method="loadBottom" :bottom-all-loaded="allLoaded" ref="wyindexloadmore">
+                        <div class="wy-news-item" v-for="item in ggNews" @click="gotoDetail(item)">
+                          <div class="wy-news-item-img">
+                            <img v-if="item.cmsImgUrl" :src="item.cmsImgUrl" />
+                            <img v-else src="../../static/images/ggdefault.jpg" />
+                          </div>
+                          <div class="wy-news-item-body">
+                            <div class="wy-news-item-title">{{htmlDecodeByRegEx(item.cmsTitle)}}</div>
+                            <div class="wy-news-item-des">
+                              <span>{{item.checkTime}}</span>
+                              <span class="wy-news-item-read">{{item.hits+'人阅读'}}</span>
+                            </div>
                           </div>
                         </div>
-                      </div>
+                      </mt-loadmore>
                       <!-- <div v-if="ggNews.length==0">暂无数据~</div> -->
                       <div v-if="ggNews.length==0" style="padding:16px 0;">
                         <img style="width:128px;height:103px;" src="../../static/images/wy/none.png" />
@@ -121,18 +123,42 @@
                     </mt-cell>
                     <div class="wy-my-mj" @click="getOpenDoor">
                       <mt-cell title="我的门禁" is-link>
-                        <img style="width: 18px;" slot="icon" src="../../static/images/wy/mj.png" />
+                        <img  slot="icon" src="../../static/images/wy/mj.png" />
                       </mt-cell>
                     </div>
-                    <mt-cell title="我的缴费" to="/recIndex" is-link>
-                      <img style="width: 18px;" slot="icon" src="../../static/images/wy/jf.png" />
-                    </mt-cell>
-                    <mt-cell title="我的报修" to="/fixList" is-link>
-                      <img slot="icon" src="../../static/images/wy/bx.png" />
-                    </mt-cell>
-                    <mt-cell title="我的投诉" to="/sugList" is-link>
-                      <img slot="icon" src="../../static/images/wy/ts.png" />
-                    </mt-cell>
+                    <div class="wy-my-mj" @click="gotoPage('recIndex')">
+                      <mt-cell title="我的缴费" is-link>
+                        <img  slot="icon" src="../../static/images/wy/jf.png" />
+                      </mt-cell>
+                    </div>
+                    <div class="wy-my-mj" @click="gotoPage('fixList')">
+                      <mt-cell title="我的报修" is-link>
+                        <img slot="icon" src="../../static/images/wy/bx.png" />
+                      </mt-cell>
+                    </div>
+                    <div class="wy-my-mj" @click="gotoPage('sugList')">
+                      <mt-cell title="我的投诉" is-link>
+                        <img slot="icon" src="../../static/images/wy/ts.png" />
+                      </mt-cell>
+                    </div>
+                    <!-- 我的派单 -->
+                    <div class="wy-my-mj" v-if="pushTypeId && pushTypeId.indexOf('1')>-1" @click="gotoPage('disIndex')">
+                      <mt-cell title="我的派单" is-link>
+                        <img slot="icon" src="../../static/images/wy/mydistribute.png" />
+                      </mt-cell>
+                    </div>
+                    <!-- 我的回复 -->
+                    <div class="wy-my-mj" v-if="pushTypeId && pushTypeId.indexOf('2')>-1" @click="gotoPage('repIndex')">
+                      <mt-cell title="我的回复" is-link>
+                        <img slot="icon" src="../../static/images/wy/myreply.png" />
+                      </mt-cell>
+                    </div>
+                    <!-- 我的接单 -->
+                    <div class="wy-my-mj" v-if="pushTypeId && pushTypeId.indexOf('3')>-1" @click="gotoPage('fixerIndex')">
+                      <mt-cell title="我的接单" is-link>
+                        <img slot="icon" src="../../static/images/wy/mybills.png" />
+                      </mt-cell>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -169,7 +195,7 @@
 import 'weui';
 import weui from 'weui.js';
 import $ from "jquery";
-import { Search,Cell,Swipe, SwipeItem,Toast,Indicator } from 'mint-ui';
+import { Search,Cell,Swipe, SwipeItem,Toast,Indicator,Loadmore } from 'mint-ui';
 import * as utils from '../utils';
 export default {
   name: 'index',
@@ -180,6 +206,7 @@ export default {
       [SwipeItem.name]: SwipeItem,
       [Toast.name]: Toast,
       [Indicator.name]: Indicator,
+      [Loadmore.name]: Loadmore
   },
   data () {
     return {
@@ -192,7 +219,17 @@ export default {
       swipes:[],
       ownerName:'',
       userHeadimgurl:'',
-      ownerMobile:''
+      ownerMobile:'',
+      pushTypeId:'',
+
+      allLoaded:false,
+      totalCount:0,
+      currPage:1,
+      newsHeight:(document.documentElement.clientHeight - 61)+'px',
+      clientWidth:document.documentElement.clientWidth +'px',
+      wySelfUrlrecIndex:'',
+      wySelfUrlsugIndex:'',
+      wySelfUrlfixIndex:'',
     }
   },
   beforeCreate(){
@@ -211,6 +248,9 @@ export default {
         if (sessionStorage.getItem('tabId') && sessionStorage.getItem('tabId') == '3') {
           $('.weui-tabbar__item').eq(2).trigger('click');
         }
+        if (sessionStorage.getItem('tabId') && sessionStorage.getItem('tabId') == '2') {
+          $('.weui-tabbar__item').eq(1).trigger('click');
+        }
     });
 
   },
@@ -218,12 +258,17 @@ export default {
     tabId(id){
       if (id==='2') {
         // this.getGgType();
-        this.getGgList();
+        // this.getGgList();
       }
       sessionStorage.setItem('tabId',id);
     },
     searchValue(value){
+      // debugger;
+      if (!value) {
+        this.currPage = 1;
+      }
       this.getGgList(value);
+
     }
   },
   methods:{
@@ -246,13 +291,50 @@ export default {
         });
       // window.location.href = "http://www.baidu.com";
     },
-    getUserInfo(){
-      Indicator.open()
-      var that = this;
+    getWySetting(){
       var param = {
-        residentCode:window.location.href.split('resident_code=')[1].split('&open_id=')[0]
+        propertyId:window.userInfo.propertyId
       };
-      if (param.residentCode) {
+      var that = this;
+      // debugger
+      utils.Get('getwysetting',param).then(function(res){
+          // console.log('getOpenDoor',res)
+          if (res.data.code === 0 && res.data.page && res.data.page.list) {
+            res.data.page.list.forEach(function(item){
+              if (item.setType == '1') {
+                that.wySelfUrlrecIndex = item.setUrl;
+              } else if(item.setType == '2'){
+                that.wySelfUrlfixIndex = item.setUrl;
+              }else if(item.setType == '3'){
+                that.wySelfUrlsugIndex = item.setUrl;
+              }else {
+                // wySelfUrlrecIndex:'',
+                // wySelfUrlsugIndex:'',
+                // wySelfUrlfixIndex:'',
+                Toast('无法分辨的setType类型')
+              }
+            });
+          }
+        });
+    },
+    getUserInfo(){
+      var that = this;
+      if (window.location.href.indexOf('resident_code=')>-1) {
+        var param = {
+          residentCode:window.location.href.split('resident_code=')[1].split('&open_id=')[0]
+        };
+      }else {
+        var param = {
+          residentCode:''
+        };
+      }
+      // if (!param.residentCode) {
+      //   Toast('未获取到resident_code');
+      //   return;
+      // }
+      var loginFlag = sessionStorage.getItem('logined');
+      if (!loginFlag) {
+        Indicator.open()
         utils.Get('getUserInfo',param).then(function(res){
           // console.log('getUserInfo',res)
           if (res.data.code == 0 && res.data.result) {
@@ -265,31 +347,53 @@ export default {
             window.userInfo = JSON.parse(localStorage.getItem('_userInfo'));
             window.open_id =localStorage.getItem('open_id');
           }
+          sessionStorage.setItem('logined','1');
           that.allready = '1';
           that.ownerName=window.userInfo.ownerName;
           that.userHeadimgurl=window.userInfo.userHeadimgurl;
           that.ownerMobile=window.userInfo.ownerMobile;
+          that.pushTypeId = window.userInfo.pushTypeId;
           that.getZxList();
           that.getSwipeImgs();
+          that.getWySetting();
           Indicator.close()
           // that.ggMenu = res.data.page.list;
         });
       }else {
-        Toast('未获取到resident_code');
+        window.userInfo = JSON.parse(localStorage.getItem('_userInfo'));
+        window.open_id =localStorage.getItem('open_id');
+        that.allready = '1';
+        that.ownerName=window.userInfo.ownerName;
+        that.userHeadimgurl=window.userInfo.userHeadimgurl;
+        that.ownerMobile=window.userInfo.ownerMobile;
+        that.pushTypeId = window.userInfo.pushTypeId;
+        that.getZxList();
+        that.getSwipeImgs();
+        that.getWySetting();
+        // Indicator.close()
       }
+
     },
     gotoPage(route){
-      this.$router.push({
-        name:route,
-      })
+      if (this['wySelfUrl'+route]) {
+        window.location.href = this['wySelfUrl'+route];
+      }else {
+        this.$router.push({
+          name:route,
+        });
+      }
     },
     gotoDetail(item){
-      this.$router.push({
-        name:'detail',
-        params:{
-          item:item
-        }
-      })
+      if (item.cmsUrlUrl) {
+        window.location.href = item.cmsUrlUrl;
+      }else {
+        this.$router.push({
+          name:'detail',
+          params:{
+            item:item
+          }
+        })
+      }
     },
     // ggmenuClick(item,index){
     //   $('.wy-ggmenu-item-selected').removeClass('wy-ggmenu-item-selected');
@@ -326,7 +430,7 @@ export default {
     getGgList(value){
       var that = this;
       var param = {
-        page:1,
+        page:that.currPage,
         limit:10,
         categoryId:'1',
         propertyId:window.userInfo.propertyId,
@@ -337,11 +441,30 @@ export default {
       // }
       if (value) {
         param.cmsTitle=value;
+        param.page = 1;
+        that.currPage = 1;
       }
       utils.Get('getGgList',param).then(function(res){
-        // console.log('getGgList',res)
-        that.ggNews = res.data.page.list;
-        // that.indexNews = res.data.page.list;
+        if (param.cmsTitle) {
+          that.ggNews = res.data.page.list;
+        }else {
+          if (that.currPage == 1) {
+            that.ggNews = res.data.page.list;
+          }else {
+            that.ggNews = that.ggNews.concat(res.data.page.list);
+          }
+        }
+        // that.indexNews = that.indexNews.concat(res.data.page.list);
+        that.totalCount = res.data.page.totalCount;
+        // that.currPage = that.currPage + 1;
+        if ((that.totalCount == that.indexNews.length) || that.currPage == that.totalPage) {
+          that.allLoaded = true;// 若数据已全部获取完毕
+          that.$refs.wyindexloadmore.onBottomLoaded();
+        }else {
+          that.allLoaded = false;
+          that.currPage++
+          that.$refs.wyindexloadmore.onBottomLoaded();
+        }
       });
     },
     getZxList(value){
@@ -349,7 +472,6 @@ export default {
       var param = {
         page:1,
         limit:10,
-        categoryId:'2',
         propertyId:window.userInfo.propertyId,
         ownerId:window.userInfo.ownerId,
       };
@@ -369,8 +491,32 @@ export default {
     clickSwipe(param){
       if (param && param.cmsUrlUrl) {
         window.location.href = param.cmsUrlUrl;
+      }else {
+        this.$router.push({
+          name:'detail',
+          params:{
+            item:param
+          }
+        })
       }
-    }
+    },
+    htmlDecodeByRegEx(str){
+         var temp = "";
+         if(str.length == 0) return "";
+         temp = str.replace(/&amp;/g,"&");
+         temp = temp.replace(/&lt;/g,"<");
+         temp = temp.replace(/&gt;/g,">");
+         temp = temp.replace(/&nbsp;/g," ");
+         temp = temp.replace(/&#39;/g,"\'");
+         temp = temp.replace(/&quot;/g,"\"");
+         temp = temp.replace(/&ldquo;/g,"\“");
+         temp = temp.replace(/&rdquo;/g,"\”");
+         return temp;
+    },
+    loadBottom() {
+      // var that = this;
+      this.getGgList(this.tarTabId);
+    },
   }
 }
 </script>
@@ -401,6 +547,7 @@ a {
 }
 .wy-head-img {
   width: 100%;
+  height:100%;
 }
 .wy-head {
   border-radius: 16px 16px 0 0;
@@ -445,9 +592,11 @@ a {
     font-size: 12px;
     position: relative;
     top: 6px;
+    padding-right: 8px;
 }
 .wy-news-items{
       padding: 0 16px;
+      overflow: auto;
 }
 .wy-news-item{
   padding: 12px 0;
@@ -470,7 +619,7 @@ a {
 .wy-news-item-title {
   padding: 4px 0;
   color: #333;
-  width: 184px;
+  width:100%;
 /*    overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;*/
@@ -574,8 +723,8 @@ border-radius:9px;
   text-align: left;
 }
   .mint-cell-text{
-    color: #747474;
-    font-size: 15px;
+    color: #333;
+    font-size: 16px;
     display: inline-block;
     padding-left: 8px;
 }
@@ -609,8 +758,8 @@ border-radius:9px;
 
  .wy-mybody-content .mint-cell img {
     vertical-align: middle;
-    width: 20px;
-    height: 20px;
+    width: 24px;
+    height: 28px;
 }
 .wy-my-mj .mint-cell-wrapper{
       background-image: linear-gradient(180deg, #d9d9d9, #d9d9d9 50%, transparent 50%) !important;
@@ -623,5 +772,20 @@ border-radius:9px;
 .wy-gg-search .mint-search-list {
 padding-top: 0;
 position: unset;
+}
+.wy-mybody-content .mint-cell-allow-right::after {
+    border: solid 1px #c8c8cd;
+        border-bottom-width: 0;
+    border-left-width: 0;
+    width: 8px;
+    height: 8px;
+}
+.wy-news-head-more.mint-cell-allow-right::after {
+    right: 0px;
+    width: 6px;
+    height: 6px;
+}
+.wy-gg-body .wy-news-item-img {
+  padding-top: 0px;
 }
 </style>

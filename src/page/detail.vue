@@ -5,8 +5,10 @@
     <!-- <span class="wy-detail-des-item">{{auther}}</span>
     <span class="wy-detail-des-item">{{mfrom}}</span> -->
     <span class="wy-detail-des-item">{{time}}</span>
+    &nbsp;&nbsp;&nbsp;&nbsp;
+    <span class="wy-detail-des-item">{{hits}}人阅读</span>
   </div>
-  <div class="wy-detail-body">{{content}}</div>
+  <div class="wy-detail-body" v-html="content"></div>
 </div>
 
 </template>
@@ -24,6 +26,7 @@ export default {
       auther:'',
       mfrom:'',
       time:'',
+      hits:'',
       content:''
     }
   },
@@ -34,20 +37,38 @@ export default {
     var param = {
       id:''
     };
-    param.id = this.$route.params.item.id;
+    if (this.$route.params && this.$route.params.item && this.$route.params.item.id) {
+      param.id = this.$route.params.item.id;
+    } else {
+      param.id = window.location.href.split('id=')[1];
+    }
     this.getGgDetail(param);
   },
   methods:{
+    htmlDecodeByRegEx(str){
+         var temp = "";
+         if(str.length == 0) return "";
+         temp = str.replace(/&amp;/g,"&");
+         temp = temp.replace(/&lt;/g,"<");
+         temp = temp.replace(/&gt;/g,">");
+         temp = temp.replace(/&nbsp;/g," ");
+         temp = temp.replace(/&#39;/g,"\'");
+         temp = temp.replace(/&quot;/g,"\"");
+         temp = temp.replace(/&ldquo;/g,"\“");
+         temp = temp.replace(/&rdquo;/g,"\”");
+         return temp;
+    },
     getGgDetail(param){
       var that = this;
       utils.Get('getGgDetail',param).then(function(res){
         console.log('res----',res)
         if (res.data.code === 0) {
-          that.title = res.data.wyCms.cmsTitle;
+          that.title = that.htmlDecodeByRegEx(res.data.wyCms.cmsTitle);
           that.auther = res.data.wyCms.checkUserName ;
           that.mfrom = res.data.wyCms.copyfrom;
           that.time = res.data.wyCms.createDate;
-          that.content = res.data.wyCms.cmsContent;
+          that.hits = res.data.wyCms.hits;
+          that.content = that.htmlDecodeByRegEx(res.data.wyCms.cmsContent);
         }
         // that.list = res.data.page.list;
       });

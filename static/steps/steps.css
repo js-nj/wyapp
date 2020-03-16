@@ -130,7 +130,8 @@
 }
 .steps-vertical .step-title {
     line-height: 24px;
-    padding-bottom: 8px;
+        padding-bottom: 4px;
+    padding-top: 4px;
 }
 .step-description {
     padding-right: 10%;

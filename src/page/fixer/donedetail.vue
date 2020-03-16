@@ -9,7 +9,7 @@
       <div v-for="item in options" class="wy-fix-det-desitem" style="">
         <span>{{item.title}}</span>：
         <span class="wy-fix-det-desitemvalue" v-if="item.title != '故障图片'" >{{item.value}}</span>
-        <div v-else class="wy-fix-det-desitemimgs">
+        <div v-else class="wy-fix-det-desitemimgs post">
           <img :src="src" v-for="src in item.value" class="wy-fix-det-desitemimg" />
         </div>
         <label v-if="item.title == '报修人员'" class="wy-fix-det-usertagdiv">
@@ -95,7 +95,7 @@ export default {
         value:[]
       }],
       problemOptions: [{
-        title:'维修人',
+        title:'维修人员',
         value:''
       },{
         title:'维修电话',
@@ -117,7 +117,7 @@ export default {
   created(){
     // console.log(utils)
     // debugger;
-    window.wxuserInfo = JSON.parse(localStorage.getItem('wxuserInfo'));
+    window.userInfo = JSON.parse(localStorage.getItem('userInfo'));
     document.title = '报修详情';
 
     var param = {
@@ -222,7 +222,7 @@ export default {
 
 
           that.$set(that.problemOptions,0,{
-            title:'维修人',
+            title:'维修人员',
             value:res.data.wyService.repairUserName
           });
           that.$set(that.problemOptions,1,{
@@ -284,7 +284,7 @@ border-radius: 8px;
     font-size: 10px;
     display: inline-block;
     line-height: 10px;
-    padding: 2px 4px 1px 4px;
+    padding: 4px 4px 2px 4px;
     vertical-align: text-bottom;
 }
 .wy-step-time,.wy-step-person {
@@ -367,7 +367,7 @@ display: inline-block;
     top: 2px;
     left: 6px;
     /* overflow: hidden; */
-    width: 200px;
+    width: calc(100% - 70px);
 }
 .wy-fix-det-desitemimg {
   width: 50px;
