@@ -166,7 +166,9 @@ export default {
     },
     listStatus(val){
       sessionStorage.setItem('wyFixList',val);
+      // debugger;
       if (val == 'done' && this.doneOptions.length == 0) {
+        this.options = [];
         this.doneOptions.push({
           show:'hide',
           serviceAddress:'',
@@ -199,6 +201,10 @@ export default {
       this.getWyserviceListComplete();
     },
     gotoDetail(id,from1){
+      // if (this.listStatus == 'done') {
+      //   debugger;
+      //   this.options = [];
+      // }
       window.location.href = window.location.origin+window.location.pathname + '#/fixDetail?from='+from1+'&id='+id;
     },
     getWyserviceListIn(){
@@ -225,6 +231,10 @@ export default {
             that.currPageDoing++
             that.$refs.wyfixDoingloadmore && that.$refs.wyfixDoingloadmore.onBottomLoaded();
           }
+          that.$nextTick(function(){
+          // debugger;
+            $('.wy-fix-list-items').scrollTop(0);
+          });
           // that.options = res.data.page.list;
         }else {
           Toast('获取数据失败');
@@ -256,6 +266,10 @@ export default {
             that.currPageDone++
             that.$refs.wyfixDoneloadmore && that.$refs.wyfixDoneloadmore.onBottomLoaded();
           }
+          that.$nextTick(function(){
+          // debugger;
+            $('.wy-fix-list-items').scrollTop(0);
+          });
           // that.doneOptions = res.data.page.list;
         }else {
           Toast('获取数据失败');

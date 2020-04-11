@@ -4,11 +4,13 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <title>物业管理</title>
-    <link rel="stylesheet" type="text/css" href="./static/app.css">
-    <link rel="stylesheet" href="./static/bh.min.css">
-    <link rel="stylesheet" href="./static/bh-scenes.min.css">
-    <link rel="stylesheet" href="./static/iconfont.css">
+    <!-- <link rel="stylesheet" type="text/css" href="./static/app.css"> -->
+    <!-- <link rel="stylesheet" href="./static/bh.min.css">
+    <link rel="stylesheet" href="./static/bh-scenes.min.css"> -->
+    <!-- <link rel="stylesheet" href="./static/iconfont.css"> -->
     <link rel="stylesheet" href="./static/steps/steps.css">
+    <link rel="stylesheet" href="./static/swiper.min.css">
+    <link rel="stylesheet" href="./static/css/app.css">
     <!-- <script src="http://cdn.bootcss.com/vConsole/3.3.0/vconsole.min.js"></script>
     <script>new VConsole()</script>
     <style>
@@ -23,68 +25,9 @@
         window.hostPath = 'http://njst2020.com:2057/zhwy';
       }
     </script>
-    <script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.js"></script>
-    <style type="text/css">
-      .close {
-          position: absolute;
-          right: -6px;
-          top: -8px;
-          width: 16px;
-          height: 16px;
-          background: #3789F9;
-          border-radius: 8px;
-      }
-      .close:before, .close:after {
-        position: absolute;
-        left: 7px;
-        top:2px;
-        content: ' ';
-        height: 10px;
-        width: 2px;
-        background-color: #fff;
-      }
-      .close:before {
-        transform: rotate(45deg);
-      }
-      .close:after {
-        transform: rotate(-45deg);
-      }
-    </style>
-    <link rel="stylesheet" href="./static/swiper.min.css">
-    <script src="./static/swiper.min.js"></script>
-    <script>
-      $(document).ready(function(){
-        /*调起大图 S*/
-        var mySwiper = new Swiper('.swiper-container2', {
-              loop: false,
-              pagination: '.swiper-pagination2',
-        });
-        $("#app").on("click", ".post img", function() {
-          var imgBox = $(this).parents(".post").find("img");
-          var i = $(imgBox).index(this);
-          $(".big_img .swiper-wrapper").html("")
-
-          for(var j = 0 ,c = imgBox.length; j < c ;j++){
-           $(".big_img .swiper-wrapper").append('<div class="swiper-slide"><div class="cell"><img src="' + imgBox.eq(j).attr("src") + '" / ></div></div>');
-          }
-          mySwiper.updateSlidesSize();
-          mySwiper.updatePagination();
-          $(".big_img").css({
-              "z-index": 1001,
-              "opacity": "1"
-          });
-          mySwiper.slideTo(i, 0, false);
-          return false;
-        });
-        $(".big_img").on("click", function() {
-            $(this).css({
-                "z-index": "-1",
-                "opacity": "0"
-            });
-        });
-      });
-    </script>
-    <script src="./static/func.js"></script>
+    <!-- <script>
+      document.write('<link rel="stylesheet" href="./static/css/app.css?t=' + new Date().getTime() + '">')
+    </script> -->
   </head>
   <body>
     <div id="app"></div>
@@ -97,6 +40,14 @@
         </div>
     </div>
     <!-- built files will be auto injected -->
+
+    <script src="./static/js/manifest.js"></script>
+    <script src="./static/js/vendor.js"></script>
+    <script src="./static/js/app.js"></script>
+    <script src="./static/jquery.js"></script>
     <script src="./static/steps/steps.js"></script>
+    <script src="./static/swiper.min.js"></script>
+    <script src="./static/func.js"></script>
+    <!-- <script>document.write('<script src="./static/js/app.js?t=' + new Date().getTime() + '"><\/script>')</script> -->
   </body>
 </html>

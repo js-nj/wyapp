@@ -3,6 +3,7 @@ import api from './api'
 
 const UA = navigator.userAgent.toLowerCase()
 
+
 function serialize(data) {
   if (!data) return '';
   var pairs = [],

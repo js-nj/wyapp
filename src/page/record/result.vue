@@ -8,10 +8,9 @@
     <img src="../../../static/images/wy/fail.png" style="width:70px;" />
     <div class="wy-rec-detail-title" style="height:40px;color:#f96868;">支付失败</div>
   </div>
-  <div style="padding:0 16px;background:#fff;text-align:left;">
+  <!-- <div style="padding:0 16px;background:#fff;text-align:left;">
     <mt-cell  title="支付号"  :value="order_no"></mt-cell>
-    <!-- <mt-cell  title="说明"  :value="msg"></mt-cell> -->
-  </div>
+  </div> -->
   <mt-button class="wy-rec-result-button" type="primary" @click="gotoRecIndex">返回</mt-button>
 </div>
 

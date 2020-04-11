@@ -9,7 +9,7 @@
     <mt-tab-container v-model="selected">
       <mt-tab-container-item id="1">
         <div class="wy-sug-list wy-rep-list" :style="{'height':newsHeight,'overflow':'scroll'}">
-          <div v-if="list.length>0" >
+          <template v-if="list.length>0" >
             <mt-loadmore :bottom-method="loadBottom" :bottom-all-loaded="allLoaded" ref="wysuglistloadmore">
               <div  v-for="(item,index) in list" class="wy-sug-item wy-reply-item" :show="item.show" @click="gotoReplyDetail(item.id)">
                 <div class="wy-rep-item-head">
@@ -22,7 +22,7 @@
                 </div>
               </div>
             </mt-loadmore>
-          </div>
+          </template>
           <div v-if="list.length==0" style="padding:16px 0;">
             <img style="width:128px;height:103px;" src="../../../static/images/wy/none.png" />
             <div style="color:#ADB7BA;font-size:15px;">暂无内容</div>
@@ -185,6 +185,10 @@ export default {
         }else {
           that.list = res.data.page.list;
         }
+        that.$nextTick(function(){
+          // debugger;
+          $('.wy-rep-list').scrollTop(0);
+        });
       });
     },
     getWyopinionlistforwyDone(){
@@ -214,6 +218,10 @@ export default {
         }else {
           that.listDone = res.data.page.list;
         }
+        that.$nextTick(function(){
+          // debugger;
+          $('.wy-rep-list').scrollTop(0);
+        });
       });
     }
   }

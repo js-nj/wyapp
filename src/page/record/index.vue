@@ -40,7 +40,7 @@
           <label style="font-size: 14px;display: inline-block;padding: 0 16px 0 0;">
             合计：<span style="color:#DE3116;">¥</span><span style="color:#DE3116;display:inline-block;min-width:32px;">{{allMoney}}</span>
           </label>
-          <mt-button class="wy-rec-button" type="primary" @click="postCreateOrder">去支付</mt-button>
+          <mt-button class="wy-rec-button" :disabled="disabled" type="primary" @click="postCreateOrder">去支付</mt-button>
         </div>
       </div>
       <div v-else style="padding:16px 0;">
@@ -49,7 +49,7 @@
       </div>
     </mt-tab-container-item>
     <mt-tab-container-item id="2" class="wy-rec-index-done-tabcon">
-      <div v-if="doneoptions.length>0" :style="{'height':newsHeight,'overflow':'scroll'}">
+      <div v-if="doneoptions.length>0" class="wy-rec-done-items" :style="{'height':newsHeight,'overflow':'scroll'}">
         <mt-loadmore :bottom-method="loadBottom" :bottom-all-loaded="allLoaded" ref="wyrecindexloadmore">
           <div class="wy-rec-item wy-rec-mt-8" v-for="item in doneoptions" :show="item.show">
             <div class="wy-rec-item-title">{{item.options[0].label}}</div>
@@ -97,6 +97,7 @@ export default {
   data () {
     return {
       allCheck: [],
+      disabled:false,
       allMoney:0,
       selected:'1',
       chooseValue:[],
@@ -134,6 +135,9 @@ export default {
   created(){
     document.title = '账单列表';
     window.userInfo = JSON.parse(localStorage.getItem('_userInfo'));
+    if (window.location.href.indexOf('open_id')>-1) {
+      window.open_id = window.location.href.split('open_id=')[1];
+    }
     this.getPayDoingList();
     var wyRecIndex = sessionStorage.getItem('wyRecIndex');
     if (wyRecIndex) {
@@ -271,6 +275,9 @@ export default {
             that.currPage++
             that.$refs.wyrecindexloadmore.onBottomLoaded();
           }
+          that.$nextTick(function(){
+            $('.wy-rec-done-items').scrollTop(0);
+          })
         }else {
           that.doneoptions = [];
         }
@@ -281,22 +288,25 @@ export default {
         ids:'',
         redirectUrl:window.location.origin + '/index.html#/recResult'
       };
-      if (this.options.length>0) {
-        this.options.forEach(function(item){
-          if (item.value[0]) {
-            param.ids = param.ids + item.id + ',';
-          }
-        });
-        param.ids = param.ids.slice(0,param.ids.length -1);
-        utils.Get('postCreateOrder',param).then(function(res){
-          if (res.data.code === 0 && res.data.result.paymentUrl) {
-            window.location.href = res.data.result.paymentUrl+'&openId='+window.open_id;
-          }else {
-            Toast('缴费失败~')
-          }
-        });
-      }else {
-        Toast('请至少选择一单~')
+      if (!this.disabled) {
+        this.disabled = true;
+        if (this.options.length>0) {
+          this.options.forEach(function(item){
+            if (item.value[0]) {
+              param.ids = param.ids + item.id + ',';
+            }
+          });
+          param.ids = param.ids.slice(0,param.ids.length -1);
+          utils.Get('postCreateOrder',param).then(function(res){
+            if (res.data.code === 0 && res.data.result.paymentUrl) {
+              window.location.href = res.data.result.paymentUrl+'&openId='+window.open_id;
+            }else {
+              Toast('缴费失败~')
+            }
+          });
+        }else {
+          Toast('请至少选择一单~')
+        }
       }
     },
     gotoRecDetail(item){

@@ -4,7 +4,7 @@
   <div class="wy-cancel-textarea">
     <mt-field label="" placeholder="请输入撤销的原因" type="textarea" rows="4" v-model="introduction"></mt-field>
   </div>
-  <mt-button class="wy-sug-button" type="primary" @click="postWyOpitionCancel">确认撤销</mt-button>
+  <mt-button class="wy-sug-button" type="primary" :disabled="disabled" @click="postWyOpitionCancel">确认撤销</mt-button>
 </div>
 
 </template>
@@ -19,7 +19,8 @@ export default {
   data () {
     return {
       introduction:'',
-      id:''
+      id:'',
+      disabled:false
     }
   },
   components:{
@@ -43,15 +44,18 @@ export default {
         id:that.id,// 物业ID ,
         returnContent:that.introduction,
       };
-      utils.Post('postWyoptionCancel',param).then(function(res){
-        if (res.data.code ==0) {
-          Toast('撤销成功~');
-          window.history.go(-1);
-        }else {
-          Toast('撤销失败,'+res.data.msg+'！');
-        }
-        // that.list = res.data.page.list;
-      });
+      if (!that.disabled) {
+        that.disabled = true;
+        utils.Post('postWyoptionCancel',param).then(function(res){
+          if (res.data.code ==0) {
+            Toast('撤销成功~');
+            window.history.go(-1);
+          }else {
+            Toast('撤销失败,'+res.data.msg+'！');
+          }
+          // that.list = res.data.page.list;
+        });
+      }
     }
   }
 }

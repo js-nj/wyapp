@@ -6,7 +6,7 @@
     <span class="wy-detail-des-item">{{mfrom}}</span> -->
     <span class="wy-detail-des-item">{{time}}</span>
     &nbsp;&nbsp;&nbsp;&nbsp;
-    <span class="wy-detail-des-item">{{hits}}人阅读</span>
+    <!-- <span class="wy-detail-des-item">{{hits}}人阅读</span> -->
   </div>
   <div class="wy-detail-body" v-html="content"></div>
 </div>

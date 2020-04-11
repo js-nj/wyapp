@@ -1,6 +1,6 @@
 <template>
 <div class="wy-sug-list">
-  <div v-if="list.length>0" :style="{'height':newsHeight,'overflow':'scroll'}">
+  <div v-if="list.length>0" class="wy-sug-items" :style="{'height':newsHeight,'overflow':'scroll'}">
     <mt-loadmore :bottom-method="loadBottom" :bottom-all-loaded="allLoaded" ref="wysuglistloadmore">
       <div  v-for="(item,index) in list" class="wy-sug-item" :show="item.show">
         <div class="wy-sug-item-head">
@@ -43,11 +43,11 @@
           <template v-if="item.opinionStatus == '3' || item.opinionStatus == '4'">
             <div>
               <span>回复内容</span>
-              <div>{{item.returnContent}}</div>
+              <div>{{item.repairContent}}</div>
             </div>
             <div>
               <span>回复时间</span>
-              <div>{{item.updateDate}}</div>
+              <div>{{item.repairTime}}</div>
             </div>
           </template>
         </div>
@@ -141,6 +141,10 @@ export default {
         }else {
           that.list = res.data.page.list;
         }
+        that.$nextTick(function(){
+          // debugger;
+          $('.wy-sug-items').scrollTop(0);
+        });
       });
     }
   }

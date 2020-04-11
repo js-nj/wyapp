@@ -48,7 +48,7 @@
                           <div class="wy-news-item-title">{{htmlDecodeByRegEx(item.cmsTitle)}}</div>
                           <div class="wy-news-item-des">
                             <span>{{item.createDate}}</span>
-                            <span class="wy-news-item-read">{{item.hits+'人阅读'}}</span>
+                            <!-- <span class="wy-news-item-read">{{item.hits+'人阅读'}}</span> -->
                           </div>
                         </div>
                         <div class="wy-news-item-img">
@@ -88,7 +88,7 @@
                             <div class="wy-news-item-title">{{htmlDecodeByRegEx(item.cmsTitle)}}</div>
                             <div class="wy-news-item-des">
                               <span>{{item.checkTime}}</span>
-                              <span class="wy-news-item-read">{{item.hits+'人阅读'}}</span>
+                              <!-- <span class="wy-news-item-read">{{item.hits+'人阅读'}}</span> -->
                             </div>
                           </div>
                         </div>
@@ -236,8 +236,8 @@ export default {
 
   },
   created(){
+    // alert('测试清除缓存~');
     var that = this;
-    document.title = '物业管理';
     this.getUserInfo();
     this.$nextTick(function(){
         $('.weui-tabbar__item').on('click', function (ele) {
@@ -348,6 +348,7 @@ export default {
             window.open_id =localStorage.getItem('open_id');
           }
           sessionStorage.setItem('logined','1');
+          document.title = window.userInfo.propertyName;
           that.allready = '1';
           that.ownerName=window.userInfo.ownerName;
           that.userHeadimgurl=window.userInfo.userHeadimgurl;
@@ -370,6 +371,7 @@ export default {
         that.getZxList();
         that.getSwipeImgs();
         that.getWySetting();
+        document.title = window.userInfo.propertyName;
         // Indicator.close()
       }
 
@@ -465,6 +467,9 @@ export default {
           that.currPage++
           that.$refs.wyindexloadmore.onBottomLoaded();
         }
+        that.$nextTick(function(){
+          $('.wy-news-items').scrollTop(0);
+        });
       });
     },
     getZxList(value){
@@ -609,15 +614,15 @@ a {
 .wy-news-item-img {
   /*width: 100px;*/
   line-height: 1;
-  padding-top: 10px;
+  padding-top: 4px;
 }
 .wy-news-item-body {
-  width: calc(100% - 96px);
+  width: calc(100% - 101px);
   /*width: calc(100% - 105px);*/
     text-align: left;
 }
 .wy-news-item-title {
-  padding: 4px 0;
+  padding: 0 0 4px 0;
   color: #333;
   width:100%;
 /*    overflow: hidden;
@@ -640,8 +645,8 @@ a {
   padding-left: 8px;
 }
 .wy-news-item-img img {
-  width: 90px;
-  height: 60px;
+  width: 95px;
+  height: 65px;
 }
 .wy-gg-search.mint-search {
   height: auto !important;
@@ -786,6 +791,12 @@ position: unset;
     height: 6px;
 }
 .wy-gg-body .wy-news-item-img {
-  padding-top: 0px;
+  padding-top: 4px;
+}
+.wy-gg-search .mint-searchbar-inner {
+     -webkit-box-flex: none;
+    -ms-flex: none;
+     flex: none;
+    width: calc(100% - 50px);
 }
 </style>

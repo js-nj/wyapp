@@ -6,6 +6,19 @@
       <div>{{item.opinionNumber}}</div>
     </div>
     <div>
+      <span>{{item.typeName}}住户</span>
+      <div>{{item.ownerName}}</div>
+    </div>
+    <div>
+      <span>{{item.typeName}}手机</span>
+      <div>{{item.ownerMobile}}</div>
+    </div>
+    <div>
+      <span>{{item.typeName}}时间</span>
+      <div>{{item.createDate}}</div>
+    </div>
+
+    <div>
       <span>{{item.typeName}}内容</span>
       <div>{{item.opinionContent}}</div>
     </div>
@@ -24,11 +37,11 @@
     <template v-if="item.opinionStatus == '3' || item.opinionStatus == '4'">
       <div>
         <span>回复内容</span>
-        <div>{{item.returnContent}}</div>
+        <div>{{item.repairContent}}</div>
       </div>
       <div>
         <span>回复时间</span>
-        <div>{{item.updateDate}}</div>
+        <div>{{item.repairTime}}</div>
       </div>
     </template>
   </div>
@@ -36,7 +49,7 @@
     <div class="wy-cancel-textarea">
       <mt-field label="" placeholder="请输入要回复的内容" type="textarea" rows="4" v-model="introduction"></mt-field>
     </div>
-    <mt-button class="wy-sug-button" type="primary" @click="postWyopinionreplay">确认回复</mt-button>
+    <mt-button class="wy-sug-button" :disabled="disabled" type="primary" @click="postWyopinionreplay">确认回复</mt-button>
   </div>
 </div>
 
@@ -51,6 +64,7 @@ export default {
   name: 'detail',
   data () {
     return {
+      disabled:false,
       introduction:'',
       roleWygj:false,
       id:'',
@@ -76,8 +90,13 @@ export default {
 
   },
   created(){
-    document.title = '提交回复';
-    this.id = window.location.href.split('id=')[1];
+    document.title = '详情';
+    if (window.location.href.indexOf('org=msg')>-1) {
+      this.id = window.location.href.split('id=')[1].split('&org=msg')[0];
+    } else {
+      this.id = window.location.href.split('id=')[1];
+    }
+    // this.id = window.location.href.split('id=')[1];
     window.userInfo = JSON.parse(localStorage.getItem('_userInfo'));
     if (window.userInfo.pushTypeId && window.userInfo.pushTypeId.indexOf('2')>-1) {
       this.roleWygj = true
@@ -103,17 +122,30 @@ export default {
       var that = this;
       var param = {
         id:that.id,
-        returnContent:that.introduction,
+        repairContent:that.introduction,
+        repairUserId:window.userInfo.ownerId
+
       };
-      utils.Post('postWyopinionreplay',param).then(function(res){
-        if (res.data.code ==0) {
-          Toast('保存成功~');
-          window.history.go(-1);
-        }else {
-          Toast('保存失败,'+res.data.msg+'！');
-        }
-        // that.list = res.data.page.list;
-      });
+      if (!that.disabled) {
+        that.disabled = true;
+        utils.Post('postWyopinionreplay',param).then(function(res){
+          if (res.data.code ==0) {
+            Toast('保存成功~');
+            if (window.location.href.indexOf('org=msg')>-1) {
+              // debugger;
+              window.history.go(0);
+              // window.reload()
+              // window.location.href = window.location.href+'&repeat';
+            } else {
+              window.history.go(-1);
+            }
+            // window.history.go(-1);
+          }else {
+            Toast('保存失败,'+res.data.msg+'！');
+          }
+          // that.list = res.data.page.list;
+        });
+      }
     }
   }
 }

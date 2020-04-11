@@ -34,7 +34,7 @@
     <mt-field label="" placeholder="这里可以填写详细评价哦" type="textarea" rows="4" v-model="introduction"></mt-field>
 
   </div>
-  <mt-button class="wy-fix-rate-button" type="primary" @click="postWyserviceEvaluate">确认提交</mt-button>
+  <mt-button class="wy-fix-rate-button" :disabled="disabled" type="primary" @click="postWyserviceEvaluate">确认提交</mt-button>
 </div>
 
 </template>
@@ -53,6 +53,7 @@ export default {
   },
   data () {
     return {
+      disabled:false,
       introduction:'',
       level:'1',
       serviceStatus:this.$route.params.serviceStatus,
@@ -76,18 +77,22 @@ export default {
   },
   methods:{
     postWyserviceEvaluate(){
+      var that = this;
       var param = {
         id : this.$route.params.id ,
         evaluateLevel : this.level ,
         evaluateContent : this.introduction ,
         ownerId : window.userInfo.ownerId
       };
-      utils.Post('postWyserviceEvaluate',param).then(function(res){
-        if (res.data.code == 0) {
-          Toast('评价成功');
-          window.history.go(-1);
-        }
-      });
+      if (!that.disabled) {
+        that.disabled = true;
+        utils.Post('postWyserviceEvaluate',param).then(function(res){
+          if (res.data.code == 0) {
+            Toast('评价成功');
+            window.history.go(-1);
+          }
+        });
+      }
     }
   }
 }

@@ -66,7 +66,7 @@
         <div style="clear:both;"></div>
       </div>
   </div>
-  <mt-button v-if="serviceStatus == '2'" class="wy-sug-button" type="primary" @click="postRepairSubmit">确认提交</mt-button>
+  <mt-button v-if="serviceStatus == '2'" :disabled="disabled" class="wy-sug-button" type="primary" @click="postRepairSubmit">确认提交</mt-button>
 </div>
 
 </template>
@@ -91,6 +91,7 @@ export default {
   data () {
     return {
       id:'',
+      disabled:false,
       phone:'',
       status:'',
       steps:[],
@@ -163,7 +164,12 @@ export default {
     var param = {
       id:''
     };
-    param.id = window.location.href.split('id=')[1];
+    if (window.location.href.indexOf('org=msg')>-1) {
+      param.id = window.location.href.split('id=')[1].split('&org=msg')[0];
+    } else {
+      param.id = window.location.href.split('id=')[1];
+    }
+    // param.id = window.location.href.split('id=')[1];
     this.id = param.id;
     this.getWyServiceInfo(param);
   },
@@ -177,15 +183,80 @@ export default {
     postRepairSubmit(){
       var that = this;
       var imageFile = $("#wy-fixer-postimgs").find('input');
-      // var imageFile = $("#imageFile2").val();
-      if(imageFile && imageFile.length > 0){
-        sendMoreRequest("#wy-fixer-postimgs",function(res){
+      if (!that.disabled) {
+        that.disabled = true;
+        if(imageFile && imageFile.length > 0){
+          sendMoreRequest("#wy-fixer-postimgs",function(res){
+            var param = {
+              id: that.id ,
+              repairUserId: window.userInfo.id,
+              repairTime:(new Date()).Format("yyyy-MM-dd hh:mm:ss"),
+              repairContent: that.introduction,
+              repairImgUrl : res.join(','),//图片地址（多个以逗号隔开）
+            };
+            utils.Post('postRepairSubmit',param).then(function(res){
+              if (res.data.code ==0) {
+                Toast('提交成功~');
+                if (window.location.href.indexOf('org=msg')>-1) {
+                  // debugger;
+                  window.history.go(0);
+                  // window.reload()
+                  // window.location.href = window.location.href+'&repeat';
+                } else {
+                  window.history.go(-1);
+                }
+                // window.history.go(-1);
+              }else {
+                Toast('提交失败,'+res.data.msg+'！');
+              }
+            });
+          });
+
+          // var formData = new FormData();
+          // formData.append("file", $("#imageFile2")[0].files[0]);
+          // $.ajax({
+          //     url:window.hostPath+"/app/upload/img",
+          //     type:"post",
+          //     data:formData,
+          //     dataType:"json",
+          //     // 告诉jQuery不要去处理发送的数据
+          //     processData: false,
+          //     // 告诉jQuery不要去设置Content-Type请求头
+          //     contentType: false,
+          //     beforeSend: function () {
+          //        console.log("正在进行，请稍候");
+          //     },
+          //     success:function(data){
+          //       console.log('img data',data);
+          //         if(data.code == 0){
+          //           var param = {
+          //             id: that.id ,
+          //             repairUserId: window.wxuserInfo.id,
+          //             repairTime:(new Date()).Format("yyyy-MM-dd hh:mm:ss"),
+          //             repairContent: that.introduction,
+          //             imgUrl : data.imgUrl,//图片地址（多个以逗号隔开）
+          //           };
+          //           utils.Post('postRepairSubmit',param).then(function(res){
+          //             if (res.data.code ==0) {
+          //               Toast('提交成功~');
+          //               window.history.go(-1);
+          //             }else {
+          //               Toast('提交失败,'+res.data.msg+'！');
+          //             }
+          //             // that.list = res.data.page.list;
+          //           });
+          //         }else{
+          //           Toast(data.msg)
+          //         }
+          //     }
+          // })
+        }else {
           var param = {
             id: that.id ,
             repairUserId: window.userInfo.id,
-            repairTime:(new Date()).Format("yyyy-MM-dd hh:mm:ss"),
+            repairTime:(new Date()).Format("yyyy-MM-dd hh:mm:ss.S"),
             repairContent: that.introduction,
-            repairImgUrl : res.join(','),//图片地址（多个以逗号隔开）
+            // repairImgUrl:''
           };
           utils.Post('postRepairSubmit',param).then(function(res){
             if (res.data.code ==0) {
@@ -194,65 +265,11 @@ export default {
             }else {
               Toast('提交失败,'+res.data.msg+'！');
             }
+            // that.list = res.data.page.list;
           });
-        });
-
-        // var formData = new FormData();
-        // formData.append("file", $("#imageFile2")[0].files[0]);
-        // $.ajax({
-        //     url:window.hostPath+"/app/upload/img",
-        //     type:"post",
-        //     data:formData,
-        //     dataType:"json",
-        //     // 告诉jQuery不要去处理发送的数据
-        //     processData: false,
-        //     // 告诉jQuery不要去设置Content-Type请求头
-        //     contentType: false,
-        //     beforeSend: function () {
-        //        console.log("正在进行，请稍候");
-        //     },
-        //     success:function(data){
-        //       console.log('img data',data);
-        //         if(data.code == 0){
-        //           var param = {
-        //             id: that.id ,
-        //             repairUserId: window.wxuserInfo.id,
-        //             repairTime:(new Date()).Format("yyyy-MM-dd hh:mm:ss"),
-        //             repairContent: that.introduction,
-        //             imgUrl : data.imgUrl,//图片地址（多个以逗号隔开）
-        //           };
-        //           utils.Post('postRepairSubmit',param).then(function(res){
-        //             if (res.data.code ==0) {
-        //               Toast('提交成功~');
-        //               window.history.go(-1);
-        //             }else {
-        //               Toast('提交失败,'+res.data.msg+'！');
-        //             }
-        //             // that.list = res.data.page.list;
-        //           });
-        //         }else{
-        //           Toast(data.msg)
-        //         }
-        //     }
-        // })
-      }else {
-        var param = {
-          id: that.id ,
-          repairUserId: window.userInfo.id,
-          repairTime:(new Date()).Format("yyyy-MM-dd hh:mm:ss.S"),
-          repairContent: that.introduction,
-          // repairImgUrl:''
-        };
-        utils.Post('postRepairSubmit',param).then(function(res){
-          if (res.data.code ==0) {
-            Toast('提交成功~');
-            window.history.go(-1);
-          }else {
-            Toast('提交失败,'+res.data.msg+'！');
-          }
-          // that.list = res.data.page.list;
-        });
+        }
       }
+
     },
     getWyServiceInfo(param){
       var that = this;
@@ -462,6 +479,7 @@ position: relative;
   display: inline-block;
   vertical-align: top;
   padding-left: 4px;
+  width:calc(100% - 80px);
 }
 .wy-fix-det-usertagdiv{
 display: inline-block;
@@ -472,7 +490,7 @@ display: inline-block;
     width: 46px;
     /* height: 18px; */
     border-radius: 2px;
-    border: 1px solid rgba(55,137,249,1);
+    /*border: 1px solid rgba(55,137,249,1);*/
     font-size: 10px;
     /* font-weight: 500; */
     color: rgba(55,137,249,1);

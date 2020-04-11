@@ -40,9 +40,6 @@ export default {
         title:'订单号',
         value:''
       },{
-        title:'支付号',
-        value:''
-      },{
         title:'小区名称',
         value:''
       },{
@@ -96,15 +93,15 @@ export default {
             title:'订单号',
             value:res.data.wyPay.payNumber
           });
+          // that.$set(that.options,3,{
+          //   title:'支付号',
+          //   value:res.data.wyPay.batchPaymentNo
+          // });
           that.$set(that.options,3,{
-            title:'支付号',
-            value:res.data.wyPay.batchPaymentNo
-          });
-          that.$set(that.options,4,{
             title:'小区名称',
             value:res.data.wyPay.communityName
           });
-          that.$set(that.options,5,{
+          that.$set(that.options,4,{
             title:'住址',
             value:res.data.wyPay.payAddress
           });
@@ -112,15 +109,15 @@ export default {
           //   title:'业主',
           //   value:res.data.wyPay.ownerName
           // });
-          that.$set(that.options,6,{
+          that.$set(that.options,5,{
             title:'费用类型',
             value:res.data.wyPay.payItemName
           });
-          that.$set(that.options,7,{
+          that.$set(that.options,6,{
             title:'费用周期',
             value:res.data.wyPay.payStart+'--'+res.data.wyPay.payEnd
           });
-          that.$set(that.options,8,{
+          that.$set(that.options,7,{
             title:'费用金额',
             value:res.data.wyPay.payMoney
           });

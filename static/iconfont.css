@@ -18,7 +18,9 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
-
+.icon-weiwancheng:before {
+  content: "\e673";
+}
 .icon-zhuantui:before {
   content: "\e609";
 }

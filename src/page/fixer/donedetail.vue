@@ -14,7 +14,7 @@
         </div>
         <label v-if="item.title == '报修人员'" class="wy-fix-det-usertagdiv">
           <span class="wy-fix-det-usertag">
-            产权用户
+            <!-- 产权用户 -->
           </span>
         </label>
         <a :href="phone" class="wy-fix-det-userphone" v-if="item.title == '报修人员'">
@@ -337,7 +337,7 @@ display: inline-block;
     width: 46px;
     /* height: 18px; */
     border-radius: 2px;
-    border: 1px solid rgba(55,137,249,1);
+    /*border: 1px solid rgba(55,137,249,1);*/
     font-size: 10px;
     /* font-weight: 500; */
     color: rgba(55,137,249,1);

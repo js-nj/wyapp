@@ -14,7 +14,7 @@
         </div>
         <label v-if="item.title == '报修人员'" class="wy-fix-det-usertagdiv">
           <span class="wy-fix-det-usertag">
-            产权用户
+            <!-- 产权用户 -->
           </span>
         </label>
         <a :href="phone" class="wy-fix-det-userphone" v-if="item.title == '报修人员'">
@@ -43,7 +43,7 @@
     <div @click="ggshowSheet" class="wy-select-problem">
       <mt-cell title="分配维修工" :value="disrepairersName" is-link  ></mt-cell>
     </div>
-    <mt-button class="wy-dis-button"  type="primary" @click="postAllocation">提交</mt-button>
+    <mt-button class="wy-dis-button" :disabled="disabled"  type="primary" @click="postAllocation">提交</mt-button>
   </div>
   <mt-popup
     v-model="ggsheetVisible"
@@ -86,6 +86,7 @@ export default {
   data () {
     return {
       id:'',
+      disabled:false,
       phone:'',
       status:'',
       steps:[],
@@ -149,11 +150,15 @@ export default {
     // debugger;
     window.userInfo = JSON.parse(localStorage.getItem('_userInfo'));
     document.title = '报修详情';
-
     var param = {
       id:''
     };
-    param.id = window.location.href.split('id=')[1];
+    if (window.location.href.indexOf('org=msg')>-1) {
+      param.id = window.location.href.split('id=')[1].split('&org=msg')[0];
+    } else {
+      param.id = window.location.href.split('id=')[1];
+    }
+
     this.id = param.id;
     this.getWyServiceInfo(param);
     this.getListrepairuser();
@@ -239,15 +244,25 @@ export default {
         repairUserId: that.disrepairersValue,
         updateBy:window.userInfo.id,
       };
-      utils.Post('postAllocation',param).then(function(res){
-        if (res.data.code == 0) {
-          Toast('分配成功~');
-          window.history.go(-1);
-        }else {
-          Toast('分配失败,'+res.data.msg+'！');
-        }
-        // that.list = res.data.page.list;
-      });
+      if (!that.disabled) {
+        that.disabled = true;
+        utils.Post('postAllocation',param).then(function(res){
+          if (res.data.code == 0) {
+            Toast('分配成功~');
+            if (window.location.href.indexOf('org=msg')>-1) {
+              // debugger;
+              window.history.go(0);
+              // window.reload()
+              // window.location.href = window.location.href+'&repeat';
+            } else {
+              window.history.go(-1);
+            }
+          }else {
+            Toast('分配失败,'+res.data.msg+'！');
+          }
+          // that.list = res.data.page.list;
+        });
+      }
     },
     getListrepairuser(){
       var that = this;
@@ -438,6 +453,7 @@ position: relative;
   display: inline-block;
   vertical-align: top;
   padding-left: 4px;
+  width:calc(100% - 80px);
 }
 .wy-fix-det-usertagdiv{
 display: inline-block;
@@ -448,7 +464,7 @@ display: inline-block;
     width: 46px;
     /* height: 18px; */
     border-radius: 2px;
-    border: 1px solid rgba(55,137,249,1);
+    /*border: 1px solid rgba(55,137,249,1);*/
     font-size: 10px;
     /* font-weight: 500; */
     color: rgba(55,137,249,1);

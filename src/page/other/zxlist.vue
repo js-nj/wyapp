@@ -17,7 +17,7 @@
             <div class="wy-news-item-title">{{htmlDecodeByRegEx(item.cmsTitle)}}</div>
             <div class="wy-news-item-des">
               <span>{{item.createDate}}</span>
-              <span class="wy-news-item-read">{{item.hits+'人阅读'}}</span>
+              <!-- <span class="wy-news-item-read">{{item.hits+'人阅读'}}</span> -->
             </div>
           </div>
           <div class="wy-news-item-img">
@@ -276,10 +276,10 @@ export default {
 .wy-news-item-img {
   /*width: 100px;*/
   line-height: 1;
-  padding-top: 10px;
+  padding-top: 7px;
 }
 .wy-news-item-body {
-  width: calc(100% - 96px);
+  width: calc(100% - 101px);
   /*width: calc(100% - 105px);*/
     text-align: left;
 }
@@ -307,7 +307,7 @@ export default {
   padding-left: 8px;
 }
 .wy-news-item-img img {
-  width: 90px;
-  height: 60px;
+  width: 95px;
+  height: 65px;
 }
 </style>

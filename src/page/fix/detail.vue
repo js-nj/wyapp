@@ -54,9 +54,9 @@
   <div id="wy-steps"></div>
   <div class="wy-fix-detbuts" v-if="!nobutton">
 
-    <mt-button class="wy-sug-button" type="primary" @click="gotoSure" v-if="serviceStatus==3">确认</mt-button>
-    <mt-button class="wy-sug-button" type="primary" @click="gotoCancel" v-if="serviceStatus==1 || serviceStatus==2">撤销</mt-button>
-    <mt-button class="wy-sug-button" type="primary" @click="gotoRate" v-if="serviceStatus==4">评价</mt-button>
+    <mt-button class="wy-sug-button" type="primary" :disabled="disabled" @click="gotoSure" v-if="serviceStatus==3">确认</mt-button>
+    <mt-button class="wy-sug-button" type="primary" :disabled="disabled" @click="gotoCancel" v-if="serviceStatus==1 || serviceStatus==2">撤销</mt-button>
+    <mt-button class="wy-sug-button" type="primary"  @click="gotoRate" v-if="serviceStatus==4">评价</mt-button>
 
     <!-- <div class="wy-fix-detbut" style="color:#3789F9;" @click="gotoSure" v-if="serviceStatus==3">确认</div> -->
     <!-- <div class="wy-fix-detbut" style="color:#F18A29;">追记</div> -->
@@ -85,6 +85,7 @@ export default {
   data () {
     return {
       id:'',
+      disabled:false,
       nobutton:false,
       phone:'',
       status:'',
@@ -207,15 +208,18 @@ export default {
         id:this.id,
         ownerId:window.userInfo.ownerId
       };
-      utils.Post('postWyserviceCancel',param).then(function(res){
-        if (res.data.code ==0) {
-          Toast('撤销成功~');
-          that.getWyServiceInfo(that.param);
-          // window.history.go(-1);
-        }else {
-          Toast('撤销失败~');
-        }
-      });
+      if (!that.disabled) {
+        that.disabled = true;
+        utils.Post('postWyserviceCancel',param).then(function(res){
+          if (res.data.code ==0) {
+            Toast('撤销成功~');
+            that.getWyServiceInfo(that.param);
+            // window.history.go(-1);
+          }else {
+            Toast('撤销失败~');
+          }
+        });
+      }
     },
     gotoSure(){
       var that = this;
@@ -223,15 +227,18 @@ export default {
         id:this.id,
         ownerId:window.userInfo.ownerId
       };
-      utils.Post('postWyserviceSure',param).then(function(res){
-        if (res.data.code ==0) {
-          Toast('确认成功~');
-          // window.history.go(-1);
-          that.gotoRate();
-        }else {
-          Toast('确认失败~');
-        }
-      });
+      if (!that.disabled) {
+        that.disabled = true;
+        utils.Post('postWyserviceSure',param).then(function(res){
+          if (res.data.code ==0) {
+            Toast('确认成功~');
+            // window.history.go(-1);
+            that.gotoRate();
+          }else {
+            Toast('确认失败~');
+          }
+        });
+      }
     },
     gotoRate(item){
       this.$router.push({
@@ -435,6 +442,7 @@ position: relative;
   display: inline-block;
   vertical-align: top;
   padding-left: 4px;
+  width:calc(100% - 80px);
 }
 .wy-fix-det-usertagdiv{
 display: inline-block;
@@ -445,7 +453,7 @@ display: inline-block;
     width: 46px;
     /* height: 18px; */
     border-radius: 2px;
-    border: 1px solid rgba(55,137,249,1);
+    /*border: 1px solid rgba(55,137,249,1);*/
     font-size: 10px;
     /* font-weight: 500; */
     color: rgba(55,137,249,1);
