@@ -141,6 +141,12 @@
                         <img slot="icon" src="../../static/images/wy/ts.png" />
                       </mt-cell>
                     </div>
+                    <!-- 公告管理 -->
+                    <div class="wy-my-mj" v-if="pushTypeId && pushTypeId.indexOf('1')>-1" @click="gotoPage('maIndex')">
+                      <mt-cell title="公告管理" is-link>
+                        <img slot="icon" src="../../static/images/wy/gl.png" />
+                      </mt-cell>
+                    </div>
                     <!-- 我的派单 -->
                     <div class="wy-my-mj" v-if="pushTypeId && pushTypeId.indexOf('1')>-1" @click="gotoPage('disIndex')">
                       <mt-cell title="我的派单" is-link>
@@ -389,12 +395,7 @@ export default {
       if (item.cmsUrlUrl) {
         window.location.href = item.cmsUrlUrl;
       }else {
-        this.$router.push({
-          name:'detail',
-          params:{
-            item:item
-          }
-        })
+        window.location.href = window.location.origin+window.location.pathname + '#/detail?id='+item.id;
       }
     },
     // ggmenuClick(item,index){
@@ -599,55 +600,9 @@ a {
     top: 6px;
     padding-right: 8px;
 }
-.wy-news-items{
-      padding: 0 16px;
-      overflow: auto;
-}
-.wy-news-item{
-  padding: 12px 0;
-      border-top: solid 1px #F7F7F7;
-}
-.wy-news-item-body,.wy-news-item-img {
-  display: inline-block;
-  vertical-align: top;
-}
-.wy-news-item-img {
-  /*width: 100px;*/
-  line-height: 1;
-  padding-top: 4px;
-}
-.wy-news-item-body {
-  width: calc(100% - 101px);
-  /*width: calc(100% - 105px);*/
-    text-align: left;
-}
-.wy-news-item-title {
-  padding: 0 0 4px 0;
-  color: #333;
-  width:100%;
-/*    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;*/
 
-    overflow: hidden;
-    text-overflow: ellipsis;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    line-clamp: 2;
-    -webkit-box-orient: vertical;
-}
-.wy-news-item-des {
-  font-size: 12px;
-  color: #666;
-}
-.wy-news-item-read {
-  display: inline-block;
-  padding-left: 8px;
-}
-.wy-news-item-img img {
-  width: 95px;
-  height: 65px;
-}
+
+
 .wy-gg-search.mint-search {
   height: auto !important;
 }
@@ -684,10 +639,7 @@ a {
 .wy-ggmenu-item.wy-ggmenu-item-selected i{
   display: inline-block;
 }
-.wy-gg-body .wy-news-item-body {
-  width: calc(100% - 104px);
-      padding-left: 8px;
-}
+
 .wy-myhead {
 padding: 16px;
 overflow: hidden;

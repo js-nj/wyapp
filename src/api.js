@@ -8,6 +8,12 @@ export default {
   getGgType: hostPath + '/app/wycmscategory/list',
   getGgList: hostPath + '/app/wycms/list',
   getGgDetail: hostPath + '/app/wycms/info',
+
+  deleteGgitem: hostPath + '/app/wycms/delete',
+  saveGgitem: hostPath + '/app/wycms/save',
+  updateGgitem: hostPath + '/app/wycms/update',
+
+  sendCmsNotify: hostPath + '/app/txhn/sendCmsNotify',
   //投诉建议
   getWyOpinionList: hostPath + '/app/wyopinion/list',
   postWyOpinionSave: hostPath + '/app/wyopinion/save',

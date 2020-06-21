@@ -97,5 +97,7 @@ export default {
 .wy-detail-body {
   font-size: 13px;
 }
-
+.wy-detail-body >>> img {
+  width: 100% !important;
+}
 </style>

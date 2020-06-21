@@ -218,17 +218,17 @@ __content ons-tabbar[status-bar-fill]>.tab-bar--top__content{top:49px}.page-with
           top: -8px;
           width: 16px;
           height: 16px;
-          background: #3789F9;
+          background: #333;
           border-radius: 8px;
       }
       .close:before, .close:after {
         position: absolute;
-        left: 7px;
-        top:2px;
-        content: ' ';
-        height: 10px;
-        width: 2px;
-        background-color: #fff;
+    left: 7px;
+    top: 3px;
+    content: ' ';
+    height: 8px;
+    width: 1.5px;
+    background-color: #fff;
       }
       .close:before {
         transform: rotate(45deg);
