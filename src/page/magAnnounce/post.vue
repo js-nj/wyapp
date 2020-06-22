@@ -123,7 +123,7 @@
         var imageFile = $("#wy-ma-postimgs").find('input');
         var param = {
             propertyId: window.userInfo.propertyId,
-            communityId: window.userInfo.communityId,
+            communityId: window.userInfo.communityEntityList[0].id,
             cmsTitle: this.title ,
             cmsContent: this.content ,
             cmsImgUrl: '' ,
@@ -131,31 +131,55 @@
           };
         if(imageFile && imageFile.length > 0){
           sendMoreRequest("#wy-ma-postimgs",function(res){
+            console.log('res~~',res)
             if (that.gguploadImgs.length>0) {
               param.cmsImgUrl = res.concat(that.gguploadImgs).join(',');
+            }else {
+              param.cmsImgUrl = res.join(',');//图片地址（多个以逗号隔开）
             }
-            // param.cmsImgUrl = res.join(','),//图片地址（多个以逗号隔开）
-            utils.Post('saveGgitem',param).then(function(res){
-              if (res.data.code == 0) {
-                Toast('提交成功！');
-                history.go(-1);
-              } else {
-                Toast('提交失败,'+res.data.msg+'！');
-              }
-            });
+            if (that.announceId) {
+              utils.Post('updateGgitem',param).then(function(res){
+                if (res.data.code == 0) {
+                  Toast('提交成功！');
+                  history.go(-1);
+                } else {
+                  Toast('提交失败,'+res.data.msg+'！');
+                }
+              });
+            } else {
+              utils.Post('saveGgitem',param).then(function(res){
+                if (res.data.code == 0) {
+                  Toast('提交成功！');
+                  history.go(-1);
+                } else {
+                  Toast('提交失败,'+res.data.msg+'！');
+                }
+              });
+            }
           });
         }else {
           if (that.gguploadImgs.length>0) {
             param.cmsImgUrl = that.gguploadImgs.join(',');
           }
-          utils.Post('saveGgitem',param).then(function(res){
-            if (res.data.code == 0) {
-              Toast('提交成功！');
-              history.go(-1);
+          if (that.announceId) {
+              utils.Post('updateGgitem',param).then(function(res){
+                if (res.data.code == 0) {
+                  Toast('提交成功！');
+                  history.go(-1);
+                } else {
+                  Toast('提交失败,'+res.data.msg+'！');
+                }
+              });
             } else {
-              Toast('提交失败,'+res.data.msg+'！');
+              utils.Post('saveGgitem',param).then(function(res){
+                if (res.data.code == 0) {
+                  Toast('提交成功！');
+                  history.go(-1);
+                } else {
+                  Toast('提交失败,'+res.data.msg+'！');
+                }
+              });
             }
-          });
         }
       }
     },
