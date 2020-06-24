@@ -1,6 +1,6 @@
 <template>
   <div class="wy-gg-body">
-    <div class="wy-news-items">
+    <div class="wy-news-items" :style="{'height':newsHeight}">
       <mt-loadmore :bottom-method="loadBottom" :bottom-all-loaded="allLoaded" ref="wyindexloadmore">
         <div class="wy-news-item" v-for="item in ggNews" @click="gotoDetail(item)">
           <div class="wy-news-item-img">
@@ -10,16 +10,17 @@
           <div class="wy-news-item-body">
             <div class="wy-news-item-title">{{htmlDecodeByRegEx(item.cmsTitle)}}</div>
             <div class="wy-news-item-des">
-              <span>{{item.checkTime}}</span>
+              <span>{{item.createDate}}</span>
               <!-- <span class="wy-news-item-read">{{item.hits+'人阅读'}}</span> -->
             </div>
           </div>
           <div class="wy-ma-buttons">
-            <img @click.stop="noticeAnnounce(item.id,item.propertyId)" style="width:24px;height:24px;" src="../../../static/images/wy/ma-notice.png" v-if="item.isPush == '0'"/>
+            <!-- <img @click.stop="noticeAnnounce(item.id,item.propertyId)" style="width:24px;height:24px;" src="../../../static/images/wy/ma-notice.png" v-if="item.isPush == '0'"/>
             <img @click.stop="editAnnounce(item.id)" style="width:24px;height:24px;" src="../../../static/images/wy/ma-edit1.png" v-if="item.isPush == '0'"/>
-            <img @click.stop="deleteAnnounce(item.id)" style="width:24px;height:24px;" src="../../../static/images/wy/ma-delete.png"  />
-            <!-- <mt-button size="small" type="primary">通知</mt-button> -->
-            <!-- <mt-button size="small" type="danger">删除</mt-button> -->
+            <img @click.stop="deleteAnnounce(item.id)" style="width:24px;height:24px;" src="../../../static/images/wy/ma-delete.png"  /> -->
+            <mt-button @click.stop="noticeAnnounce(item.id,item.propertyId)" v-if="item.isPush == '0'" size="small" type="primary">通知</mt-button>
+            <mt-button @click.stop="editAnnounce(item.id)" v-if="item.isPush == '0'" size="small" type="primary">修改</mt-button>
+            <mt-button @click.stop="deleteAnnounce(item.id)" size="small" type="danger">删除</mt-button>
           </div>
         </div>
       </mt-loadmore>
@@ -52,6 +53,7 @@ export default {
       allLoaded:false,
       totalCount:0,
       currPage:1,
+      newsHeight:(document.documentElement.clientHeight - 6)+'px',
     }
   },
   beforeCreate(){
@@ -158,7 +160,7 @@ export default {
         // that.indexNews = that.indexNews.concat(res.data.page.list);
         that.totalCount = res.data.page.totalCount;
         // that.currPage = that.currPage + 1;
-        if (that.currPage == that.totalPage) {
+        if (that.totalCount == that.ggNews.length) {
           that.allLoaded = true;// 若数据已全部获取完毕
           that.$refs.wyindexloadmore.onBottomLoaded();
         }else {
@@ -174,7 +176,7 @@ export default {
 
     htmlDecodeByRegEx(str){
          var temp = "";
-         if(str.length == 0) return "";
+         if(!str || str.length == 0) return "";
          temp = str.replace(/&amp;/g,"&");
          temp = temp.replace(/&lt;/g,"<");
          temp = temp.replace(/&gt;/g,">");
@@ -200,10 +202,10 @@ export default {
 .wy-ma-buttons {
   position: absolute;
   right: 0px;
-    top: 20px;
+   bottom: 2px;
 }
   .wy-ma-buttons button{
-    display: block;
+    /*display: block;*/
   }
   .wy-news-item-img img {
     width: 95px;
@@ -212,9 +214,9 @@ export default {
 .wy-ma-addicon {
   width: 72px;
     height: 72px;
-    position: absolute;
-    bottom: 49px;
-    right: 50px;
+    position: fixed;
+    bottom: 0%;
+    right: 42%;
 }
 
 </style>

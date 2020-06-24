@@ -87,7 +87,7 @@
                           <div class="wy-news-item-body">
                             <div class="wy-news-item-title">{{htmlDecodeByRegEx(item.cmsTitle)}}</div>
                             <div class="wy-news-item-des">
-                              <span>{{item.checkTime}}</span>
+                              <span>{{item.createDate}}</span>
                               <!-- <span class="wy-news-item-read">{{item.hits+'人阅读'}}</span> -->
                             </div>
                           </div>

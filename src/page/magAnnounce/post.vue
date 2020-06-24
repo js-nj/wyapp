@@ -1,29 +1,39 @@
 <template>
   <div class="wy-ma-post">
-    <mt-field label="标题" placeholder="公告标题" type="textarea" rows="2" v-model="title"></mt-field>
-    <mt-field label="内容" placeholder="公告内容" type="textarea" rows="12" v-model="content"></mt-field>
-    <div style="padding: 16px 24px;text-align: left;background:#fff;">
-      <span style="display: inline-block;padding: 12px 24px;">图片</span>
-      <div id="wy-imgs-upload" style="display:inline-block;vertical-align:top;"></div>
-      <div class="upload_item" v-for="(item,index) in gguploadImgs">
-        <i class="iconfont icon-weiwancheng cancel_upload_img" @click="ggdeleteImg(index)"></i>
-        <img class="upload_img" :src="item" alt="">
+    <div class="wy-ma-post-body" style="margin-left: -32px;">
+      <mt-field label="标题" placeholder="公告标题" type="textarea" rows="2" v-model="title"></mt-field>
+      <mt-radio
+        class="wy-ma-radio"
+        title="选项"
+        v-model="radiovalue"
+        align="left"
+        :options="options">
+      </mt-radio>
+      <mt-field v-if="radiovalue == 'nr'" label="内容" placeholder="公告内容" type="textarea" rows="12" v-model="content"></mt-field>
+      <mt-field v-if="radiovalue == 'wz'" label="网址" placeholder="网址链接" type="textarea" rows="3" v-model="cms_url_url"></mt-field>
+      <div class="a" style="padding: 16px 24px;text-align: left;background:#fff;">
+        <span style="display: inline-block;padding: 12px 24px 12px 26px;">图片</span>
+        <div id="wy-imgs-upload" style="display:inline-block;vertical-align:top;"></div>
+        <div class="upload_item" v-for="(item,index) in gguploadImgs">
+          <i class="iconfont icon-weiwancheng cancel_upload_img" @click="ggdeleteImg(index)"></i>
+          <img class="upload_img" :src="item" alt="">
+        </div>
+        <div id="wy-ma-postimgs" class="upload_item">
+          <img class="upload_img" id="uploaderBox" style="width:65px;" src="../../../static/images/upload.png" alt="无" >
+        </div>
       </div>
-      <div id="wy-ma-postimgs" class="upload_item">
-        <img class="upload_img" id="uploaderBox" style="width:65px;" src="../../../static/images/upload.png" alt="无" >
+      <div class="wy-ma-switch">
+        <span style="">轮播</span>
+        <mt-switch v-model="isLb"></mt-switch>
+        <span>{{isLb_dispaly}}</span>
       </div>
-    </div>
-    <div class="wy-ma-switch">
-      <span style="">是否轮播</span>
-      <mt-switch v-model="isLb"></mt-switch>
-      <span>{{isLb_dispaly}}</span>
     </div>
     <mt-button class="wy-sug-button" :disabled="disabled" type="primary" @click="postAnnounce">提交</mt-button>
   </div>
 
 </template>
 <script>
-  import { Toast,Indicator,Button,MessageBox,Switch,Field  } from 'mint-ui';
+  import { Toast,Indicator,Button,MessageBox,Switch,Field,Radio } from 'mint-ui';
   import * as utils from '../../utils';
   import $ from "jquery";
   export default {
@@ -35,16 +45,30 @@
       [MessageBox.name]: MessageBox,
       [Switch.name]: Switch,
       [Field.name]: Field,
+      [Radio.name]: Radio,
   },
   data () {
     return {
       isLb:false,
+      // isContent:false
       isLb_dispaly:'否',
       title:'',
       content:'',
+      cms_url_url:'',
       gguploadImgs:[],
       disabled:false,
-      announceId:''
+      announceId:'',
+      radiovalue:'',
+      options:[
+        {
+          label: '内容',
+          value: 'nr'
+        },
+        {
+          label: '网址',
+          value: 'wz'
+        }
+      ]
     }
   },
   beforeCreate(){
@@ -79,6 +103,9 @@
       } else {
         this.isLb_dispaly = '否';
       }
+    },
+    radiovalue(val){
+
     }
   },
   methods:{
@@ -119,16 +146,29 @@
     postAnnounce(){
       var that = this;
       if (!that.disabled) {
-        that.disabled = true;
         var imageFile = $("#wy-ma-postimgs").find('input');
         var param = {
-            propertyId: window.userInfo.propertyId,
-            communityId: window.userInfo.communityEntityList[0].id,
-            cmsTitle: this.title ,
-            cmsContent: this.content ,
-            cmsImgUrl: '' ,
-            isCarousel: this.isLb?'1':'0'
-          };
+          propertyId: window.userInfo.propertyId,
+          communityId: window.userInfo.communityEntityList[0].id,
+          cmsTitle: this.title ,
+          cmsContent: this.content ,
+          cmsImgUrl: '' ,
+          cms_url_url:this.cms_url_url,
+          isCarousel: this.isLb?'1':'0'
+        };
+        if (!that.title) {
+          Toast('请填写标题！');
+          return;
+        }
+        if (!that.radiovalue) {
+          Toast('请选择选项！');
+          return;
+        }
+        if (!that.cms_url_url && !that.content) {
+          Toast('请填写内容或者网址！');
+          return;
+        }
+        that.disabled = true;
         if(imageFile && imageFile.length > 0){
           sendMoreRequest("#wy-ma-postimgs",function(res){
             console.log('res~~',res)
@@ -138,6 +178,7 @@
               param.cmsImgUrl = res.join(',');//图片地址（多个以逗号隔开）
             }
             if (that.announceId) {
+              param.id = that.announceId;
               utils.Post('updateGgitem',param).then(function(res){
                 if (res.data.code == 0) {
                   Toast('提交成功！');
@@ -162,6 +203,7 @@
             param.cmsImgUrl = that.gguploadImgs.join(',');
           }
           if (that.announceId) {
+              param.id = that.announceId;
               utils.Post('updateGgitem',param).then(function(res){
                 if (res.data.code == 0) {
                   Toast('提交成功！');
@@ -187,13 +229,45 @@
 }
 </script>
 <style scoped>
+.wy-ma-radio {
+  position: relative;
+  background-color: #fff;
+  border-bottom: solid 1px #ddd;
+}
+.wy-ma-radio >>> .mint-cell {
+      display: inline-block;
+      background-image: none;
+}
+/*.wy-ma-radio >>> .mint-cell-title {
+  text-align: left;
+    padding-left: 22%;
+}
+.wy-ma-radio >>> .mint-radiolist-label{
+  display: inline-block;
+}*/
+.wy-ma-radio >>> .mint-radiolist-title {
+      position: absolute;
+    left: 4%;
+    width: 80px;
+    z-index: 1;
+    padding: 8px 20px;
+    font-size: 16px;
+    color: #333;
+}
+.wy-ma-post-body > a {
+  border-bottom:solid 1px #ddd;
+}
+.wy-ma-post-body > div.a {
+  border-bottom:solid 1px #ddd;
+}
 .wy-ma-switch{
   text-align: left;
-    padding-left: 45px;
+    padding: 8px 0 8px 45px;
     background: #fff;
 }
 .wy-ma-switch >span:first-child {
   padding-right: 16px;
+  padding-left: 4px;
 }
 .wy-sug-button{
   font-size: 16px;

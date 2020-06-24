@@ -8,6 +8,9 @@
     &nbsp;&nbsp;&nbsp;&nbsp;
     <!-- <span class="wy-detail-des-item">{{hits}}人阅读</span> -->
   </div>
+  <div v-if="cmsImgUrl" style="padding-bottom:16px;">
+    <img :src="cmsImgUrl" style="width: 100%;" />
+  </div>
   <div class="wy-detail-body" v-html="content"></div>
 </div>
 
@@ -27,7 +30,8 @@ export default {
       mfrom:'',
       time:'',
       hits:'',
-      content:''
+      content:'',
+      cmsImgUrl:''
     }
   },
   created(){
@@ -69,6 +73,7 @@ export default {
           that.time = res.data.wyCms.createDate;
           that.hits = res.data.wyCms.hits;
           that.content = that.htmlDecodeByRegEx(res.data.wyCms.cmsContent);
+          that.cmsImgUrl = res.data.wyCms.cmsImgUrl;
         }
         // that.list = res.data.page.list;
       });
@@ -84,18 +89,21 @@ export default {
   text-align: left;
 }
 .wy-detail-title {
-  font-size: 20px;
+  /*font-size: 20px;*/
+  font-size: 24px;
       word-break: break-all;
 
 }
 .wy-detail-des-item {
   display: inline-block;
     padding: 4px 0 8px 0;
-  font-size: 14px;
+  /*font-size: 14px;*/
+  font-size: 20px;
   color: #999;
 }
 .wy-detail-body {
-  font-size: 13px;
+  /*font-size: 13px;*/
+  font-size: 20px;
 }
 .wy-detail-body >>> img {
   width: 100% !important;
