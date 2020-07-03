@@ -124,11 +124,11 @@ export default {
       });
     },
     gotoDetail(item){
-      // if (item.cmsUrlUrl) {
-      //   window.location.href = item.cmsUrlUrl;
-      // }else {
+      if (item.cmsUrlUrl) {
+        window.location.href = item.cmsUrlUrl;
+      }else {
         window.location.href = window.location.origin+window.location.pathname + '#/detail?id='+item.id;
-      // }
+      }
     },
     getGgList(value){
       var that = this;
@@ -199,7 +199,9 @@ export default {
   position: relative;
       border-top: solid 1px #ddd;
 }
-.wy-ma-buttons {
+</style>
+<style>
+  .wy-ma-buttons {
   position: absolute;
   right: 0px;
    bottom: 2px;
@@ -218,5 +220,4 @@ export default {
     bottom: 0%;
     right: 42%;
 }
-
 </style>

@@ -10,7 +10,7 @@
         :options="options">
       </mt-radio>
       <mt-field v-if="radiovalue == 'nr'" label="内容" placeholder="公告内容" type="textarea" rows="12" v-model="content"></mt-field>
-      <mt-field v-if="radiovalue == 'wz'" label="网址" placeholder="网址链接" type="textarea" rows="3" v-model="cms_url_url"></mt-field>
+      <mt-field v-if="radiovalue == 'wz'" label="网址" placeholder="网址链接" type="textarea" rows="3" v-model="cmsUrlUrl"></mt-field>
       <div class="a" style="padding: 16px 24px;text-align: left;background:#fff;">
         <span style="display: inline-block;padding: 12px 24px 12px 26px;">图片</span>
         <div id="wy-imgs-upload" style="display:inline-block;vertical-align:top;"></div>
@@ -54,7 +54,7 @@
       isLb_dispaly:'否',
       title:'',
       content:'',
-      cms_url_url:'',
+      cmsUrlUrl:'',
       gguploadImgs:[],
       disabled:false,
       announceId:'',
@@ -114,7 +114,7 @@
     },
     htmlDecodeByRegEx(str){
          var temp = "";
-         if(str.length == 0) return "";
+         if(!str || str.length == 0) return "";
          temp = str.replace(/&amp;/g,"&");
          temp = temp.replace(/&lt;/g,"<");
          temp = temp.replace(/&gt;/g,">");
@@ -138,8 +138,15 @@
           if (res.data.wyCms.cmsImgUrl) {
             that.gguploadImgs = res.data.wyCms.cmsImgUrl.split(',');
           }
-          that.content = that.htmlDecodeByRegEx(res.data.wyCms.cmsContent);
+          if (res.data.wyCms.cmsUrlUrl) {
+            that.radiovalue = 'wz';
+            that.cmsUrlUrl = res.data.wyCms.cmsUrlUrl;
+          } else {
+            that.radiovalue = 'nr';
+            that.content = that.htmlDecodeByRegEx(res.data.wyCms.cmsContent);
+          }
         }
+
         // that.list = res.data.page.list;
       });
     },
@@ -153,7 +160,7 @@
           cmsTitle: this.title ,
           cmsContent: this.content ,
           cmsImgUrl: '' ,
-          cms_url_url:this.cms_url_url,
+          cmsUrlUrl:this.cmsUrlUrl,
           isCarousel: this.isLb?'1':'0'
         };
         if (!that.title) {
@@ -164,7 +171,7 @@
           Toast('请选择选项！');
           return;
         }
-        if (!that.cms_url_url && !that.content) {
+        if (!that.cmsUrlUrl && !that.content) {
           Toast('请填写内容或者网址！');
           return;
         }
@@ -229,57 +236,13 @@
 }
 </script>
 <style scoped>
-.wy-ma-radio {
-  position: relative;
-  background-color: #fff;
-  border-bottom: solid 1px #ddd;
-}
-.wy-ma-radio >>> .mint-cell {
-      display: inline-block;
-      background-image: none;
-}
-/*.wy-ma-radio >>> .mint-cell-title {
-  text-align: left;
-    padding-left: 22%;
-}
-.wy-ma-radio >>> .mint-radiolist-label{
-  display: inline-block;
-}*/
-.wy-ma-radio >>> .mint-radiolist-title {
-      position: absolute;
-    left: 4%;
-    width: 80px;
-    z-index: 1;
-    padding: 8px 20px;
-    font-size: 16px;
-    color: #333;
-}
-.wy-ma-post-body > a {
-  border-bottom:solid 1px #ddd;
-}
-.wy-ma-post-body > div.a {
-  border-bottom:solid 1px #ddd;
-}
-.wy-ma-switch{
-  text-align: left;
-    padding: 8px 0 8px 45px;
-    background: #fff;
-}
-.wy-ma-switch >span:first-child {
-  padding-right: 16px;
-  padding-left: 4px;
-}
 .wy-sug-button{
   font-size: 16px;
       width: 80%;
     margin: 16px auto;
     display: block;
 }
-#wy-ma-postimgs{
-  display: inline-block;
-    vertical-align: top;
-    position: relative;
-}
+
 .upload_item {
         display: inline-block;
         width: 60px;
@@ -317,7 +280,55 @@
   right: 0;
   z-index:-1;
 }
-.wy-ma-post .mint-cell .mint-cell-wrapper {
-  background-image: none;
+.wy-ma-post .wy-ma-radio>.mint-cell {
+  background-image: none !important;
+}
+.wy-ma-post .wy-ma-radio>.mint-cell .mint-cell-wrapper {
+  background-image: none !important;
+}
+.wy-ma-radio {
+  position: relative;
+  background-color: #fff;
+  border-bottom: solid 1px #ddd;
+}
+.wy-ma-radio > .mint-cell {
+      display: inline-block;
+      background-image: none;
+}
+/*.wy-ma-radio >>> .mint-cell-title {
+  text-align: left;
+    padding-left: 22%;
+}
+.wy-ma-radio >>> .mint-radiolist-label{
+  display: inline-block;
+}*/
+.wy-ma-radio > .mint-radiolist-title {
+      position: absolute;
+    left: 4%;
+    width: 80px;
+    z-index: 1;
+    padding: 8px 20px;
+    font-size: 16px;
+    color: #333;
+}
+.wy-ma-post-body > a {
+  border-bottom:solid 1px #ddd;
+}
+.wy-ma-post-body > div.a {
+  border-bottom:solid 1px #ddd;
+}
+.wy-ma-switch{
+  text-align: left;
+    padding: 8px 0 8px 45px;
+    background: #fff;
+}
+.wy-ma-switch >span:first-child {
+  padding-right: 16px;
+  padding-left: 4px;
+}
+#wy-ma-postimgs{
+  display: inline-block;
+    vertical-align: top;
+    position: relative;
 }
 </style>

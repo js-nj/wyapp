@@ -51,7 +51,7 @@ export default {
   methods:{
     htmlDecodeByRegEx(str){
          var temp = "";
-         if(str.length == 0) return "";
+         if(!str || str.length == 0) return "";
          temp = str.replace(/&amp;/g,"&");
          temp = temp.replace(/&lt;/g,"<");
          temp = temp.replace(/&gt;/g,">");
@@ -89,8 +89,8 @@ export default {
   text-align: left;
 }
 .wy-detail-title {
-  /*font-size: 20px;*/
-  font-size: 24px;
+  font-size: 20px;
+  /*font-size: 24px;*/
       word-break: break-all;
 
 }
