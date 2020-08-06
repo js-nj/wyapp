@@ -56,7 +56,7 @@
 </template>
 
 <script>
-import { Field,Button,Toast,Cell} from 'mint-ui';
+import { Field,Button,Toast,Cell,Indicator} from 'mint-ui';
 // import utils from '../utils.js';
 import * as utils from '../../utils';
 import $ from "jquery";
@@ -128,12 +128,17 @@ export default {
       };
       if (!that.disabled) {
         that.disabled = true;
+        Indicator.open();
         utils.Post('postWyopinionreplay',param).then(function(res){
+          Indicator.close();
           if (res.data.code ==0) {
             Toast('保存成功~');
             if (window.location.href.indexOf('org=msg')>-1) {
               // debugger;
-              window.history.go(0);
+              that.$router.push({
+                name: 'index'
+              });
+              // window.history.go(0);
               // window.reload()
               // window.location.href = window.location.href+'&repeat';
             } else {
@@ -181,7 +186,7 @@ display: inline-block;
   vertical-align: top;
   padding-right: 8px;
 }
-.wy-reply-detail .wy-sug-item-hide >div >div {
+.wy-reply-detail .wy-sug-item-hide > div > div {
  display: inline-block;
   vertical-align: top;
       width: calc(100% - 70px);

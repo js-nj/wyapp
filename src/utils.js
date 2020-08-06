@@ -1,6 +1,8 @@
 import axios from 'axios'
 import api from './api'
-
+// import {
+//   Indicator
+// } from 'mint-ui';
 const UA = navigator.userAgent.toLowerCase()
 
 

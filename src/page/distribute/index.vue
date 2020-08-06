@@ -143,7 +143,8 @@ export default {
       var param = {
         // repairUserId:window.userInfo.id,
         page:1,
-        limit:9999
+        limit:9999,
+        propertyId:window.userInfo.propertyId
       };
       var that = this;
       utils.Get('getListwaitallocate',param).then(function(res){
@@ -159,7 +160,8 @@ export default {
       var param = {
         // repairUserId:window.userInfo.id,
         page:1,
-        limit:9999
+        limit:9999,
+        propertyId:window.userInfo.propertyId
       };
       var that = this;
       utils.Get('getListcompleteallocate',param).then(function(res){

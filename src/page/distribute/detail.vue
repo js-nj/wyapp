@@ -67,7 +67,7 @@
 </template>
 
 <script>
-import { Navbar, TabItem,TabContainer,TabContainerItem,Cell,Checklist ,Picker ,Popup,Button,Toast} from 'mint-ui';
+import { Navbar, TabItem,TabContainer,TabContainerItem,Cell,Checklist ,Picker ,Popup,Button,Toast,Indicator} from 'mint-ui';
 import * as utils from '../../utils';
 export default {
   name: 'detail',
@@ -82,6 +82,7 @@ export default {
       [Popup.name]: Popup,
       [Toast.name]: Toast,
       [Button.name]: Button,
+      [Indicator.name]: Indicator
   },
   data () {
     return {
@@ -246,12 +247,17 @@ export default {
       };
       if (!that.disabled) {
         that.disabled = true;
+        Indicator.open();
         utils.Post('postAllocation',param).then(function(res){
+          Indicator.close();
           if (res.data.code == 0) {
             Toast('分配成功~');
             if (window.location.href.indexOf('org=msg')>-1) {
+              that.$router.push({
+                name: 'index'
+              });
               // debugger;
-              window.history.go(0);
+              // window.history.go(0);
               // window.reload()
               // window.location.href = window.location.href+'&repeat';
             } else {

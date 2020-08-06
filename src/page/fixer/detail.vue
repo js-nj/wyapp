@@ -72,7 +72,7 @@
 </template>
 
 <script>
-import { Navbar, TabItem,TabContainer,TabContainerItem,Cell,Checklist,Field,Button,Toast  } from 'mint-ui';
+import { Navbar, TabItem,TabContainer,TabContainerItem,Cell,Checklist,Field,Button,Toast,Indicator  } from 'mint-ui';
 import * as utils from '../../utils';
 import $ from 'jquery';
 export default {
@@ -87,6 +87,7 @@ export default {
       [Field.name]: Field,
       [Button.name]: Button,
       [Toast.name]: Toast,
+      [Indicator.name]: Indicator
   },
   data () {
     return {
@@ -183,6 +184,7 @@ export default {
     postRepairSubmit(){
       var that = this;
       var imageFile = $("#wy-fixer-postimgs").find('input');
+
       if (!that.disabled) {
         that.disabled = true;
         if(imageFile && imageFile.length > 0){
@@ -194,12 +196,17 @@ export default {
               repairContent: that.introduction,
               repairImgUrl : res.join(','),//图片地址（多个以逗号隔开）
             };
+            Indicator.open()
             utils.Post('postRepairSubmit',param).then(function(res){
+              Indicator.close()
               if (res.data.code ==0) {
                 Toast('提交成功~');
                 if (window.location.href.indexOf('org=msg')>-1) {
+                  that.$router.push({
+                    name: 'fixerIndex'
+                  });
                   // debugger;
-                  window.history.go(0);
+                  // window.history.go(0);
                   // window.reload()
                   // window.location.href = window.location.href+'&repeat';
                 } else {

@@ -40,7 +40,7 @@
 </template>
 
 <script>
-import { Field,Button,Toast  } from 'mint-ui';
+import { Field,Button,Toast,Indicator  } from 'mint-ui';
 import * as utils from '../../utils';
 import $ from "jquery";
 export default {
@@ -50,6 +50,7 @@ export default {
       [Field.name]: Field,
       [Button.name]: Button,
       [Toast.name]: Toast,
+      [Indicator.name]: Indicator,
   },
   data () {
     return {
@@ -86,10 +87,15 @@ export default {
       };
       if (!that.disabled) {
         that.disabled = true;
+        Indicator.open();
         utils.Post('postWyserviceEvaluate',param).then(function(res){
+          Indicator.close();
           if (res.data.code == 0) {
+            // that.disabled = false;
             Toast('评价成功');
             window.history.go(-1);
+          }else {
+            Toast('评价失败');
           }
         });
       }

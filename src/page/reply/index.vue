@@ -156,6 +156,7 @@ export default {
       // debugger;
       var that = this;
       var param = {
+        propertyId:window.userInfo.propertyId,
         page:that.currPage,
         limit:10,
         cxlx:'1'
@@ -195,6 +196,7 @@ export default {
       // debugger
       var that = this;
       var param = {
+        propertyId:window.userInfo.propertyId,
         page:that.currPageDone,
         limit:10,
         cxlx:'2'

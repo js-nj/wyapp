@@ -8,10 +8,10 @@
     &nbsp;&nbsp;&nbsp;&nbsp;
     <!-- <span class="wy-detail-des-item">{{hits}}人阅读</span> -->
   </div>
+  <div class="wy-detail-body" v-html="content"></div>
   <div v-if="cmsImgUrl" style="padding-bottom:16px;">
     <img :src="cmsImgUrl" style="width: 100%;" />
   </div>
-  <div class="wy-detail-body" v-html="content"></div>
 </div>
 
 </template>
