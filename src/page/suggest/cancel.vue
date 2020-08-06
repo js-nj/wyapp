@@ -10,7 +10,7 @@
 </template>
 
 <script>
-import { Field,Button,Toast,Cell} from 'mint-ui';
+import { Field,Button,Toast,Cell,Indicator} from 'mint-ui';
 // import utils from '../utils.js';
 import * as utils from '../../utils';
 import $ from "jquery";
@@ -28,6 +28,7 @@ export default {
     [Button.name]:Button,
     [Toast.name]:Toast,
     [Cell.name]:Cell,
+    [Indicator.name]:Indicator
   },
   watch:{
 
@@ -46,7 +47,9 @@ export default {
       };
       if (!that.disabled) {
         that.disabled = true;
+        Indicator.open();
         utils.Post('postWyoptionCancel',param).then(function(res){
+          Indicator.close();
           if (res.data.code ==0) {
             Toast('撤销成功~');
             window.history.go(-1);

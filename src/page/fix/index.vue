@@ -119,7 +119,7 @@
 </template>
 
 <script>
-import { Navbar, TabItem,Tabbar,TabContainer,TabContainerItem,Cell,Checklist,Actionsheet,Field,Picker,Popup,Button,DatetimePicker,Toast} from 'mint-ui';
+import { Navbar, TabItem,Tabbar,TabContainer,TabContainerItem,Cell,Checklist,Actionsheet,Field,Picker,Popup,Button,DatetimePicker,Toast,Indicator} from 'mint-ui';
 // import utils from '../utils.js';
 import * as utils from '../../utils';
 import $ from "jquery";
@@ -163,7 +163,7 @@ export default {
       [Button.name]: Button,
       [DatetimePicker.name]: DatetimePicker,
       [Toast.name]: Toast,
-
+      [Indicator.name]: Indicator
   },
   data () {
     return {
@@ -365,6 +365,7 @@ export default {
       if (!this.disabled) {
         this.disabled = true;
         if(imageFile && imageFile.length > 0){
+          Indicator.open();
           sendMoreRequest("#wy-fix-postimgs",function(res){
             var param = {
               propertyId: window.userInfo.propertyId,
@@ -392,10 +393,12 @@ export default {
               param.endTime=that.problemTimeEnd;
             }
             utils.Post('postWyServiceSave',param).then(function(res){
+              Indicator.close();
               if (res.data.code ==0) {
                 Toast('提交成功~');
                 window.history.go(-1);
               }else {
+                that.disabled = false;
                 Toast('提交失败,'+res.data.msg+'！');
               }
               // that.list = res.data.page.list;
@@ -426,12 +429,14 @@ export default {
               param.beginTime=that.problemTime;
               param.endTime=that.problemTimeEnd;
             }
-
+          Indicator.open();
           utils.Post('postWyServiceSave',param).then(function(res){
+            Indicator.close();
             if (res.data.code ==0) {
               Toast('提交成功~');
               window.history.go(-1);
             }else {
+              that.disabled = false;
               Toast('提交失败,'+res.data.msg+'！');
             }
             // that.list = res.data.page.list;

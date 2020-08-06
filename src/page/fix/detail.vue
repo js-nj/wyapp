@@ -68,7 +68,7 @@
 </template>
 
 <script>
-import { Navbar, TabItem,TabContainer,TabContainerItem,Cell,Checklist,Button,Toast  } from 'mint-ui';
+import { Navbar, TabItem,TabContainer,TabContainerItem,Cell,Checklist,Button,Toast,Indicator  } from 'mint-ui';
 import * as utils from '../../utils';
 export default {
   name: 'detail',
@@ -81,6 +81,7 @@ export default {
       [Checklist.name]: Checklist,
       [Button.name]: Button,
       [Toast.name]: Toast,
+      [Indicator.name]: Indicator
   },
   data () {
     return {
@@ -210,7 +211,9 @@ export default {
       };
       if (!that.disabled) {
         that.disabled = true;
+        Indicator.open();
         utils.Post('postWyserviceCancel',param).then(function(res){
+          Indicator.close();
           if (res.data.code ==0) {
             Toast('撤销成功~');
             that.getWyServiceInfo(that.param);
@@ -229,7 +232,9 @@ export default {
       };
       if (!that.disabled) {
         that.disabled = true;
+        Indicator.open();
         utils.Post('postWyserviceSure',param).then(function(res){
+          Indicator.close();
           if (res.data.code ==0) {
             Toast('确认成功~');
             // window.history.go(-1);

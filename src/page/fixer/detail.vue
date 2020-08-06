@@ -66,7 +66,7 @@
         <div style="clear:both;"></div>
       </div>
   </div>
-  <mt-button v-if="serviceStatus == '2'" :disabled="disabled" class="wy-sug-button" type="primary" @click="postRepairSubmit">确认提交</mt-button>
+  <mt-button v-if="serviceStatus == '2'" :disabled="disabled" class="wy-sug-button wy-fixer-button" type="primary" @click="postRepairSubmit">确认提交</mt-button>
 </div>
 
 </template>
@@ -188,6 +188,7 @@ export default {
       if (!that.disabled) {
         that.disabled = true;
         if(imageFile && imageFile.length > 0){
+          Indicator.open()
           sendMoreRequest("#wy-fixer-postimgs",function(res){
             var param = {
               id: that.id ,
@@ -196,7 +197,6 @@ export default {
               repairContent: that.introduction,
               repairImgUrl : res.join(','),//图片地址（多个以逗号隔开）
             };
-            Indicator.open()
             utils.Post('postRepairSubmit',param).then(function(res){
               Indicator.close()
               if (res.data.code ==0) {
@@ -265,7 +265,9 @@ export default {
             repairContent: that.introduction,
             // repairImgUrl:''
           };
+          Indicator.open();
           utils.Post('postRepairSubmit',param).then(function(res){
+            Indicator.close();
             if (res.data.code ==0) {
               Toast('提交成功~');
               window.history.go(-1);
@@ -575,5 +577,8 @@ display: inline-block;
     left: 0px;
     top:0;
     opacity: 0;
+}
+.wy-sug-button.wy-fixer-button {
+  margin-bottom: 24px;
 }
 </style>

@@ -44,7 +44,7 @@
 </template>
 
 <script>
-import { Field,Button,Toast,Cell,Popup,Picker } from 'mint-ui';
+import { Field,Button,Toast,Cell,Popup,Picker,Indicator } from 'mint-ui';
 // import utils from '../utils.js';
 import * as utils from '../../utils';
 import $ from "jquery";
@@ -73,6 +73,7 @@ export default {
     [Cell.name]:Cell,
     [Popup.name]:Popup,
     [Picker.name]:Picker,
+    [Indicator.name]:Indicator
   },
   watch:{
     grfpchooseResult(val){
@@ -147,7 +148,7 @@ export default {
         var imageFile = $("#wy-sug-postimgs").find('input');
         // var imageFile = $("#imageFile1").val();
         if(imageFile && imageFile.length > 0){
-
+          Indicator.open();
           sendMoreRequest("#wy-sug-postimgs",function(res){
             console.log('res~~~',res);
             var param = {
@@ -161,6 +162,7 @@ export default {
               imgUrl : res.join(','),//图片地址（多个以逗号隔开）
             };
             utils.Post('postWyOpinionSave',param).then(function(res){
+              Indicator.close();
               if (res.data.code ==0) {
                 Toast('提交成功~');
                 window.history.go(-1);
@@ -180,7 +182,9 @@ export default {
             opinionContent : that.introduction,//投诉内容 ,
             // imgUrl : res.join(','),//图片地址（多个以逗号隔开）
           };
+          Indicator.open();
           utils.Post('postWyOpinionSave',param).then(function(res){
+            Indicator.close();
             if (res.data.code ==0) {
               Toast('提交成功~');
               window.history.go(-1);

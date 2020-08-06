@@ -177,6 +177,7 @@
         }
         that.disabled = true;
         if(imageFile && imageFile.length > 0){
+          Indicator.open();
           sendMoreRequest("#wy-ma-postimgs",function(res){
             console.log('res~~',res)
             if (that.gguploadImgs.length>0) {
@@ -187,6 +188,7 @@
             if (that.announceId) {
               param.id = that.announceId;
               utils.Post('updateGgitem',param).then(function(res){
+                Indicator.close();
                 if (res.data.code == 0) {
                   Toast('提交成功！');
                   history.go(-1);
@@ -196,6 +198,7 @@
               });
             } else {
               utils.Post('saveGgitem',param).then(function(res){
+                Indicator.close();
                 if (res.data.code == 0) {
                   Toast('提交成功！');
                   history.go(-1);
@@ -211,7 +214,9 @@
           }
           if (that.announceId) {
               param.id = that.announceId;
+              Indicator.open();
               utils.Post('updateGgitem',param).then(function(res){
+                Indicator.close();
                 if (res.data.code == 0) {
                   Toast('提交成功！');
                   history.go(-1);
@@ -220,7 +225,9 @@
                 }
               });
             } else {
+              Indicator.open();
               utils.Post('saveGgitem',param).then(function(res){
+                Indicator.close();
                 if (res.data.code == 0) {
                   Toast('提交成功！');
                   history.go(-1);

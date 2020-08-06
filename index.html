@@ -11,7 +11,7 @@
     <link rel="stylesheet" href="./static/steps/steps.css?t=1">
     <link rel="stylesheet" href="./static/swiper.min.css?t=1">
     <link rel="stylesheet" href="./static/app.css?t=2">
-    <link rel="stylesheet" href="./static/css/app.css?t=2">
+    <!-- <link rel="stylesheet" href="./static/css/app.css?t=2"> -->
     <!-- <script src="http://cdn.bootcss.com/vConsole/3.3.0/vconsole.min.js"></script>
     <script>new VConsole()</script>
     <style>
@@ -20,6 +20,8 @@
       }
     </style> -->
     <script type="text/javascript">
+      document.write('<link rel="stylesheet" href="./static/css/app.css?t=' + new Date().getTime() + '">');
+
       if (window.location.href.indexOf('waiqinzx')>-1 || window.location.href.indexOf('localhost')>-1) {
         window.hostPath = 'http://121.196.192.110:2057/zhwy';
       } else {
