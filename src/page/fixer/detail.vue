@@ -201,7 +201,11 @@ export default {
               Indicator.close()
               if (res.data.code ==0) {
                 Toast('提交成功~');
+                // alert('提交成功~');
+                // console.log('window.location.href',window.location.href);
+                // console.log('window.location.href',window.location.href.indexOf('org=msg'));
                 if (window.location.href.indexOf('org=msg')>-1) {
+                  // alert('准备跳转到列表页')
                   that.$router.push({
                     name: 'fixerIndex'
                   });
@@ -210,6 +214,7 @@ export default {
                   // window.reload()
                   // window.location.href = window.location.href+'&repeat';
                 } else {
+                  // alert('准备跳转到上一页')
                   window.history.go(-1);
                 }
                 // window.history.go(-1);
@@ -270,7 +275,10 @@ export default {
             Indicator.close();
             if (res.data.code ==0) {
               Toast('提交成功~');
-              window.history.go(-1);
+              that.$router.push({
+                name: 'fixerIndex'
+              });
+              // window.history.go(-1);
             }else {
               Toast('提交失败,'+res.data.msg+'！');
             }
