@@ -3,11 +3,15 @@
 import Vue from 'vue'
 import App from './App'
 import router from './router';
-import Mint from 'bh-mint-ui2';
+import Mint from 'mint-ui';
 import {
   Toast
 } from 'mint-ui';
 import 'mint-ui/lib/style.css'
+import Vant from 'vant';
+import 'vant/lib/index.css';
+
+Vue.use(Vant);
 // import Vconsole from 'vconsole'
 // const vConsole = new Vconsole()
 // Vue.use(vConsole)

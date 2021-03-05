@@ -1,6 +1,17 @@
 var hostPath = window.hostPath;
 
 export default {
+  //新修改后的
+  UserCheckAdd: 'http://daka.xixiaoli.com/WebService.asmx/UserCheckAdd',
+  GetUserCheckDetails: 'http://daka.xixiaoli.com/WebService.asmx/GetUserCheckDetails',
+  GetWxUser: 'http://daka.xixiaoli.com/WebService.asmx/GetWxUser',
+  GetHouseList: 'http://daka.xixiaoli.com/WebService.asmx/GetHouseList',
+  PostSMS: 'http://daka.xixiaoli.com/WebService.asmx/PostSMS',
+
+  DoorList:'http://daka.xixiaoli.com/WebService.asmx/DoorList',
+  DoorOpenList:'http://daka.xixiaoli.com/WebService.asmx/DoorOpenList',
+  DoorOpen:'http://daka.xixiaoli.com/WebService.asmx/DoorOpen',
+
   //海纳个人信息
   // getInfo: 'http://localhost:3000/users/info',
   getUserInfo: hostPath + '/app/txhn/getUserInfo',

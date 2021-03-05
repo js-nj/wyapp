@@ -18,7 +18,13 @@ import sugIndex from '@/page/suggest/index'
 import sugList from '@/page/suggest/list'
 import sugCancel from '@/page/suggest/cancel'
 import otherHouse from '@/page/other/house'
+import otherMyinfo from '@/page/other/info'
 import otherZxlist from '@/page/other/zxlist'
+
+import openList from '@/page/other/openList'
+import openRecords from '@/page/other/openRecords'
+import openResult from '@/page/other/openResult'
+
 import repIndex from '@/page/reply/index'
 import repDetail from '@/page/reply/detail'
 import disIndex from '@/page/distribute/index'
@@ -105,9 +111,25 @@ export default new Router({
       name: 'otherHouse',
       component: otherHouse
     }, {
+      path: '/otherMyinfo',
+      name: 'otherMyinfo',
+      component: otherMyinfo
+    }, {
       path: '/otherZxlist',
       name: 'otherZxlist',
       component: otherZxlist
+    }, {
+      path: '/openList',
+      name: 'openList',
+      component: openList
+    }, {
+      path: '/openRecords',
+      name: 'openRecords',
+      component: openRecords
+    }, {
+      path: '/openResult',
+      name: 'openResult',
+      component: openResult
     }, {
       path: '/repIndex',
       name: 'repIndex',

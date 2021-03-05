@@ -19,7 +19,7 @@
                     </mt-swipe>
                   </div>
                   <div class="wy-menu">
-                    <div class="wy-menu-item" @click="getOpenDoor()">
+                    <div class="wy-menu-item" @click="gotoPage('openList')">
                       <img src="../../static/images/wy/mj.png" style="width: 24px;" alt="" class="weui-tabbar__icon">
                       <div>门禁</div>
                     </div>
@@ -118,14 +118,15 @@
                 </div>
                 <div class="wy-mybody">
                   <div class="wy-mybody-content">
+                    <mt-cell title="我的信息" to="/otherMyInfoHouse" is-link>
+                      <img slot="icon" src="../../static/images/wy/myfw.png" />
+                    </mt-cell>
                     <mt-cell title="我的房产" to="/otherHouse" is-link>
                       <img slot="icon" src="../../static/images/wy/myfw.png" />
                     </mt-cell>
-                    <div class="wy-my-mj" @click="getOpenDoor">
-                      <mt-cell title="我的门禁" is-link>
-                        <img  slot="icon" src="../../static/images/wy/mj.png" />
-                      </mt-cell>
-                    </div>
+                    <mt-cell title="开锁记录" to="/openRecords" is-link>
+                      <img slot="icon" src="../../static/images/wy/myfw.png" />
+                    </mt-cell>
                     <div class="wy-my-mj" @click="gotoPage('recIndex')">
                       <mt-cell title="我的缴费" is-link>
                         <img  slot="icon" src="../../static/images/wy/jf.png" />
@@ -325,36 +326,82 @@ export default {
     },
     getUserInfo(){
       var that = this;
-      if (window.location.href.indexOf('resident_code=')>-1) {
-        var param = {
-          residentCode:window.location.href.split('resident_code=')[1].split('&open_id=')[0]
-        };
-      }else {
-        var param = {
-          residentCode:''
-        };
-      }
-      // if (!param.residentCode) {
-      //   Toast('未获取到resident_code');
-      //   return;
+      // if (window.location.href.indexOf('resident_code=')>-1) {
+      //   var param = {
+      //     residentCode:window.location.href.split('resident_code=')[1].split('&open_id=')[0]
+      //   };
+      // }else {
+      //   var param = {
+      //     residentCode:''
+      //   };
       // }
+      if (window.location.href.indexOf('&code=')>-1) {
+        var tmpCode = window.location.href.split('&code=');
+        var code = tmpCode[1].split('&state=')[0];
+        var tmpParam = tmpCode[0].split('community_id=')[1];
+        var community_id = tmpParam.split('&property_id=')[0];
+        var property_id = tmpParam.split('&property_id=')[1];
+      } else {
+        var code = null;
+        var community_id = null;
+        var property_id = null;
+      }
       var loginFlag = sessionStorage.getItem('logined');
       if (!loginFlag) {
         Indicator.open()
-        utils.Get('getUserInfo',param).then(function(res){
-          // console.log('getUserInfo',res)
-          if (res.data.code == 0 && res.data.result) {
-            window.userInfo = res.data.result;
-            window.open_id = window.location.href.split('resident_code=')[1].split('&open_id=')[1];
-
-            localStorage.setItem('_userInfo',JSON.stringify(res.data.result));
-            localStorage.setItem('open_id',window.open_id);
+        let param = {
+          request_content: JSON.stringify({
+            code: code,
+            community_id: community_id,
+            property_id: property_id
+          })
+        };
+        var result = {};
+        utils.Post('GetWxUser', param).then(res => {
+          let tmpResult = JSON.parse(res.data.d);
+          console.log('tmpResult',tmpResult)
+          if (tmpResult.code == 0 && tmpResult.list) {
+            window.userInfo = tmpResult.list[0];
+            window.userInfo.propertyId = window.userInfo.property_id;
+            window.userInfo.ownerId = window.userInfo.id;
+            window.userInfo.propertyName = window.userInfo.property_name;
+            window.open_id = window.userInfo.open_id;
+            // window.open_id = window.location.href.split('resident_code=')[1].split('&open_id=')[1];
+            sessionStorage.setItem('_userInfo', JSON.stringify(window.userInfo));
+            window._ids = {
+              'community_id': community_id,
+              'property_id': property_id
+            };
+            localStorage.setItem('_userInfo',JSON.stringify(tmpResult.list[0]));
+            sessionStorage.setItem('_ids', JSON.stringify(window._ids));
+            // if(window.userInfo.check_status == '0' || window.userInfo.check_status == '1'){
+            //   // console.log('otherMyinfo~~~~~~~~~')
+            //   this.$router.push({
+            //     name:'otherMyinfo',
+            //     params:{}
+            //   })
+            //   return;
+            // }
+            console.log('window.location.href',window.location.href)
+            if(window.location.href.indexOf('wxscan')>-1){
+              this.$router.push({
+                name:'openResult',
+                params:{}
+              })
+              Indicator.close()
+              return;
+            }
+            // console.log('nononononononono')
+            // localStorage.setItem('open_id',window.open_id);
           }else {
             window.userInfo = JSON.parse(localStorage.getItem('_userInfo'));
+            window.userInfo.propertyId = window.userInfo.property_id;
+            window.userInfo.ownerId = window.userInfo.id;
+            window.userInfo.propertyName = window.userInfo.property_name;
             window.open_id =localStorage.getItem('open_id');
           }
           sessionStorage.setItem('logined','1');
-          document.title = window.userInfo.propertyName;
+          document.title = window.userInfo.propertyName?window.userInfo.propertyName:'智慧物业';
           that.allready = '1';
           that.ownerName=window.userInfo.ownerName;
           that.userHeadimgurl=window.userInfo.userHeadimgurl;
@@ -364,20 +411,22 @@ export default {
           that.getSwipeImgs();
           that.getWySetting();
           Indicator.close()
-          // that.ggMenu = res.data.page.list;
         });
       }else {
         window.userInfo = JSON.parse(localStorage.getItem('_userInfo'));
         window.open_id =localStorage.getItem('open_id');
-        that.allready = '1';
-        that.ownerName=window.userInfo.ownerName;
-        that.userHeadimgurl=window.userInfo.userHeadimgurl;
-        that.ownerMobile=window.userInfo.ownerMobile;
-        that.pushTypeId = window.userInfo.pushTypeId;
-        that.getZxList();
-        that.getSwipeImgs();
-        that.getWySetting();
-        document.title = window.userInfo.propertyName;
+        if(window.userInfo){
+          that.allready = '1';
+          that.ownerName=window.userInfo.ownerName;
+          that.userHeadimgurl=window.userInfo.userHeadimgurl;
+          that.ownerMobile=window.userInfo.ownerMobile;
+          that.pushTypeId = window.userInfo.pushTypeId;
+          that.getZxList();
+          that.getSwipeImgs();
+          that.getWySetting();
+          document.title = window.userInfo.propertyName?window.userInfo.propertyName:'智慧物业';
+        }
+        
         // Indicator.close()
       }
 
@@ -421,11 +470,14 @@ export default {
         ownerId:window.userInfo.ownerId,
       };
       utils.Get('getGgList',param).then(function(res){
-        // console.log('getGgList',res);
-        if (res.data.page.list.length>5) {
-          that.swipes = res.data.page.list.splice(0, 4);
-        } else {
-          that.swipes = res.data.page.list;
+        if(res.data.code == 0){
+          if (res.data.page.list.length>5) {
+            that.swipes = res.data.page.list.splice(0, 4);
+          } else {
+            that.swipes = res.data.page.list;
+          }
+        }else {
+          window.$toast(res.data.msg)
         }
         // that.indexNews = res.data.page.list;
       });
@@ -448,29 +500,33 @@ export default {
         that.currPage = 1;
       }
       utils.Get('getGgList',param).then(function(res){
-        if (param.cmsTitle) {
-          that.ggNews = res.data.page.list;
-        }else {
-          if (that.currPage == 1) {
+        if(res.data.code == 0){
+          if (param.cmsTitle) {
             that.ggNews = res.data.page.list;
           }else {
-            that.ggNews = that.ggNews.concat(res.data.page.list);
+            if (that.currPage == 1) {
+              that.ggNews = res.data.page.list;
+            }else {
+              that.ggNews = that.ggNews.concat(res.data.page.list);
+            }
           }
-        }
-        // that.indexNews = that.indexNews.concat(res.data.page.list);
-        that.totalCount = res.data.page.totalCount;
-        // that.currPage = that.currPage + 1;
-        if ((that.totalCount == that.indexNews.length) || that.currPage == that.totalPage) {
-          that.allLoaded = true;// 若数据已全部获取完毕
-          that.$refs.wyindexloadmore.onBottomLoaded();
+          // that.indexNews = that.indexNews.concat(res.data.page.list);
+          that.totalCount = res.data.page.totalCount;
+          // that.currPage = that.currPage + 1;
+          if ((that.totalCount == that.indexNews.length) || that.currPage == that.totalPage) {
+            that.allLoaded = true;// 若数据已全部获取完毕
+            that.$refs.wyindexloadmore.onBottomLoaded();
+          }else {
+            that.allLoaded = false;
+            that.currPage++
+            that.$refs.wyindexloadmore.onBottomLoaded();
+          }
+          that.$nextTick(function(){
+            $('.wy-news-items').scrollTop(0);
+          });
         }else {
-          that.allLoaded = false;
-          that.currPage++
-          that.$refs.wyindexloadmore.onBottomLoaded();
+          window.$toast(res.data.msg)
         }
-        that.$nextTick(function(){
-          $('.wy-news-items').scrollTop(0);
-        });
       });
     },
     getZxList(value){
@@ -484,7 +540,11 @@ export default {
       utils.Get('getGgList',param).then(function(res){
         // console.log('getGgList',res)
         // that.ggNews = res.data.page.list;
-        that.indexNews = res.data.page.list;
+        if(res.data.code == 0){
+          that.indexNews = res.data.page.list;
+        }else {
+          window.$toast(res.data.msg);
+        }
       });
     },
     clickMoreNews(){

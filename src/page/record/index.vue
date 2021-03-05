@@ -10,10 +10,14 @@
     <mt-tab-container-item id="1" style="padding-bottom: 64px;">
       <div v-if="options.length!=0">
         <div class="wy-rec-item" v-for="item in options">
-          <mt-checklist
+          <mt-radiolist
             v-model="item.value"
             :options="item.options">
-          </mt-checklist>
+          </mt-radiolist>
+          <!-- <mt-checklist
+            v-model="item.value"
+            :options="item.options">
+          </mt-checklist> -->
           <div class="wy-rec-item-des">
             <div class="wy-rec-item-time">
               <span>费用周期</span>
@@ -32,11 +36,11 @@
             v-model="allCheck"
             :options="['全选']">
           </mt-radio> -->
-          <mt-checklist
+          <!-- <mt-checklist
             style="width: 105px;display: inline-block;vertical-align:top;"
             v-model="allCheck"
             :options="['全选']">
-          </mt-checklist>
+          </mt-checklist> -->
           <label style="font-size: 14px;display: inline-block;padding: 0 16px 0 0;">
             合计：<span style="color:#DE3116;">¥</span><span style="color:#DE3116;display:inline-block;min-width:32px;">{{allMoney}}</span>
           </label>
@@ -298,11 +302,61 @@ export default {
           });
           param.ids = param.ids.slice(0,param.ids.length -1);
           utils.Get('postCreateOrder',param).then(function(res){
-            if (res.data.code === 0 && res.data.result.paymentUrl) {
-              window.location.href = res.data.result.paymentUrl+'&openId='+window.open_id;
-            }else {
-              Toast('缴费失败~')
-            }
+            // this.getFetch("公司后端提供的接口", data).then(res => {
+              if (res.data.code === 0) {
+                function onBridgeReady() {
+                  WeixinJSBridge.invoke(
+                    "getBrandWCPayRequest", {
+                      appId: res.data.data.jsApiId, //公众号名称，由商户传入
+                      timeStamp:res.data.data.timestamp, //时间戳，自1970年以来的秒数
+                      nonceStr: res.data.data.nonceStr, //随机串
+                      package: res.data.data.package,
+                      signType: res.data.data.signType, //微信签名方式：
+                      paySign: res.data.data.paySign //微信签名
+                    },
+                    wxResponse => {
+                      if (wxResponse.err_msg == "get_brand_wcpay_request:ok") {
+                        window.location.href = window.location.origin + '/index.html#/recResult?ORDER_NO=&CODE=0'
+                        //?ORDER_NO=202002051541391072&CODE=4&MSG=%E5%8F%96%E6%B6%88%E6%94%AF%E4%BB%98
+                        // window.location.href = window.location.origin + "/couponPaySuccess?ordernum=" + res.data.data.id;
+                      }
+                      if (wxResponse.err_msg == "get_brand_wcpay_request:fail") {
+                        window.$toast("支付失败");
+                      }
+                     if (wxResponse.err_msg == "get_brand_wcpay_request:cancel") {
+                       window.$toast("支付取消");
+                      }
+                    }
+                  );
+                }
+                if (typeof WeixinJSBridge == "undefined") {
+                  if (document.addEventListener) {
+                    document.addEventListener(
+                      "WeixinJSBridgeReady",
+                      onBridgeReady,
+                      false
+                    );
+                  } else if (document.attachEvent) {
+                    document.attachEvent("WeixinJSBridgeReady", onBridgeReady);
+                    document.attachEvent(
+                      "onWeixinJSBridgeReady",
+                      onBridgeReady
+                    );
+                  }
+                } else {
+                  onBridgeReady();
+                }
+              } else {
+                window.$toast(res.data.msg);
+                // this.wxBtn=true;
+              }
+
+            // });
+            // if (res.data.code === 0 && res.data.result.paymentUrl) {
+            //   window.location.href = res.data.result.paymentUrl+'&openId='+window.open_id;
+            // }else {
+            //   Toast('缴费失败~')
+            // }
           });
         }else {
           Toast('请至少选择一单~')
