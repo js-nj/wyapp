@@ -1,7 +1,7 @@
 <template>
-  <div class="pageContainer" v-if="isReady">
+  <div class="pageContainer wy-info" v-if="isReady">
     <h3 style="padding:16px 12px;">
-      <span v-if="check_status == '0'">请首先完善个人信息：</span>
+      <span v-if="check_status == '0'" style="font-size:18px;">请首先完善个人信息：</span>
     </h3>
     <div>
       <van-form>
@@ -39,6 +39,23 @@
         <van-field
           :readonly="true"
           :clickable="!disabled"
+          name="dy_picker"
+          :value="form.name1_Display"
+          label="单元"
+          placeholder="点击选择单元"
+          @click="dy_showPicker = true"
+        />
+        <van-popup v-if="!disabled" v-model="dy_showPicker" position="bottom">
+          <van-picker
+            show-toolbar
+            :columns="DYoptions"
+            @confirm="dy_onConfirm"
+            @cancel="dy_showPicker = false"
+          />
+        </van-popup>
+        <van-field
+          :readonly="true"
+          :clickable="!disabled"
           name="hh_picker"
           :value="form.name2_Display"
           label="户号"
@@ -53,13 +70,13 @@
             @cancel="hh_showPicker = false"
           />
         </van-popup>
-        <van-field
+        <!-- <van-field
           v-model="form.name6"
           :readonly="disabled"
           name="面积"
           label="面积"
           placeholder="房产面积"
-        />
+        /> -->
         <van-field
           v-model="form.name3"
           :readonly="disabled"
@@ -133,7 +150,7 @@ window.countDown = function() {
         // console.log('缓存的用户数据2');
         window._userInfo = JSON.parse(sessionStorage.getItem('_userInfo'));
         window._ids = JSON.parse(sessionStorage.getItem('_ids'));
-        Indicator.open();
+        // Indicator.open();
         // let infoDone = await this.GetUserCheckDetails();
         console.log('window._userInfo',window._userInfo)
         let infoDone = window._userInfo;
@@ -148,11 +165,13 @@ window.countDown = function() {
             // }
             this.disabled = true;
             if(infoDone.houses){
-              this.form.name = infoDone.houses[0] && infoDone.houses[0].house_parent_id;
+              this.form.name = infoDone.houses[0] && infoDone.houses[0].parent_parent_id;
               this.form.name_Display = infoDone.houses[0] && infoDone.houses[0].full_name.split('/')[0];
+              this.form.name1 = infoDone.houses[0] && infoDone.houses[0].house_parent_id;
+              this.form.name1_Display = infoDone.houses[0] && infoDone.houses[0].full_name.split('/')[1];
               this.form.name2 = infoDone.houses[0] && infoDone.houses[0].house_id;
-              this.form.name2_Display = infoDone.houses[0] && infoDone.houses[0].full_name.split('/')[1];
-              this.form.name6 = infoDone.houses[0] && infoDone.houses[0].house_area;
+              this.form.name2_Display = infoDone.houses[0] && infoDone.houses[0].full_name.split('/')[2];
+              // this.form.name6 = infoDone.houses[0] && infoDone.houses[0].house_area;
             }
             this.form.name3 = infoDone.user_name;
             this.form.name4 = infoDone.user_phone;
@@ -177,15 +196,15 @@ window.countDown = function() {
           this.LDoptions.push(tmpobj);
           this.buildingsObj[item.id] = item;
         });
-        if (this.form.name) {
-          this.buildingsObj[this.form.name].childrens.forEach(item => {
-            this.HHoptions.push({
-              text:item.house_name,
-              id:item.id
-            });
-          });
-          console.log('this.HHoptions',this.HHoptions)
-        }
+        // if (this.form.name) {
+        //   this.buildingsObj[this.form.name].childrens.forEach(item => {
+        //     this.HHoptions.push({
+        //       text:item.house_name,
+        //       id:item.id
+        //     });
+        //   });
+        //   console.log('this.HHoptions',this.HHoptions)
+        // }
 
         // console.log('this.setting-after',this.setting);
     },
@@ -201,16 +220,19 @@ window.countDown = function() {
         form: {
           name: '',
           name_Display:'',
+          name1: '',
+          name1_Display:'',
           name2: '',
           name2_Display:'',
           name3: '',
           name4: '',
           name5: '',
-          name6: '',
+          // name6: '',
         },
         buildings:[],
         buildingsObj:{},
         LDoptions:[],
+        DYoptions:[],
         HHoptions:[],
         butDisabled:false,
         setting:{
@@ -218,6 +240,7 @@ window.countDown = function() {
           is_need_id:'1'
         },
         ld_showPicker: false,
+        dy_showPicker: false,
         hh_showPicker: false,
       }
     },
@@ -282,7 +305,7 @@ window.countDown = function() {
       //     } else {
       //       window.$toast('获取个人信息失败~');
       //     }
-      //   }); 
+      //   });
       //   return tmpResult;
       // },
       ld_onConfirm(e){
@@ -293,11 +316,31 @@ window.countDown = function() {
         this.ld_showPicker = false;
         // this.setHHoptions();
         this.buildingsObj[this.form.name].childrens.forEach(item => {
-            this.HHoptions.push({
+            this.DYoptions.push({
               text:item.house_name,
               id:item.id
             });
           });
+      },
+      dy_onConfirm(e){
+        console.log('dy_onConfirm',e)
+        // this.form.name = e.id;
+        this.form.name1 = e.id;
+        this.form.name1_Display = e.text;
+        this.dy_showPicker = false;
+        // this.setHHoptions();
+        this.buildingsObj[this.form.name].childrens.forEach(item => {
+          if(item.id === e.id){
+            item.childrens.forEach(subitem => {
+              this.HHoptions.push({
+                text:subitem.house_name,
+                id:subitem.id
+              });
+            });
+          }else {
+            console.log('没找到此单元')
+          }
+        });
       },
       hh_onConfirm(e){
         console.log('hh_onConfirm',e)
@@ -384,6 +427,9 @@ window.countDown = function() {
         if (!this.form.name) {
           window.$toast('请先选择楼栋');
           return;
+        }if (!this.form.name1) {
+          window.$toast('请先选择单元');
+          return;
         }
         if (!this.form.name2) {
           window.$toast('请先选择户号');
@@ -401,10 +447,10 @@ window.countDown = function() {
           window.$toast('请填写验证码');
           return;
         }
-        if (!this.form.name6) {
-          window.$toast('请填写房产面积');
-          return;
-        }
+        // if (!this.form.name6) {
+        //   window.$toast('请填写房产面积');
+        //   return;
+        // }
         // if (this.setting.is_need_house == '1') {
         //   if (this.fileList2[0] && this.fileList2[0].url) {
 
@@ -430,7 +476,8 @@ window.countDown = function() {
           sms_code:this.form.name5,
           // user_id_img:this.fileList[0]?this.fileList[0].url:'',
           houses:[{
-            house_parent_id:this.form.name,
+            parent_parent_id:this.form.name,
+            house_parent_id:this.form.name1,
             house_id:this.form.name2,
             // house_img_url:this.fileList2[0]?this.fileList2[0].url:'',
             house_area:this.form.name6,
@@ -453,6 +500,7 @@ window.countDown = function() {
           if (tmpResult.code == '0') {
             window.$toast('提交成功~');
             window._userInfo.check_status = "1";
+            this.check_status = '1';
             sessionStorage.setItem('_userInfo', JSON.stringify(window._userInfo));
             that.disabled = true;
             // window.history.go(-1);
@@ -552,5 +600,9 @@ window.countDown = function() {
   .pageContainer .van-uploader {
     margin-left: 48px;
   }
+  .wy-info .van-cell {
+    font-size: 18px;
+  }
+
 
 </style>

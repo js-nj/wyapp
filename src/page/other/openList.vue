@@ -5,12 +5,12 @@
       <van-col span="4">
         <img style="width:40px;position: relative;top: 4px;" src="../../../static/images/wy/open.png" />
       </van-col>
-      <van-col span="16">
+      <van-col span="14">
         <h5 style="font-weight: 600;">{{item.house_name}}</h5>
         <span style="font-size: 12px;color: #999;line-height: 12px;display: inline-block;padding-top: 4px;">{{item.house_info}}</span>
       </van-col>
-      <van-col span="4">
-        <van-button type="info" size="mini" style="position: relative;top: 6px;right: -8px;" @click="handleOpenDoor(item)">开门</van-button>
+      <van-col span="6">
+        <van-button type="info" size="small" style="position: relative;top: 0px;right: 0px;font-weight:600;" @click="handleOpenDoor(item)">开门</van-button>
       </van-col>
     </van-row>
   </div>
@@ -19,16 +19,20 @@
 </template>
 
 <script>
+  import { Indicator } from 'mint-ui';
 import * as utils from '../../utils';
 export default {
   name: 'openList',
+  components: {
+      [Indicator.name]: Indicator
+  },
   data () {
     return {
       options:[]
     }
   },
   created(){
-    document.title = '门禁开锁';
+    document.title = '门禁';
     window._userInfo = JSON.parse(sessionStorage.getItem('_userInfo'));
     window._ids = JSON.parse(sessionStorage.getItem('_ids'));
     this.getOpenDoorList();
@@ -64,8 +68,10 @@ export default {
           terminal_code:params.terminal_code
         })
       };
+      Indicator.open()
       // debugger
       utils.Post('DoorOpen',param).then(function(res){
+        Indicator.close();
         let tmpResult = JSON.parse(res.data.d);
         if (tmpResult.code == 0){
           window.$toast('开门成功！')
@@ -84,7 +90,7 @@ export default {
   min-height: 100%;
 }
 .wy-openList-item {
-  padding:8px;
+  padding:8px 0 8px 8px;
   text-align: left;
   margin-bottom: 8px;
   background-color: #fff;

@@ -54,12 +54,12 @@
                 <mt-field class="wy-date-getdoor" label="上门日期" placeholder="请输入日期" type="date" v-model="problemday"></mt-field>
 
                 <div class="wy-fix-fixtime" @click="openTimePicker">
-                  <span style="color:#333;">上门时间起</span><label class="wy-fix-fixtimevalue">{{problemTime}}</label>
+                  <span style="color:#333;">上门时间起</span><label class="wy-fix-fixtimevalue">{{problemTime}}</label><label v-if="!problemTime" style="color:#999;">请选择</label>
                 </div>
                 <mt-datetime-picker type="time" v-model="problemTime" ref="timepiker"></mt-datetime-picker>
 
                 <div class="wy-fix-fixtime" @click="openTimePickerEnd">
-                  <span style="color:#333;">上门时间止</span><label class="wy-fix-fixtimevalue">{{problemTimeEnd}}</label>
+                  <span style="color:#333;">上门时间止</span><label class="wy-fix-fixtimevalue">{{problemTimeEnd}}</label><label v-if="!problemTimeEnd" style="color:#999;">请选择</label>
                 </div>
                 <mt-datetime-picker type="time" v-model="problemTimeEnd" ref="timepikerend"></mt-datetime-picker>
 
@@ -223,12 +223,12 @@ export default {
     // debugger;
     document.title = '快捷报修';
     window.userInfo = JSON.parse(localStorage.getItem('_userInfo'));
-    this.username=window.userInfo.ownerName;
-    this.phone=window.userInfo.ownerMobile;
-    var tmpArr= window.userInfo.wyOwnerHouseEntityList.map(function(item){
+    this.username=window.userInfo.user_name;
+    this.phone=window.userInfo.user_phone;
+    var tmpArr= window.userInfo.houses.map(function(item){
       var tmp = {
-        id:item.id,
-        name:item.communityName +'/'+item.address
+        id:item.house_id,
+        name:item.community_name +'/'+item.full_name
       };
       return tmp
     });
@@ -372,8 +372,8 @@ export default {
               companyId: window.userInfo.companyId ,
               communityId: window.userInfo.companyId ,
               ownerId: window.userInfo.ownerId,
-              ownerName: window.userInfo.ownerName ,
-              ownerMobile: window.userInfo.ownerMobile ,
+              ownerName: window.userInfo.user_name ,
+              ownerMobile: window.userInfo.user_phone ,
               houseId:that.grfixplaceid,
               imgUrl: res.join(',')
             };
@@ -410,9 +410,9 @@ export default {
             companyId: window.userInfo.companyId ,
             communityId: window.userInfo.companyId ,
             ownerId: window.userInfo.ownerId,
-            ownerName: window.userInfo.ownerName ,
+            ownerName: window.userInfo.user_name ,
             houseId:that.grfixplaceid,
-            ownerMobile: window.userInfo.ownerMobile
+            ownerMobile: window.userInfo.user_phone
           };
           if (type == 'pub') {
               param.typeId = "1";

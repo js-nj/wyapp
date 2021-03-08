@@ -91,4 +91,18 @@ body {
   width: 95px;
   height: 65px;
 }
+.wy-info  .van-picker__cancel {
+  font-size: 18px;
+}
+.wy-info  .van-picker__confirm {
+  font-size: 18px;
+}
+.wy-info  .van-picker-column{
+  font-size: 18px;
+}
+.wy-openList .van-button--small {
+    font-size: 16px;
+    padding: 0px 14px;
+    height:42px;
+}
 </style>

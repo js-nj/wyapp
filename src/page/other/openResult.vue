@@ -2,11 +2,11 @@
 <div class="wy-openList">
     <div v-if="result == 'success'">
       <img class="openr-img" src="../../../static/images/wy/success.png" />
-      <div class="openr-des">开门成功</div>
+      <div class="openr-des" style="font-size:24px;">开门成功</div>
     </div>
     <div v-if="result == 'fail'">
       <img class="openr-img" src="../../../static/images/wy/fail.png" />
-      <div class="openr-des">开门失败</div>
+      <div class="openr-des" style="font-size:24px;">开门失败</div>
     </div>
 </div>
 

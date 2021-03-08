@@ -88,15 +88,15 @@ export default {
     document.title = '提交建议';
     var that = this;
     window.userInfo = JSON.parse(localStorage.getItem('_userInfo'));
-    var tmpArr= window.userInfo.wyOwnerHouseEntityList.map(function(item){
+    var tmpArr= window.userInfo.houses.map(function(item){
       var tmp = {
-        id:item.id,
-        name:item.communityName +'/'+item.address
+        id:item.house_id,
+        name:item.community_name +'/'+item.full_name
       };
       return tmp
     });
     this.$set(this.grfpslots[0],'values',tmpArr);
-    this.grfixplaceid = window.userInfo.wyOwnerHouseEntityList[0].id;
+    this.grfixplaceid = window.userInfo.houses[0].house_id;
 
     this.$nextTick(function(){
         $('span','.wy-sug-types').on('click', function (ele) {

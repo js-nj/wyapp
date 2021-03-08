@@ -1,7 +1,7 @@
 <template>
 <div class="wy-houses">
   <div class="wy-house" v-for="item in options">
-    {{item.communityName +'&nbsp;&nbsp;'+ item.address}}
+    {{item.community_name +'&nbsp;&nbsp;'+ item.full_name}}
     <!-- {{item.address}} -->
   </div>
 </div>
@@ -21,7 +21,7 @@ export default {
   },
   created(){
     document.title = '我的房屋';
-    this.options = window.userInfo.wyOwnerHouseEntityList;
+    this.options = window.userInfo.houses;
   },
   methods:{
 

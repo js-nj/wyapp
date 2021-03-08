@@ -118,36 +118,12 @@
                 </div>
                 <div class="wy-mybody">
                   <div class="wy-mybody-content">
-                    <mt-cell title="我的信息" to="/otherMyInfoHouse" is-link>
-                      <img slot="icon" src="../../static/images/wy/myfw.png" />
-                    </mt-cell>
-                    <mt-cell title="我的房产" to="/otherHouse" is-link>
-                      <img slot="icon" src="../../static/images/wy/myfw.png" />
-                    </mt-cell>
-                    <mt-cell title="开锁记录" to="/openRecords" is-link>
-                      <img slot="icon" src="../../static/images/wy/myfw.png" />
-                    </mt-cell>
-                    <div class="wy-my-mj" @click="gotoPage('recIndex')">
-                      <mt-cell title="我的缴费" is-link>
-                        <img  slot="icon" src="../../static/images/wy/jf.png" />
-                      </mt-cell>
-                    </div>
-                    <div class="wy-my-mj" @click="gotoPage('fixList')">
-                      <mt-cell title="我的报修" is-link>
-                        <img slot="icon" src="../../static/images/wy/bx.png" />
-                      </mt-cell>
-                    </div>
-                    <div class="wy-my-mj" @click="gotoPage('sugList')">
-                      <mt-cell title="我的投诉" is-link>
-                        <img slot="icon" src="../../static/images/wy/ts.png" />
-                      </mt-cell>
-                    </div>
                     <!-- 公告管理 -->
-                    <div class="wy-my-mj" v-if="pushTypeId && pushTypeId.indexOf('1')>-1" @click="gotoPage('maIndex')">
+                    <!-- <div class="wy-my-mj" v-if="pushTypeId && pushTypeId.indexOf('1')>-1" @click="gotoPage('maIndex')">
                       <mt-cell title="公告管理" is-link>
                         <img slot="icon" src="../../static/images/wy/gl.png" />
                       </mt-cell>
-                    </div>
+                    </div> -->
                     <!-- 我的派单 -->
                     <div class="wy-my-mj" v-if="pushTypeId && pushTypeId.indexOf('1')>-1" @click="gotoPage('disIndex')">
                       <mt-cell title="我的派单" is-link>
@@ -166,6 +142,31 @@
                         <img slot="icon" src="../../static/images/wy/mybills.png" />
                       </mt-cell>
                     </div>
+                    <mt-cell title="我的信息" to="/otherMyInfo" is-link>
+                      <img slot="icon" src="../../static/images/wy/mydistribute.png" />
+                    </mt-cell>
+                    <mt-cell title="我的房产" to="/otherHouse" is-link>
+                      <img slot="icon" src="../../static/images/wy/myfw.png" />
+                    </mt-cell>
+                    <mt-cell title="开锁记录" to="/openRecords" is-link>
+                      <img slot="icon" src="../../static/images/wy/gl.png" />
+                    </mt-cell>
+                    <div class="wy-my-mj" @click="gotoPage('recIndex')">
+                      <mt-cell title="我的缴费" is-link>
+                        <img  slot="icon" src="../../static/images/wy/jf.png" />
+                      </mt-cell>
+                    </div>
+                    <div class="wy-my-mj" @click="gotoPage('fixList')">
+                      <mt-cell title="我的报修" is-link>
+                        <img slot="icon" src="../../static/images/wy/bx.png" />
+                      </mt-cell>
+                    </div>
+                    <div class="wy-my-mj" @click="gotoPage('sugList')">
+                      <mt-cell title="我的投诉" is-link>
+                        <img slot="icon" src="../../static/images/wy/ts.png" />
+                      </mt-cell>
+                    </div>
+
                   </div>
                 </div>
               </div>
@@ -374,14 +375,14 @@ export default {
             };
             localStorage.setItem('_userInfo',JSON.stringify(tmpResult.list[0]));
             sessionStorage.setItem('_ids', JSON.stringify(window._ids));
-            // if(window.userInfo.check_status == '0' || window.userInfo.check_status == '1'){
-            //   // console.log('otherMyinfo~~~~~~~~~')
-            //   this.$router.push({
-            //     name:'otherMyinfo',
-            //     params:{}
-            //   })
-            //   return;
-            // }
+            if(window.userInfo.check_status == '0' || window.userInfo.check_status == '1'){
+              // console.log('otherMyinfo~~~~~~~~~')
+              this.$router.push({
+                name:'otherMyinfo',
+                params:{}
+              })
+              return;
+            }
             console.log('window.location.href',window.location.href)
             if(window.location.href.indexOf('wxscan')>-1){
               this.$router.push({
@@ -403,9 +404,9 @@ export default {
           sessionStorage.setItem('logined','1');
           document.title = window.userInfo.propertyName?window.userInfo.propertyName:'智慧物业';
           that.allready = '1';
-          that.ownerName=window.userInfo.ownerName;
-          that.userHeadimgurl=window.userInfo.userHeadimgurl;
-          that.ownerMobile=window.userInfo.ownerMobile;
+          that.ownerName=window.userInfo.user_name;
+          that.userHeadimgurl=window.userInfo.wx_avatar;
+          that.ownerMobile=window.userInfo.user_phone;
           that.pushTypeId = window.userInfo.pushTypeId;
           that.getZxList();
           that.getSwipeImgs();
@@ -417,16 +418,16 @@ export default {
         window.open_id =localStorage.getItem('open_id');
         if(window.userInfo){
           that.allready = '1';
-          that.ownerName=window.userInfo.ownerName;
-          that.userHeadimgurl=window.userInfo.userHeadimgurl;
-          that.ownerMobile=window.userInfo.ownerMobile;
+          that.ownerName=window.userInfo.user_name;
+          that.userHeadimgurl=window.userInfo.wx_avatar;
+          that.ownerMobile=window.userInfo.user_phone;
           that.pushTypeId = window.userInfo.pushTypeId;
           that.getZxList();
           that.getSwipeImgs();
           that.getWySetting();
           document.title = window.userInfo.propertyName?window.userInfo.propertyName:'智慧物业';
         }
-        
+
         // Indicator.close()
       }
 
@@ -513,7 +514,7 @@ export default {
           // that.indexNews = that.indexNews.concat(res.data.page.list);
           that.totalCount = res.data.page.totalCount;
           // that.currPage = that.currPage + 1;
-          if ((that.totalCount == that.indexNews.length) || that.currPage == that.totalPage) {
+          if ((that.totalCount == that.ggNews.length) || that.currPage == that.totalPage) {
             that.allLoaded = true;// 若数据已全部获取完毕
             that.$refs.wyindexloadmore.onBottomLoaded();
           }else {
