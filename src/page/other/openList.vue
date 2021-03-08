@@ -75,6 +75,8 @@ export default {
         let tmpResult = JSON.parse(res.data.d);
         if (tmpResult.code == 0){
           window.$toast('开门成功！')
+        }else {
+          window.$toast(tmpResult.msg)
         }
       });
     }
