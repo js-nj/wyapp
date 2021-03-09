@@ -11,13 +11,14 @@
       document.title = "智慧社区";
       // alert(window.location.origin)
       if (window.location.origin.indexOf('toupiaowx.njst2020')>-1) {
-        var appid = "wxe926da557f89d2c4";
+        // var appid = "wxe926da557f89d2c4";
         var url = "http://toupiaowx.njst2020.com/index.html";
       } else {
-        var appid = "wxf53735790a600140";
+        // var appid = "wxf53735790a600140";
         var url = "http://daka.xixiaoli.com/index.html";
       }
       var param = window.location.href.split('?')[1];
+      var appid = window.location.href.split('&AppID=')[1];
       var encodeUrl = encodeURIComponent(url+'?'+param);
       // var encodeUrl = encodeURIComponent(url+'?t='+new Date().getTime()+'&'+param);
       window.location.href = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid='+appid+'&redirect_uri='+encodeUrl+'&response_type=code&scope=snsapi_userinfo&state=123#wechat_redirect';

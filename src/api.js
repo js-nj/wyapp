@@ -12,6 +12,8 @@ export default {
   DoorOpenList:'http://daka.xixiaoli.com/WebService.asmx/DoorOpenList',
   DoorOpen:'http://daka.xixiaoli.com/WebService.asmx/DoorOpen',
 
+  GetADList:'http://daka.xixiaoli.com/WebService.asmx/GetADList',
+
   //海纳个人信息
   // getInfo: 'http://localhost:3000/users/info',
   getUserInfo: hostPath + '/app/txhn/getUserInfo',

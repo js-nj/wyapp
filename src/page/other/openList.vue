@@ -1,21 +1,29 @@
 <template>
-<div class="wy-openList">
-  <div class="wy-openList-item" v-for="item in options">
-    <van-row>
-      <van-col span="4">
-        <img style="width:40px;position: relative;top: 4px;" src="../../../static/images/wy/open.png" />
-      </van-col>
-      <van-col span="14">
-        <h5 style="font-weight: 600;">{{item.house_name}}</h5>
-        <span style="font-size: 12px;color: #999;line-height: 12px;display: inline-block;padding-top: 4px;">{{item.house_info}}</span>
-      </van-col>
-      <van-col span="6">
-        <van-button type="info" size="small" style="position: relative;top: 0px;right: 0px;font-weight:600;" @click="handleOpenDoor(item)">开门</van-button>
-      </van-col>
-    </van-row>
+  <div>
+    <div class="wy-header">
+      <mt-swipe :show-indicators="false" style="height:144px;">
+        <mt-swipe-item v-for="item in swipes" :key="item.id">
+          <img class="wy-head-img" :src="item.cmsImgUrl" @click="clickSwipe(item)" />
+        </mt-swipe-item>
+      </mt-swipe>
+    </div>
+    <div class="wy-openList">
+      <div class="wy-openList-item" v-for="item in options">
+        <van-row>
+          <van-col span="4">
+            <img style="width:40px;position: relative;top: 4px;" src="../../../static/images/wy/open.png" />
+          </van-col>
+          <van-col span="14">
+            <h5 style="font-weight: 600;">{{item.house_name}}</h5>
+            <span style="font-size: 12px;color: #999;line-height: 12px;display: inline-block;padding-top: 4px;">{{item.house_info}}</span>
+          </van-col>
+          <van-col span="6">
+            <van-button type="info" size="small" style="position: relative;top: 0px;right: 0px;font-weight:600;" @click="handleOpenDoor(item)">开门</van-button>
+          </van-col>
+        </van-row>
+      </div>
+    </div>
   </div>
-</div>
-
 </template>
 
 <script>
@@ -28,7 +36,8 @@ export default {
   },
   data () {
     return {
-      options:[]
+      options:[],
+      swipes:[],
     }
   },
   created(){
@@ -36,6 +45,7 @@ export default {
     window._userInfo = JSON.parse(sessionStorage.getItem('_userInfo'));
     window._ids = JSON.parse(sessionStorage.getItem('_ids'));
     this.getOpenDoorList();
+    this.getSwipeImgs();
     // this.options = window.userInfo.wyOwnerHouseEntityList;
   },
   methods:{
@@ -79,13 +89,49 @@ export default {
           window.$toast(tmpResult.msg)
         }
       });
-    }
+    },
+    getSwipeImgs(){
+      var that = this;
+      var param = {
+        user_id:window.userInfo.id,
+        property_id:window.userInfo.property_id,
+        community_id:window.userInfo.community_id,
+      };
+      utils.Post('GetADList',param).then(function(res){
+        if(res.data.code == 0){
+          if (res.data.page.list.length>5) {
+            that.swipes = res.data.page.list.splice(0, 4);
+          } else {
+            that.swipes = res.data.page.list;
+          }
+        }else {
+          window.$toast(res.data.msg)
+        }
+        // that.indexNews = res.data.page.list;
+      });
+    },
+    clickSwipe(param){
+      if (param && param.cmsUrlUrl) {
+        window.location.href = param.cmsUrlUrl;
+      }else {
+        // this.$router.push({
+        //   name:'detail',
+        //   params:{
+        //     item:param
+        //   }
+        // })
+      }
+    },
   }
 }
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
+.wy-head-img {
+  width: 100%;
+  height:100%;
+}
 .wy-openList {
   background-color: #ddd;
   padding: 16px;
