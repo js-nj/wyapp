@@ -1,7 +1,7 @@
 <template>
 
 <div class="page" v-show="allready == '1'">
-    <div class="page__bd" style="height: 100%;">
+    <div class="page__bd" style="height: calc(100%);">
         <div class="weui-tab">
             <div class="weui-tab__panel">
               <div v-if="tabId=='1'">
@@ -19,7 +19,11 @@
                     </mt-swipe>
                   </div>
                   <div class="wy-menu">
-                    <div class="wy-menu-item" @click="gotoPage('openList')">
+                    <div class="wy-menu-item" v-for="item in menulist" v-if="item.is_show" @click="gotoMenuPage(item)">
+                      <img :src="item.show_img" style="" alt="" class="weui-tabbar__icon" />
+                      <div>{{item.menu_title}}</div>
+                    </div>
+                    <!-- <div class="wy-menu-item" @click="gotoPage('openList')">
                       <img src="../../static/images/wy/mj.png" style="width: 24px;" alt="" class="weui-tabbar__icon">
                       <div>门禁</div>
                     </div>
@@ -34,7 +38,7 @@
                     <div class="wy-menu-item" @click="gotoPage('sugIndex')">
                       <img src="../../static/images/wy/ts.png" alt="" class="weui-tabbar__icon">
                       <div>投诉</div>
-                    </div>
+                    </div> -->
                   </div>
                 </div>
                 <div class="wy-news">
@@ -124,6 +128,11 @@
                         <img slot="icon" src="../../static/images/wy/gl.png" />
                       </mt-cell>
                     </div> -->
+                    <div class="wy-my-mj" v-if="pushTypeId && pushTypeId.indexOf('1')>-1" @click="gotoPage('checkLive')">
+                      <mt-cell title="住户审核"  is-link>
+                        <img slot="icon" src="../../static/images/wy/gl.png" />
+                      </mt-cell>
+                    </div>
                     <!-- 我的派单 -->
                     <div class="wy-my-mj" v-if="pushTypeId && pushTypeId.indexOf('1')>-1" @click="gotoPage('disIndex')">
                       <mt-cell title="我的派单" is-link>
@@ -142,9 +151,6 @@
                         <img slot="icon" src="../../static/images/wy/mybills.png" />
                       </mt-cell>
                     </div>
-                    <mt-cell title="我的信息" to="/otherMyInfo" is-link>
-                      <img slot="icon" src="../../static/images/wy/mydistribute.png" />
-                    </mt-cell>
                     <mt-cell title="我的房产" to="/otherHouse" is-link>
                       <img slot="icon" src="../../static/images/wy/myfw.png" />
                     </mt-cell>
@@ -229,7 +235,7 @@ export default {
       userHeadimgurl:'',
       ownerMobile:'',
       pushTypeId:'',
-
+      menulist:[],
       allLoaded:false,
       totalCount:0,
       currPage:1,
@@ -280,6 +286,26 @@ export default {
     }
   },
   methods:{
+    gotoMenuPage(param){
+      if(param.custom_menu_url){
+        window.location.href = param.custom_menu_url;
+      }else {
+        switch(param.menu_type){
+          case '1':
+            this.gotoPage('openList');
+            break;
+          case '2':
+            this.gotoPage('recIndex');
+            break;
+          case '3':
+            this.gotoPage('fixIndex');
+            break;
+          case '4':
+            this.gotoPage('sugIndex');
+            break;
+        }
+      }
+    },
     getOpenDoor(){
       var param = {
         propertyId:window.userInfo.propertyId
@@ -408,9 +434,11 @@ export default {
           that.userHeadimgurl=window.userInfo.wx_avatar;
           that.ownerMobile=window.userInfo.user_phone;
           that.pushTypeId = window.userInfo.pushTypeId;
+          that.getMenuList();
           that.getZxList();
           that.getSwipeImgs();
           that.getWySetting();
+
           Indicator.close()
         });
       }else {
@@ -422,9 +450,11 @@ export default {
           that.userHeadimgurl=window.userInfo.wx_avatar;
           that.ownerMobile=window.userInfo.user_phone;
           that.pushTypeId = window.userInfo.pushTypeId;
+          that.getMenuList();
           that.getZxList();
           that.getSwipeImgs();
           that.getWySetting();
+
           document.title = window.userInfo.propertyName?window.userInfo.propertyName:'智慧物业';
         }
 
@@ -440,6 +470,25 @@ export default {
           name:route,
         });
       }
+    },
+    getMenuList(){
+      var that = this;
+      let param = {
+        request_content: JSON.stringify({
+          user_id: window.userInfo.id,
+          community_id: window.userInfo.community_id,
+          property_id: window.userInfo.property_id
+        })
+      };
+      utils.Post('MenuList',param).then(function(res){
+        let tmpResult = JSON.parse(res.data.d);
+        if(tmpResult.code == 0){
+          that.menulist = tmpResult.list;
+        }else {
+          window.$toast(tmpResult.msg)
+        }
+        // that.indexNews = res.data.page.list;
+      });
     },
     gotoDetail(item){
       if (item.cmsUrlUrl) {

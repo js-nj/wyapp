@@ -8,11 +8,15 @@ export default {
   GetHouseList: 'http://daka.xixiaoli.com/WebService.asmx/GetHouseList',
   PostSMS: 'http://daka.xixiaoli.com/WebService.asmx/PostSMS',
 
-  DoorList:'http://daka.xixiaoli.com/WebService.asmx/DoorList',
-  DoorOpenList:'http://daka.xixiaoli.com/WebService.asmx/DoorOpenList',
-  DoorOpen:'http://daka.xixiaoli.com/WebService.asmx/DoorOpen',
+  DoorList: 'http://daka.xixiaoli.com/WebService.asmx/DoorList',
+  DoorOpenList: 'http://daka.xixiaoli.com/WebService.asmx/DoorOpenList',
+  DoorOpen: 'http://daka.xixiaoli.com/WebService.asmx/DoorOpen',
 
-  GetADList:'http://daka.xixiaoli.com/WebService.asmx/GetADList',
+  GetADList: 'http://daka.xixiaoli.com/WebService.asmx/GetADList',
+  MenuList: 'http://daka.xixiaoli.com/WebService.asmx/MenuList',
+
+  CheckList: 'http://daka.xixiaoli.com/WebService.asmx/CheckList',
+  CheckByUserId: 'http://daka.xixiaoli.com/WebService.asmx/CheckByUserId',
 
   //海纳个人信息
   // getInfo: 'http://localhost:3000/users/info',

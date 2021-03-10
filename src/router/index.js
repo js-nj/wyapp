@@ -25,6 +25,9 @@ import openList from '@/page/other/openList'
 import openRecords from '@/page/other/openRecords'
 import openResult from '@/page/other/openResult'
 
+import checkLive from '@/page/other/checkLive'
+import checkInfo from '@/page/other/checkInfo'
+
 import repIndex from '@/page/reply/index'
 import repDetail from '@/page/reply/detail'
 import disIndex from '@/page/distribute/index'
@@ -130,6 +133,14 @@ export default new Router({
       path: '/openResult',
       name: 'openResult',
       component: openResult
+    }, {
+      path: '/checkLive',
+      name: 'checkLive',
+      component: checkLive
+    }, {
+      path: '/checkInfo',
+      name: 'checkInfo',
+      component: checkInfo
     }, {
       path: '/repIndex',
       name: 'repIndex',

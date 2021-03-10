@@ -3,7 +3,7 @@
     <div class="wy-header">
       <mt-swipe :show-indicators="false" style="height:144px;">
         <mt-swipe-item v-for="item in swipes" :key="item.id">
-          <img class="wy-head-img" :src="item.cmsImgUrl" @click="clickSwipe(item)" />
+          <img class="wy-head-img" :src="item.pic_url" @click="clickSwipe(item)" />
         </mt-swipe-item>
       </mt-swipe>
     </div>
@@ -27,12 +27,14 @@
 </template>
 
 <script>
-  import { Indicator } from 'mint-ui';
+  import { Indicator,Swipe, SwipeItem } from 'mint-ui';
 import * as utils from '../../utils';
 export default {
   name: 'openList',
   components: {
-      [Indicator.name]: Indicator
+      [Indicator.name]: Indicator,
+      [Swipe.name]: Swipe,
+      [SwipeItem.name]: SwipeItem
   },
   data () {
     return {
@@ -92,34 +94,32 @@ export default {
     },
     getSwipeImgs(){
       var that = this;
-      var param = {
-        user_id:window.userInfo.id,
-        property_id:window.userInfo.property_id,
-        community_id:window.userInfo.community_id,
+      let param = {
+        request_content: JSON.stringify({
+          user_id: window._userInfo.id,
+          community_id: window._ids.community_id,
+          property_id: window._ids.property_id
+        })
       };
       utils.Post('GetADList',param).then(function(res){
-        if(res.data.code == 0){
-          if (res.data.page.list.length>5) {
-            that.swipes = res.data.page.list.splice(0, 4);
+        let tmpResult = JSON.parse(res.data.d);
+        if(tmpResult.code == 0){
+          if (tmpResult.list.length>5) {
+            that.swipes = tmpResult.list.splice(0, 4);
           } else {
-            that.swipes = res.data.page.list;
+            that.swipes = tmpResult.list;
           }
         }else {
-          window.$toast(res.data.msg)
+          window.$toast(tmpResult.msg)
         }
         // that.indexNews = res.data.page.list;
       });
     },
     clickSwipe(param){
-      if (param && param.cmsUrlUrl) {
-        window.location.href = param.cmsUrlUrl;
+      if (param && param.web_url) {
+        window.location.href = param.web_url;
       }else {
-        // this.$router.push({
-        //   name:'detail',
-        //   params:{
-        //     item:param
-        //   }
-        // })
+        console.log('轮播图数据格式不对')
       }
     },
   }
