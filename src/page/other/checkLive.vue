@@ -2,18 +2,18 @@
 <div class="wy-openList">
   <div class="wy-openList-item" v-for="item in options" @click="gotoPage(item)">
     <van-row>
-      <van-col span="6">
+      <van-col span="4">
         {{item.user_name}}
       </van-col>
-      <van-col span="6">
+      <van-col span="10">
         {{item.full_name}}
       </van-col>
-      <van-col span="6">
+      <van-col span="10">
         {{item.join_time}}
       </van-col>
-      <van-col span="6">
+      <!-- <van-col span="6">
         {{item.community_id}}
-      </van-col>
+      </van-col> -->
     </van-row>
   </div>
 </div>

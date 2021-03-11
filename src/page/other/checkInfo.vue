@@ -147,7 +147,7 @@ window.countDown = function() {
         }
         // this.setting = await this.GetCommunityDetails();
         Indicator.close();
-        // this.isReady = true
+        this.isReady = true
         // this.buildings = await this.GetHouseList();
         // this.buildings.forEach( item => {
         //   let tmpobj = {

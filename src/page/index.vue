@@ -21,7 +21,7 @@
                   <div class="wy-menu">
                     <div class="wy-menu-item" v-for="item in menulist" v-if="item.is_show" @click="gotoMenuPage(item)">
                       <img :src="item.show_img" style="" alt="" class="weui-tabbar__icon" />
-                      <div>{{item.menu_title}}</div>
+                      <div>{{item.show_title}}</div>
                     </div>
                     <!-- <div class="wy-menu-item" @click="gotoPage('openList')">
                       <img src="../../static/images/wy/mj.png" style="width: 24px;" alt="" class="weui-tabbar__icon">
@@ -128,7 +128,7 @@
                         <img slot="icon" src="../../static/images/wy/gl.png" />
                       </mt-cell>
                     </div> -->
-                    <div class="wy-my-mj" v-if="pushTypeId && pushTypeId.indexOf('1')>-1" @click="gotoPage('checkLive')">
+                    <div class="wy-my-mj" v-if="pushTypeId && (pushTypeId.indexOf('1')>-1 || pushTypeId.indexOf('2')>-1)" @click="gotoPage('checkLive')">
                       <mt-cell title="住户审核"  is-link>
                         <img slot="icon" src="../../static/images/wy/gl.png" />
                       </mt-cell>
