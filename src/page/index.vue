@@ -128,7 +128,7 @@
                         <img slot="icon" src="../../static/images/wy/gl.png" />
                       </mt-cell>
                     </div> -->
-                    <div class="wy-my-mj" v-if="pushTypeId && (pushTypeId.indexOf('1')>-1 || pushTypeId.indexOf('2')>-1)" @click="gotoPage('checkLive')">
+                    <div class="wy-my-mj" v-if="pushTypeId && (pushTypeId.indexOf('5')>-1)" @click="gotoPage('checkLive')">
                       <mt-cell title="住户审核"  is-link>
                         <img slot="icon" src="../../static/images/wy/gl.png" />
                       </mt-cell>

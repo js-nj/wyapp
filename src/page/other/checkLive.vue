@@ -31,8 +31,20 @@ export default {
   },
   created(){
     document.title = '审核住户';
-    window._userInfo = JSON.parse(sessionStorage.getItem('_userInfo'));
-    window._ids = JSON.parse(sessionStorage.getItem('_ids'));
+    if (window.location.href.indexOf('org=msg')>-1) {
+      if(!window._userInfo){
+        window._userInfo = {};
+      }
+      if(!window._ids){
+        window._ids = {};
+      }
+      window._userInfo.id = window.location.href.split('&user_id=')[1].split('&org=msg')[0];
+      window._ids.community_id = window.location.href.split('community_id=')[1].split('&property_id=')[0];
+      window._ids.property_id = window.location.href.split('&property_id=')[1].split('&user_id=')[0];
+    } else {
+      window._userInfo = JSON.parse(sessionStorage.getItem('_userInfo'));
+      window._ids = JSON.parse(sessionStorage.getItem('_ids'));
+    }
     this.getCheckList();
     // this.options = window.userInfo.wyOwnerHouseEntityList;
   },

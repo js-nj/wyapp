@@ -132,16 +132,18 @@ export default {
         utils.Post('postWyopinionreplay',param).then(function(res){
           Indicator.close();
           if (res.data.code ==0) {
-            Toast('保存成功~');
+            
             if (window.location.href.indexOf('org=msg')>-1) {
+              MessageBox('提示', '审核成功~');
               // debugger;
-              that.$router.push({
-                name: 'index'
-              });
+              // that.$router.push({
+              //   name: 'index'
+              // });
               // window.history.go(0);
               // window.reload()
               // window.location.href = window.location.href+'&repeat';
             } else {
+              Toast('审核成功~');
               window.history.go(-1);
             }
             // window.history.go(-1);

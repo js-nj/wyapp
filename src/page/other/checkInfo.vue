@@ -69,13 +69,13 @@
           label="加入时间"
           placeholder="加入时间"
         />
-        <van-field
+        <!-- <van-field
           v-model="form.name8"
           :readonly="disabled"
           name="小区id"
           label="小区id"
           placeholder="小区id"
-        />
+        /> -->
         <div style="margin: 16px;">
           <van-button round block type="info" @click="onSubmit">
             审核通过
@@ -117,8 +117,22 @@ window.countDown = function() {
     async created(){
       window._vue_info = this;
         // console.log('缓存的用户数据2');
-        window._userInfo = JSON.parse(sessionStorage.getItem('_userInfo'));
-        window._ids = JSON.parse(sessionStorage.getItem('_ids'));
+        if (window.location.href.indexOf('org=msg')>-1) {
+          if(!window._userInfo){
+            window._userInfo = {};
+          }
+          if(!window._ids){
+            window._ids = {};
+          }
+          window._userInfo.id = window.location.href.split('&user_id=')[1].split('&org=msg')[0];
+          window._ids.community_id = window.location.href.split('community_id=')[1].split('&property_id=')[0];
+          window._ids.property_id = window.location.href.split('&property_id=')[1].split('&user_id=')[0];
+        } else {
+          window._userInfo = JSON.parse(sessionStorage.getItem('_userInfo'));
+          window._ids = JSON.parse(sessionStorage.getItem('_ids'));
+        }
+        // window._userInfo = JSON.parse(sessionStorage.getItem('_userInfo'));
+        // window._ids = JSON.parse(sessionStorage.getItem('_ids'));
         // Indicator.open();
         // let infoDone = await this.GetUserCheckDetails();
         console.log('window._userInfo',window._userInfo)
@@ -390,7 +404,7 @@ window.countDown = function() {
       onSubmit(){
         let param = {
           request_content: JSON.stringify({
-            user_id: this.$route.params.user_id,
+            user_id: this.$route.params.user_id?this.$route.params.user_id:window._userInfo.id,
             community_id: window._ids.community_id,
             property_id: window._ids.property_id,
           })
