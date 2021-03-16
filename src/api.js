@@ -1,22 +1,22 @@
 var hostPath = window.hostPath;
-
+var hostPath2 = window.hostPath2;
 export default {
   //新修改后的
-  UserCheckAdd: 'http://daka.xixiaoli.com/WebService.asmx/UserCheckAdd',
-  GetUserCheckDetails: 'http://daka.xixiaoli.com/WebService.asmx/GetUserCheckDetails',
-  GetWxUser: 'http://daka.xixiaoli.com/WebService.asmx/GetWxUser',
-  GetHouseList: 'http://daka.xixiaoli.com/WebService.asmx/GetHouseList',
-  PostSMS: 'http://daka.xixiaoli.com/WebService.asmx/PostSMS',
+  UserCheckAdd: hostPath2 + '/WebService.asmx/UserCheckAdd',
+  GetUserCheckDetails: hostPath2 + '/WebService.asmx/GetUserCheckDetails',
+  GetWxUser: hostPath2 + '/WebService.asmx/GetWxUser',
+  GetHouseList: hostPath2 + '/WebService.asmx/GetHouseList',
+  PostSMS: hostPath2 + '/WebService.asmx/PostSMS',
 
-  DoorList: 'http://daka.xixiaoli.com/WebService.asmx/DoorList',
-  DoorOpenList: 'http://daka.xixiaoli.com/WebService.asmx/DoorOpenList',
-  DoorOpen: 'http://daka.xixiaoli.com/WebService.asmx/DoorOpen',
+  DoorList: hostPath2 + '/WebService.asmx/DoorList',
+  DoorOpenList: hostPath2 + '/WebService.asmx/DoorOpenList',
+  DoorOpen: hostPath2 + '/WebService.asmx/DoorOpen',
 
-  GetADList: 'http://daka.xixiaoli.com/WebService.asmx/GetADList',
-  MenuList: 'http://daka.xixiaoli.com/WebService.asmx/MenuList',
+  GetADList: hostPath2 + '/WebService.asmx/GetADList',
+  MenuList: hostPath2 + '/WebService.asmx/MenuList',
 
-  CheckList: 'http://daka.xixiaoli.com/WebService.asmx/CheckList',
-  CheckByUserId: 'http://daka.xixiaoli.com/WebService.asmx/CheckByUserId',
+  CheckList: hostPath2 + '/WebService.asmx/CheckList',
+  CheckByUserId: hostPath2 + '/WebService.asmx/CheckByUserId',
 
   //海纳个人信息
   // getInfo: 'http://localhost:3000/users/info',
