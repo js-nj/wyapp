@@ -12,13 +12,13 @@
     <link rel="stylesheet" href="./static/swiper.min.css?t=1">
     <link rel="stylesheet" href="./static/app.css?t=2">
     <!-- <link rel="stylesheet" href="./static/css/app.css?t=2"> -->
-    <!-- <script src="http://cdn.bootcss.com/vConsole/3.3.0/vconsole.min.js"></script>
+    <script src="http://cdn.bootcss.com/vConsole/3.3.0/vconsole.min.js"></script>
     <script>new VConsole()</script>
     <style>
       #__vconsole .vc-switch {
         bottom:60px !important;
       }
-    </style> -->
+    </style>
     <script type="text/javascript">
       document.write('<link rel="stylesheet" href="./static/css/app.css?t=' + new Date().getTime() + '">');
       if (window.location.href.indexOf('xixiaoli')>-1 || window.location.href.indexOf('localhost')>-1) {
@@ -28,6 +28,16 @@
         window.hostPath = 'http://zhsqapi.njst2020.com:8090/zhwy';
         window.hostPath2 = 'http://zhsqwx.njst2020.com';
       }
+      // if(window.location.href.indexOf('&AppID=')>-1){
+      //   var tmpStr = window.location.href.split('&AppID=')[1];
+      //   if(tmpStr.indexOf('&')>-1){
+      //     window.AppID = tmpStr.split('&')[0];
+      //   }else {
+      //     window.AppID = tmpStr;
+      //   }
+      // }else {
+      //   console.err('链接缺少AppID')
+      // }
     </script>
     <!-- <script>
       document.write('<link rel="stylesheet" href="./static/css/app.css?t=' + new Date().getTime() + '">')

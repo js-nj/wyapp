@@ -78,7 +78,7 @@ export default {
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style >
+<style scoped>
 .wy-rec-item-des{
       text-align: left;
    padding: 8px 32px 8px 0px;

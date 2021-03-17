@@ -367,7 +367,7 @@ export default {
         var code = tmpCode[1].split('&state=')[0];
         var tmpParam = tmpCode[0].split('community_id=')[1];
         var community_id = tmpParam.split('&property_id=')[0];
-        var property_id = tmpParam.split('&property_id=')[1];
+        var property_id = tmpParam.split('&property_id=')[1].split('&AppID=')[0];
       } else {
         var code = null;
         var community_id = null;

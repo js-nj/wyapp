@@ -18,6 +18,9 @@ export default {
   CheckList: hostPath2 + '/WebService.asmx/CheckList',
   CheckByUserId: hostPath2 + '/WebService.asmx/CheckByUserId',
 
+  WXPay: hostPath2 + '/WebService.asmx/WXPay',
+  
+
   //海纳个人信息
   // getInfo: 'http://localhost:3000/users/info',
   getUserInfo: hostPath + '/app/txhn/getUserInfo',

@@ -1,10 +1,10 @@
 <template>
   <div class="pageContainer wy-info" v-if="isReady">
     <h3 style="padding:16px 12px;">
-      <span v-if="check_status == '0'" style="font-size:18px;">请首先完善个人信息：</span>
+      <span v-if="check_status == '0'" style="font-size:18px;color:#fff;">请首先完善个人信息：</span>
     </h3>
     <div>
-      <van-form>
+      <van-form style="background: #fff;">
         <van-field
           :readonly="true"
           :value="statusName"
@@ -108,7 +108,7 @@
             </el-form-item>
           </el-form> -->
         <div style="margin: 16px;">
-          <van-button round block type="info" v-if="!disabled" @click="onSubmit">
+          <van-button block type="info" v-if="!disabled" @click="onSubmit">
             提交
           </van-button>
           <!-- <van-button round block type="info" v-else @click="onEdit">
@@ -547,6 +547,12 @@ window.countDown = function() {
 </script>
 
 <style scoped >
+  .wy-info {
+    background: url(../../../static/images/bg.png) no-repeat fixed top;
+    background-size: cover;
+    height: 100vh;
+    padding: 8px;
+  }
   .pageContainer{
     background-color: #fff;
   }

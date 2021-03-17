@@ -20,12 +20,15 @@
           </mt-checklist> -->
           <div class="wy-rec-item-des">
             <div class="wy-rec-item-time">
-              <span>费用周期</span>
+              <span>{{item.payItemName}}</span>
               <div style="padding-top:2px;">{{item.time}}</div>
             </div>
             <div class="wy-rec-item-money">
               <span>金额</span>
               <div style="padding-top:2px;">{{item.money}}</div>
+            </div>
+            <div>
+              <mt-button class="wy-rec-button" type="primary" @click="postCreateOrder(item)">支付</mt-button>
             </div>
             <!-- <div class="wy-rec-icon" >></div> -->
           </div>
@@ -41,10 +44,10 @@
             v-model="allCheck"
             :options="['全选']">
           </mt-checklist> -->
-          <label style="font-size: 14px;display: inline-block;padding: 0 16px 0 0;">
+          <!-- <label style="font-size: 14px;display: inline-block;padding: 0 16px 0 0;">
             合计：<span style="color:#DE3116;">¥</span><span style="color:#DE3116;display:inline-block;min-width:32px;">{{allMoney}}</span>
-          </label>
-          <mt-button class="wy-rec-button" :disabled="disabled" type="primary" @click="postCreateOrder">去支付</mt-button>
+          </label> -->
+          <!-- <mt-button class="wy-rec-button" :disabled="disabled" type="primary" @click="postCreateOrder">去支付</mt-button> -->
         </div>
       </div>
       <div v-else style="padding:16px 0;">
@@ -227,6 +230,7 @@ export default {
                 time: item.payStart+' - '+item.payEnd,
                 money: item.payMoney,
                 id:item.id,
+                payItemName:item.payItemName,
                 value:[],
                 options:[{
                   label: item.payItemName+'-'+item.payAddress,//item.payItemName+'-'+item.communityName+'-'+item.payAddress,
@@ -287,32 +291,50 @@ export default {
         }
       });
     },
-    postCreateOrder(){
-      var param = {
-        ids:'',
-        redirectUrl:window.location.origin + '/index.html#/recResult'
+    postCreateOrder(params){
+      console.log('window',window.userInfo)
+      let param = {
+        request_content: JSON.stringify({
+          community_id:window.userInfo.community_id,
+          open_id:window.userInfo.open_id,
+          property_id:window.userInfo.property_id,
+          id:params.id,
+          user_id:window.userInfo.id,
+          total_fee:params.money
+        })
       };
-      if (!this.disabled) {
-        this.disabled = true;
-        if (this.options.length>0) {
-          this.options.forEach(function(item){
-            if (item.value[0]) {
-              param.ids = param.ids + item.id + ',';
-            }
-          });
-          param.ids = param.ids.slice(0,param.ids.length -1);
-          utils.Get('postCreateOrder',param).then(function(res){
+      // var param = {
+      //   user_id:window.userInfo.user_id,
+      //   community_id:window.userInfo.community_id,
+      //   open_id:window.userInfo.open_id,
+      //   total_fee:param.payMoney,
+      //   property_id:window.userInfo.property_id,
+      //   id:param.id,
+      //   redirectUrl:window.location.origin + '/index.html#/recResult'
+      // };
+      // if (!this.disabled) {
+      //   this.disabled = true;
+      //   if (this.options.length>0) {
+          // this.options.forEach(function(item){
+          //   if (item.value[0]) {
+          //     param.ids = param.ids + item.id + ',';
+          //   }
+          // });
+          // param.ids = param.ids.slice(0,param.ids.length -1);
+
+          utils.Post('WXPay',param).then(function(res){
+            let tmpResult = JSON.parse(res.data.d);
             // this.getFetch("公司后端提供的接口", data).then(res => {
-              if (res.data.code === 0) {
+              if (tmpResult.code == '0') {
                 function onBridgeReady() {
                   WeixinJSBridge.invoke(
                     "getBrandWCPayRequest", {
-                      appId: res.data.data.jsApiId, //公众号名称，由商户传入
-                      timeStamp:res.data.data.timestamp, //时间戳，自1970年以来的秒数
-                      nonceStr: res.data.data.nonceStr, //随机串
-                      package: res.data.data.package,
-                      signType: res.data.data.signType, //微信签名方式：
-                      paySign: res.data.data.paySign //微信签名
+                      appId: tmpResult.result.appId, //公众号名称，由商户传入
+                      timeStamp:tmpResult.result.timeStamp, //时间戳，自1970年以来的秒数
+                      nonceStr: tmpResult.result.nonceStr, //随机串
+                      package: tmpResult.result.package,
+                      signType: tmpResult.result.signType, //微信签名方式：
+                      paySign: tmpResult.result.paySign //微信签名
                     },
                     wxResponse => {
                       if (wxResponse.err_msg == "get_brand_wcpay_request:ok") {
@@ -358,10 +380,10 @@ export default {
             //   Toast('缴费失败~')
             // }
           });
-        }else {
-          Toast('请至少选择一单~')
-        }
-      }
+      //   }else {
+      //     Toast('请至少选择一单~')
+      //   }
+      // }
     },
     gotoRecDetail(item){
       this.$router.push({
@@ -402,14 +424,18 @@ export default {
     bottom: 0;
 }
 .wy-rec-button.mint-button{
-  font-size: 16px;
+  font-size: 12px;
+    padding: 0 18px;
+    height: 34px;
+    border-radius: 4px;
+ /* font-size: 16px;
     padding: 0 16px;
     height: 34px;
-    border-radius: 18px;
+    border-radius: 18px;*/
 }
 .wy-rec-item-des{
       text-align: left;
-   padding: 8px 32px 8px 0px;
+   padding: 8px 8px 8px 0px;
    margin-left: 32px;
    border-top: solid 1px #EEEEEE;
 }
@@ -444,7 +470,7 @@ padding: 0 0 0 10px;
   width: 50px;
 }
 .wy-rec-item-time {
-  width: calc(100% - 100px);
+  width: calc(100% - 120px);
 }
 .wy-rec-item-money span,.wy-rec-item-time span {
   color: #999;
