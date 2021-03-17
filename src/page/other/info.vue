@@ -4,8 +4,9 @@
       <span v-if="check_status == '0'" style="font-size:18px;color:#fff;">请首先完善个人信息：</span>
     </h3>
     <div>
-      <van-form style="background: #fff;padding-bottom: 24px;">
+      <van-form style="background: #fff;padding-bottom: 8px;border-radius: 8px;">
         <van-field
+          style="border-radius: 8px;"
           :readonly="true"
           :value="statusName"
           label="状态"
