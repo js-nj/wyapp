@@ -4,7 +4,7 @@
       <span v-if="check_status == '0'" style="font-size:18px;color:#fff;">请首先完善个人信息：</span>
     </h3>
     <div>
-      <van-form style="background: #fff;">
+      <van-form style="background: #fff;padding-bottom: 24px;">
         <van-field
           :readonly="true"
           :value="statusName"
@@ -94,9 +94,11 @@
           v-if="!disabled"
           v-model="form.name5"
           name="验证码"
+          type="number"
+          maxlength="4"
           label="验证码"
           placeholder="验证码">
-            <van-button slot="button" size="small" type="primary" @click="getSMS" :disabled="butDisabled">{{snsLabel}}</van-button>
+            <van-button slot="button" size="small" type="info" @click="getSMS" :disabled="butDisabled">{{snsLabel}}</van-button>
           </van-field>
 
          <!--  <el-form :disabled="disabled" ref="form" :model="form" label-width="62px"  style="padding:0 8px;">
