@@ -56,7 +56,7 @@
 </template>
 
 <script>
-import { Field,Button,Toast,Cell,Indicator} from 'mint-ui';
+import { Field,Button,Toast,Cell,Indicator,MessageBox} from 'mint-ui';
 // import utils from '../utils.js';
 import * as utils from '../../utils';
 import $ from "jquery";
@@ -85,6 +85,7 @@ export default {
     [Button.name]:Button,
     [Toast.name]:Toast,
     [Cell.name]:Cell,
+    [MessageBox.name]:MessageBox
   },
   watch:{
 
@@ -134,7 +135,7 @@ export default {
           if (res.data.code ==0) {
             
             if (window.location.href.indexOf('org=msg')>-1) {
-              MessageBox('提示', '审核成功~');
+              MessageBox('提示', '操作成功~');
               // debugger;
               // that.$router.push({
               //   name: 'index'
@@ -143,7 +144,7 @@ export default {
               // window.reload()
               // window.location.href = window.location.href+'&repeat';
             } else {
-              Toast('审核成功~');
+              Toast('操作成功~');
               window.history.go(-1);
             }
             // window.history.go(-1);
